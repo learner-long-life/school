@@ -1,0 +1,414 @@
+\documentclass[12pt]{article}
+
+\usepackage{fullpage}
+\usepackage{fancyhdr}
+\usepackage{scribe}
+\pagestyle{fancy}
+
+\rhead{\thesection\\Page \thepage\\}
+\lhead{Paul Pham\\ppham@cs.washington.edu\\CSE 533 Problem Set 1}
+
+%\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\addtolength{\headheight}{42pt} % make space for the rule
+\addtolength{\headsep}{6pt} % make space for the rule
+
+\renewcommand{\labelenumi}{\textbf{\alph{enumi})}}
+\renewcommand{\labelenumii}{\textbf{\arabic{enumii}}}
+\renewcommand{\thesection}{\small{Problem \arabic{section}}}
+  \makeatletter
+   \renewcommand{\section}{\@startsection{section}{1}{0mm}
+   {\baselineskip}%
+   {\baselineskip}{\normalfont\normalsize}}%
+   \makeatother
+%\renewcommand{\section}{\@startsection{section}{1}}
+\def\qopnamewl@#1{\mathop{\fam\z@#1}\nlimits@}
+\def\Exp{\mathop{\rm {E}}}
+\def\dist{{\rm dist}\,}
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\setcounter{section}{0}
+\section{Hardness-of-approximation reductions}
+
+\begin{enumerate}
+
+%------------------------------------------------------------------------------
+\item
+\textbf{Perfect Completeness of H\aa stad PCP.}
+We define a \textit{H\aa stad $(c,s)$-PCP-system} as a
+PCP system for NP that makes 3 queries from the alphabet $\{0,1\}$
+with predicates $\phi$ of the form $x_{i_1}+x_{i_2}+x_{i_3} = b \mod 2$,
+completeness $c$, and soundness $s$.
+
+To show that a H\aa stad $(1,\frac{1}{2}+\epsilon)$-PCP-system does not
+exist unless $\P=\NP$, it suffices to show that such a system would give a
+deterministic polytime algorithm for E3SAT, which is NP-complete.
+
+For the language E3SAT, the verifier and its predicates $\phi$ reduce
+proofs to assignments to Boolean variables in a E3CNF formula $\psi$ as part of
+their deterministic polytime computation. Therefore the three chosen
+proof bits $x_i$ correspond to the truth assignment to three variables
+whose literals appear in the same E3CNF clause, chosen randomly from within
+$\psi$.
+
+Having perfect completeness means that for all random coin tosses and
+choices of proof bits,
+$\psi \in \textrm{E3SAT} \Rightarrow \Pr{\left[\phi(x_{i_1}, x_{i_2}, x_{i_3}) \textrm{accepts} \right]} = 1$. Then we will construct an E3SAT solver.
+
+For $r = O(\log n)$ random bits, enumerate all $2^r = O(n)$ possible random
+choices of bits and their corresponding predicates in deterministic
+polytime. This will cover all E3CNF clauses in $\psi$. Run each $\phi$ on its
+corresponding clause. If all $\phi$'s accept, then the overall verifier should
+accept, otherwise it should reject. This verifier is an E3SAT solver.
+$\Box$
+
+%------------------------------------------------------------------------------
+\item
+\textbf{Hardness of MAX-3LIN.}
+Using a H\aa stad $(1-\epsilon,\frac{1}{2}+\epsilon)$-PCP-system, we can solve
+MAX-3LIN directly by using the verifier to enumerate over all random coin
+tosses and generate predicates to check every 3LIN equation in our system.
+A PCP system solving a gap decision problem with completeness $c$ and
+soundness $s$ gives
+an $\frac{s}{c}$-approximation algorithm for the corresponding
+optimization problem.
+
+For the above H\aa stad PCP system, we have:
+
+\begin{eqnarray*}
+& \displaystyle \frac{s}{c} & =\\
+& \frac{\frac{1}{2}+\epsilon}{1 - \epsilon} & = \\
+& \frac{\frac{1}{2} - \frac{\epsilon}{2}}{1 - \epsilon} + \frac{\frac{3}{2}\epsilon}{1 - \epsilon} & = \\
+& \frac{\frac{1}{2}(1 - \epsilon)}{1 - \epsilon} + \frac{\frac{3}{2}\epsilon}{1 - \epsilon} & = \\
+& \frac{1}{2} + \frac{\frac{3}{2}\epsilon}{1 - \epsilon} & =\\
+& \frac{1}{2} + \epsilon' &
+\end{eqnarray*}
+
+This gives us a $(\frac{1}{2}+\epsilon')$-approximation algorithm for all
+$\epsilon' > 0$, a new positive constant we have defined in terms of the
+PCP constant $\epsilon$ above. The prover for this PCP runs in nondeterminisic
+polytime because it can ``guess'' an optimal assignment which the verifier
+will accept. If $\P=\NP$, then this PCP system gives a polytime approximation
+algorithm for MAX-E3LIN.
+$\Box$
+
+%------------------------------------------------------------------------------
+\item
+\textbf{Hardness of MAX-E3SAT.}
+We show the
+hardness of a $(\frac{7}{8}+\epsilon)$-approximation algorithm for MAX-E3SAT
+by reduction from MAX-3LIN.
+%
+%as follows: construct a reduction from MAX-3LIN to MAX-E3SAT with certain
+%soundness 
+%by using it to construct a $(\frac{1}{2}+\epsilon)$-approximation algorithm for
+%MAX-E3LIN, which we know to be NP-hard from part (b).
+
+First, note that of the eight possible truth assignments to three Boolean
+variables, there are four with even parity and four with odd parity.
+
+\begin{tabular}{|c|c|}
+\hline
+$b=0$ & $b=1$\\
+\hline
+$000, 011, 110, 101$ & $111, 001, 010, 100$\\
+\hline
+\end{tabular}
+
+Given as input a system of 3LIN equations, convert each equation
+$x_{i_1} + x_{i_2} + x_{i_3} = b \mod 2$ into
+four E3CNF clauses (gadgets) according to the parity bit $b$ as follows.
+
+\begin{tabular}{|c|c|}
+\hline
+$b=0$ & $b=1$\\
+\hline
+$(\overline{x_{i_1}} \lor \overline{x_{i_2}} \lor \overline{x_{i_3}})$ &
+$(x_{i_1} \lor x_{i_2} \lor x_{i_3})$ \\
+$(\overline{x_{i_1}} \lor x_{i_2} \lor x_{i_3})$ &
+$(\overline{x_{i_1}} \lor \overline{x_{i_2}} \lor x_{i_3})$ \\
+$(x_{i_1} \lor \overline{x_{i_2}} \lor x_{i_3})$ &
+$(\overline{x_{i_1}} \lor x_{i_2} \lor \overline{x_{i_3}})$ \\
+$(x_{i_1} \lor x_{i_2} \lor \overline{x_{i_3}})$ &
+$(x_{i_1} \lor \overline{x_{i_2}} \lor \overline{x_{i_3}})$ \\
+\hline
+\end{tabular}
+
+If a 3LIN equation system is satisfiable,
+then for every equation the corresponding assignment will
+have the right parity $b$ and satisfy all four clauses above for that parity.
+This gives the reduction a completeness of $1$.
+%, and an overall completeness
+%of $1-\epsilon$.
+
+If a 3LIN equation system is unsatisfiable, then all assignments will have the
+wrong parity for at least one equation.
+All assignments of odd parity will fail exactly one clause above
+for even parity, and all assignments of even parity will likewise fail
+exactly one clause above for odd parity.
+This means $\frac{1}{4}$ of the E3CNF clauses cannot be satisfied, and by
+the soundness of the H\aa stad PCP system, $(\frac{1}{2}-\epsilon)$ fraction
+of these fail the predicate check. This gives an overall soundness of:
+
+\begin{eqnarray*}
+& 1 - \frac{1}{4}\left(\frac{1}{2} - \epsilon \right) & =\\
+& 1 - \frac{1}{8} + \epsilon & = \\
+& \frac{7}{8} + \epsilon
+\end{eqnarray*}
+
+From the calculation in part (a), we know that this completeness and
+soundness give us a $(\frac{7}{8}+\epsilon')$-approximation algorithm for
+MAX-E3SAT for all $\epsilon' > 0$, where $\epsilon'$ is defined in terms
+of the original PCP's $\epsilon$. This algorithm
+does not run in polytime unless $\P=\NP$.
+$\Box$
+
+%------------------------------------------------------------------------------
+\item
+\textbf{Hardness of MAX-3MAJ.}
+We show the hardness of a
+a $(\frac{2}{3}+\epsilon)$-approximation algorithm for MAX-3MAJ by
+reduction from MAX-E3LIN.
+
+Given as input a system of 3LIN equations, convert each equation
+$x_{i_1} + x_{i_2} + x_{i_3} = b \mod 2$ into
+four 3MAJ constraints (gadgets) according to the parity bit $b$ as follows.
+
+\begin{tabular}{|c|c|}
+\hline
+$b=0$ & $b=1$\\
+\hline
+Maj$(x_{i_1}, x_{i_2}, x_{i_3}) = 1$ &
+Maj$(\overline{x_{i_1}}, \overline{x_{i_2}}, \overline{x_{i_3}}) = 1$ \\
+Maj$(x_{i_1}, \overline{x_{i_2}}, \overline{x_{i_3}}) = 1$ &
+Maj$(\overline{x_{i_1}}, x_{i_2}, x_{i_3}) = 1$ \\
+Maj$(\overline{x_{i_1}}, \overline{x_{i_2}}, x_{i_3}) = 1$ &
+Maj$(x_{i_1}, x_{i_2}, \overline{x_{i_3}}) = 1$ \\
+Maj$(\overline{x_{i_1}}, x_{i_2}, \overline{x_{i_3}}) = 1$ &
+Maj$(x_{i_1}, \overline{x_{i_2}}, x_{i_3}) = 1$ \\
+\hline
+\end{tabular}
+
+If a 3LIN equation is satisfiable, then the corresponding assignment will
+have the right parity $b$ and satisfy exactly three of the constraints above
+for that parity (and fail one).
+This gives the reduction a completeness of $\frac{3}{4}$.
+% and an overall
+%completeness of $\frac{3}{4} - \epsilon$.
+
+If a 3LIN equation is unsatisfiable, then it will have the wrong parity.
+All assignments of odd parity will satisfy exactly one clause
+above for even parity, and all assignments of even parity will likewise
+satisfy exactly one clause above for odd parity.
+This means at most (in fact, exactly) $\frac{1}{4}$ of the 3MAJ constraints
+are satisfied, giving the reduction a soundness of $\frac{1}{4}$.
+%Combined
+%with the original PCP predicate, the overall soundness is
+$\Box$
+
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\setcounter{section}{1}
+\section{2-Prover 1-Round Games}
+
+\begin{enumerate}
+
+\item
+\textbf{Randomized Provers.}
+We would like to show that randomness does not increase the probability of
+provers winning a 2P1R by comparing the expectation of the game's value
+in the first case, when the provers are not given randomness, and in the
+second case, when they are.
+
+Because the provers $P_1$ and $P_2$ are all-powerful, they can simulate
+$V$ before the game starts on all possible random coin flips.
+We define a random variable to
+be the value of a game where $V$ has random string $r$, $P_1$ gives optimal
+answer $a_1$ with randomness $r_1$, and $P_2$ gives optimal answer $a_2$
+with randomness $r_2$.
+
+\begin{equation}
+X_{r,r_1,r_2} = \Pr{\left[(q_1,q_2)\leftarrow V(r); a_1\leftarrow P_1(q_1,r_1); a_2\leftarrow P_2(q_2,r_2); V'(a_1,a_2) = 1\right]}
+\end{equation}
+
+The expected value of provers winning the game with an optimal
+strategy is taken over random coin flips of the verifier, which
+determines the questions and the provers' answers. In the first case,
+the provers are not allowed any randomness, denoted by $X_{r,0,0}$.
+
+\begin{equation}
+\label{2p1r-exp-1}
+\Exp_{r}{\left[ X_{r}\right]} = \sum_{r}{\Pr{\left[r\right]}X_{r,0,0}}
+\end{equation}
+
+In the second case, the provers are given random strings $r_1$ and $r_2$ after
+the game has started. The new expectation of winning is:
+
+\begin{equation}
+\label{2p1r-exp-2}
+\Exp_{r,r_1,r_2}{\left[ X_{r,r_1,r_2}\right]} = \sum_{r}{\Pr{\left[r \land r_1 \land r_2\right]}X_{r,r_1,r_2}}
+\end{equation}
+
+Since in the best case for the provers, the choices of randomness are
+independent, \ref{2p1r-exp-2} can be written as:
+
+\begin{equation}
+\sum_{r,r_1,r_2}{\Pr{\left[r_1\right]}\Pr{\left[r_2\right]}\Pr{\left[r\right]}X_{r,r_1,r_2}}
+\end{equation}
+
+For a given choice of verifier random string $r$, we can see that the
+provers can always precompute or guess optimal random strings $r_1'$ and $r_2'$
+which are at least as good in expectation
+as using any given random string.
+
+\begin{equation}
+\sum_{r_1,r_2}{\Pr{\left[r_1\right]}\Pr{\left[r_2\right]}X_{r,r_1,r_2}} \le X_{r,r_1',r_2'}
+\end{equation}
+
+Therefore
+\ref{2p1r-exp-2} will always be less than or equal to \ref{2p1r-exp-1}, and
+it does not help the provers to have randomness.
+
+\item
+\textbf{Bipartite GAP-CG$_1,\epsilon(\Sigma)$ is NP-hard.}
+
+In lecture we showed that GAP-CG$_{1,\epsilon}(\sigma)$ is NP-hard and
+that 2P1R games are equivalent to bipartite constraint-graph
+problems. We can then reduce any constraint graph problem
+to a bipartite version,
+which can then be solved by some 2P1R game. This shows how a
+2P1R game can decide any language $L \in \NP$ with the required
+completeness and soundness.
+
+Given an input to GAP-CG$_{1,\epsilon}(\sigma)$, $G = (V,E)$ and constant-size 
+For every vertex $x \in G$, create two vertices $x_1$ and $x_2$ in
+$G'$ connected by an equality constraint to enforce the reduction.
+For every edge $(u,v)$, create two ``diagonal''
+edges $(u_1,v_2)$ and $(u_2,v_1)$ with the same constraint.
+
+If $x \in L$ and all constraints in $G$ are satisfied,
+then all constraints in $G'$ will
+also be satisfied, giving completeness 1.
+Each constraint that is unsatisfied in $G$
+must fail one of the diagonal edges in $G'$,
+$\frac{1}{4}$ of the constraints.
+If $x \notin L$ then at most $\epsilon$ fraction of
+constraints are satisfied in $G$ and therefore $\epsilon' = \frac{\epsilon}{4}$
+constraints unsatisfied in $G'$.
+
+Therefore if there exists a 2P1R game to solve the gap problem for any 
+bipartite constraint graph, all constraint graphs can be made bipartite and
+their gap problem is NP-hard, then a 2P1R game can solve any gap problem for
+languages in NP.
+$\Box$
+
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\setcounter{section}{2}
+%\section{Error reduction using expanders}
+
+%\begin {itemize}
+
+%\item
+
+%\item
+
+%\item
+
+%\item
+
+%\item
+
+%\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\setcounter{section}{3}
+%\section{Hardness of \textsc{Clique} and graph products}
+
+%\begin{enumerate}
+
+%\item
+
+%\item
+
+%\item
+
+%\item
+
+%\item
+
+%\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\setcounter{section}{4}
+%\section{Amplification fails beyond 1/2}
+
+%\begin{enumerate}
+
+%\item
+
+%\item
+
+%\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\setcounter{section}{5}
+%\section{Fourier interpretations}
+
+%\begin{enumerate}
+
+%\item
+
+%\item
+
+%\item
+
+%\item
+
+%\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\setcounter{section}{6}
+\section{A long code test}
+
+\begin{enumerate}
+
+\item
+In general, a local test for a function set $C$ may not be a local test for
+a subset $C' \subseteq C$ because the distribution of functions may be
+different in the subset. For example, consider
+the function $f: \{1,-1\}^n \rightarrow {1}$ that maps every input to $1$.
+It is at least $\frac{1}{2}$-far from every function in $\mathcal{D}$, since
+the dictator bit is always balanced (half $1$'s and half $-1$'s). However,
+it will always pass the BLR test.
+
+\item
+\begin{displaymath}
+\frac{3}{4} - \frac{ab + bc + ca}{4}
+\end{displaymath}
+
+If $a = b = c$ then $ab = bc = ca = 1$ and the expression is 0.
+If $a \ne b$ or $b \ne c$, then one of $\{ab,bc,ca\}$ is 1 and the other two are-1, so the expression is 1.
+
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\setcounter{section}{7}
+%\section{Orthogonal decomposition}
+
+%\begin{enumerate}
+
+%\item
+
+%\item
+
+%\item
+
+%\end{enumerate}
+
+\end{document}

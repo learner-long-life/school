@@ -1,0 +1,137 @@
+1a
+select distinct x.id, x.fname, x.lname
+from 	Actor x, Movie y1, Movie y2, casts z1, casts z2
+where x.id = z1.pid and
+      x.id = z2.pid and
+	z1.mid = y1.id and			  
+	y1.year >= 1850 and y1.year < 1900 and
+	z2.mid = y2.id and
+	y2.year >= 1900 and y2.year < 1950;
+
+1b
+select distinct a.id
+from 	Director a, Movie_Director b, Movie c
+where a.id = b.did and
+      b.mid = c.id and
+      ((c.year % 4 = 0 and c.year % 100 <> 0) or c.year % 400 = 0);
+
+2
+select b.*
+from Movie a, Movie b
+where	a.name = 'Shrek' and
+	b.year = a.year and
+	b.rank > a.rank;
+
+3
+select a.fname, a.lname
+from Actor a, Movie b, Casts c
+where a.id = c.pid and
+ 	c.mid = b.id and
+ 	b.name = 'Officer 444';
+
+4
+select d.id, d.fname, d.lname, count(md.mid) as num_movies
+from director as d left outer join Movie_director as md
+on d.id = md.did
+group by  d.id, d.fname, d.lname
+order by  num_movies desc;
+
+5 largest
+select m.name, count(*) as casts_size
+from Movie as m, Casts as c
+where m.id = c.mid
+group by  m.id, m.name
+having count(*) >= all (select count(*) from Casts group by mid);
+// 1274 is the largest cast size.
+
+5 smallest
+select m.name, count(c.pid) as casts_size
+from Movie as m left outer join Casts as c
+on m.id = c.mid
+group by m.id, m.name
+having count(c.pid) <= all (select count(c2.pid) from Movie as m2 left outer join Casts as c2
+                             on m2.id = c2.mid group by m2.id ); 
+// 0 is the smallest cast size.
+
+6
+select a.id, a.fname, a.lname, count(distinct md.did) as num
+from	Actor a, Casts c, Movie_director md
+where	a.id = c.pid and c.mid = md.mid
+group by a.id, a.fname, a.lname
+having count(distinct md.did) >= 10;
+
+7
+select a.id, a.fname, a.lname
+from Actor a, Casts c, Movie m
+where	a.id = c.pid and c.mid = m.id
+group by a.id, a.fname, a.lname
+having max (m.year) < 1960;
+
+8
+select m.id, m.name
+from Movie as m, casts as c1, Actor as a
+where c1.mid = m.id and c1.pid = a.id and a.gender = 'F'
+group by m.id, m.name
+having count(*) > (select count(*)
+                   from casts as c2, Actor as a
+                   where c2.mid = m.id and c2.pid = a.id and a.gender = 'M');
+
+9
+select a1.fname, a1.lname, a2.fname, a2.lname, count(*) as num_films
+from Actor as a1, Actor as a2, casts as c1, casts as c2
+where c1.mid = c2.mid and 
+      a1.id = c1.pid 	and 
+      a2.id = c2.pid 	and
+      a1.gender = 'M' and 
+      a2.gender = 'F'
+group by a1.id, a2.id, a1.fname, a1.lname, a2.fname, a2.lname
+having count(*) > 0
+order by count(*) desc;
+
+10
+select a.fname, a.lname, m.name 
+from Actor as a, Movie as m, Casts as c
+where	a.id = c.pid and 
+      m.id = c.mid and
+      m.year = (select min(year)
+                from Movie as m1, casts as c1
+                where m1.id = c1.mid and c1.pid = a.id)
+order by a.lname;
+
+11
+select distinct c1.pid
+from casts as c1
+where c1.mid in (select	c2.mid
+		     from casts as c2
+		     where c2.pid in (select c3.pid
+					    from casts as c3
+					    where c3.mid in (select c4.mid 
+								   from casts as c4, Actor as a
+								   where c4.pid = a.id and a.fname = 'Kevin' and a.lname = 'Bacon')))	
+      and c1.pid not in (select c2.pid
+				 from	 casts as c2
+				 where c2.mid in (select c3.mid
+							from casts as c3, Actor as a
+							where c3.pid = a.id and a.fname = 'Kevin' and a.lname = 'Bacon'));
+
+Bonus: If one knows apriori that the largest possible Bacon number is k, then a query that joins 
+the Casts table with itself 2k times is sufficient to return all such actors. One trivial value 
+for k will be the total number of actors in the database.
+
+12
+select yearlist.year as decade, sum(yearcount.cnt) as movies
+from (select distinct year from Movie) as yearlist,   
+     (select year, count(*) as cnt 
+      from Movie 
+      group by year) as yearcount
+where yearcount.year >= yearlist.year and yearcount.year < (yearlist.year + 10)
+group by yearlist.year
+having sum(yearcount.cnt) >= all 
+		(select sum(yearcount.cnt)
+		 from	(select distinct year from Movie) as yearlist,    
+         		(select year, count(*) as cnt 
+			 from Movie
+                   group by year) as yearcount
+		 where yearcount.year >= yearlist.year and yearcount.year < (yearlist.year + 10)
+		 group by yearlist.year);
+// Returns the decade 1995-2004 with 113338 as the movie count.

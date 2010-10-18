@@ -1,0 +1,244 @@
+\documentclass[12pt]{article}
+\usepackage{scribe}
+
+\Scribe{Paul Pham}
+\Lecturer{Paul Beame}
+\LectureNumber{1}
+\LectureDate{3 January 2006}
+\LectureTitle{Introduction and Definitions}
+
+\begin{document}
+\MakeScribeTop
+
+\def\Var{{\rm Var}\,}
+\def\qopnamewl@#1{\mathop{\fam\z@#1}\nlimits@}
+\def\Exp{\mathop{\rm {E}}}
+\def\Stab{\mathop{\rm {Stab}}}
+\def\Inf{\mathop{\rm {Inf}}}
+\def\maj{\mathop{\rm {maj}}}
+\def\sgn{\mathop{\rm {sgn}}}
+\def\dist{{\rm dist}\,}
+%------------------------------------------------------------------------------
+\section{``Secret Writing''}
+
+In the original two-party setting of cryptography:
+
+\begin{itemize}
+\item The sender, usually called Alice, transmits a message.
+\item The receiver, usually called Bob, receives a message.
+\end{itemize}
+
+The channel is generally insecure and can be modelled as an adversary,
+or an eavesdropper (hence called Eve).
+
+\begin{itemize}
+\item
+An \textit{passive} adversary can only observe messages in the channel.
+\item
+An \textit{active} adversary can modify messages in the channel but cannot
+sever it entirely (this is detectable by Alice and Bob).
+\end{itemize}
+
+\section{Desiderata}
+
+Desired properties of \textit{secure} communication over this channel.
+
+\begin{description}
+\item[secrecy]: Eve learns nothing from observing the channel that she didn't
+already know before.
+\item[authenticity]: the message Bob receives is the same one Alice sent.
+\end{description}
+
+\section{Other scenarios}
+
+\begin{itemize}
+\item access control / passwords / general authentication
+\item data privacy
+\item electronic payments
+\item electronic voting
+\item bit commitment
+\item pseudorandom generators
+\end{itemize}
+
+Cryptography overlaps with both computational complexity and security, and
+some cryptographic topics are not in either.
+
+\section{Secrets}
+
+Note that the receiver and adversary positions are symmetric.
+
+\begin{itemize}
+\item
+To get secrecy: receiver must know something (or have some capability)
+that adversary doesn't. Call this a secret or a \textit{key}.
+\item
+To get authenticity: likewise, the sender must have a key that the
+adversary doesn't know.
+\end{itemize}
+
+\section{Trust Models}
+
+\begin{description}
+\item[symmetric]: also called shared secret or private key model.
+Alice and Bob share the same key.
+\item[asymmetric]: also called public key.
+Each party has its own private key which is kept secret and an
+associated public key
+which is openly published.
+\end{description}
+
+\section{Symmetric Encryption}
+
+Three spaces and associated distributions:
+
+\begin{itemize}
+\item key space $\mathcal{K}$
+\item message space $\mathcal{M}$
+\item ciphertext space $\mathcal{C}$
+\end{itemize}
+
+Three (polynomial time) algorithms:
+
+\begin{itemize}
+\item decryption algorithm $D : \mathcal{K} \times \mathcal{M} \rightarrow \mathcal{C}$
+\item encryption algorithm $E : \mathcal{K} \times \mathcal{C} \rightarrow \mathcal{M}$
+\item key generation algorithm (leave vague for now) which produces a key $K \in \mathcal{K}$
+\end{itemize}
+
+Remarks on distributions:
+
+\begin{itemize}
+\item
+Note that the distribution of $\mathcal{K}$ is determined by the key
+generation algorithm. It must be random, otherwise the adversary can
+predict it.
+
+\item
+The sender is free to choose $\mathcal{M}$.
+
+\item
+$\mathcal{C}$ is determined by the encryption
+algorithm, $\mathcal{M}$, and $\mathcal{K}$.
+\end{itemize}
+
+$\log{(|\mathcal{K}|)} = k$ is known as the security parameter and
+in general determines the running time and level of security of the
+algorithms $E$ and $D$.
+
+\begin{itemize}
+\item Sender computes $E(K,M) = E_K(M) = C$
+\item Receiver computs $D(K,C) = D_K(C) = M'$
+\item We require $M = D_K(E_K(M))$
+\end{itemize}
+
+The adversary learns the ciphertext $C$ and in general the approximate
+length of $M$, since the algorithms $E$ and $D$ are publicly known.
+
+\section{One-time pad}
+
+Example of symmetric encryption.
+
+\begin{itemize}
+\item $\mathcal{K} = \{0,1\}^k$
+\item $\mathcal{M} = \mathcal{C} = \{0,1\}^n, n \le k$
+\item $E_K(M) = C$ where $C_i \gets M_i \oplus K_i$
+\item $D_K(C) = M'$ where $M'_i \gets C_i \oplus K_i$
+\end{itemize}
+
+Note that the encryption and decryption algorithms are identical 
+(bitwise XOR with the key) and that the length of the message can be at most
+the length of the key (one-time pad).
+
+Actually, $E$ and $D$ above take a counter argument which is an offset into
+the one-time pad. The counter must be sent with the ciphertext to keep the
+sender and receiver synchronized.
+
+If the sender ever reuses a part of $K$, then for some pair of ciphertexts,
+the adversary can learn the XOR of the two messages.
+
+\begin{displaymath}
+C \oplus C' = (M \oplus K) \oplus (M' \oplus K) = M \oplus M'
+\end{displaymath}
+
+In terms of information theory, Shannon showed that one-time pads have
+perfect security.
+
+\section{Symmetric authentication}
+
+This is known as a MAC (message authentication code) or a ``tag'' for each
+message. We don't want the adversary to be able to convince receiver that
+sender's message was anything else.
+
+\begin{itemize}
+\item
+Sender computes $tag \gets MAC_K(M)$ and sends $\langle M, tag \rangle$
+\item
+Receiver gets $\langle M', tag' \rangle$ and computes $tag'' \gets MAC_K(M')$.
+Rejects iff $tag' \ne tag''$.
+\end{itemize}
+
+We can combine secrecy and authentication by inserting encryption before
+sending the message/tag pair and decryption after receiving the message/tag pair.
+
+\section{Asymmetric encryption}
+
+Two keys for each party (A for Alice, B for Bob).
+
+\begin{itemize}
+\item public keys $PK_A, PK_B$
+\item secret keys $SK_A, SK_B$
+\item Sender computes $C \gets E(PK_B, M)$ and sends it.
+\item Receiver gets $C'$ and computes $M' \gets D(SK_B, C)$
+\item Adversary gets everyone's public keys and the algorithms $E$ and $D$
+\end{itemize}
+
+In reality, the adversary could potentially intercept the message
+in between the sender and the algorithm $E$, if the latter is a separate
+device or entity.
+
+Asymmetric encryption is usually used to exchange symmetric secret keys,
+which are faster for the bulk of communication (SSL works this way).
+
+The original Diffie-Hellman paper
+noted the close connection between the schemes for
+asymmetric encryption and asymmetric authentication.
+
+\section{Asymmetric authentication}
+
+Known as ``digital signatures,'' uses secret and public key pairs as
+defined previously.
+
+\begin{itemize}
+\item Sender computes $S \gets Sign(SK_A, M)$ and sends $\langle M, S \rangle$
+\item Receiver gets $\langle M', S' \rangle$ and computes $S'' \gets Verify(PK_A, M')$. Rejects iff $S'' \ne S'$.
+\end{itemize}
+
+\section{Security definition}
+
+Shannon in 1949 gave an information-theoretic definition of security.
+
+\begin{definition}
+A symmetric encryption scheme is \textbf{secure} iff
+
+\begin{displaymath}
+\forall \mathcal{M}: \Pr_{K \in \mathcal{K}, M \in \mathcal{M}}{\left[M \mid C=E_K(M)  \right]} = \Pr_{K \in \mathcal{K}, M \in \mathcal{M}}{\left[M\right]}
+\end{displaymath}
+
+In other words, the probability of any adversary recovering the original
+message given just the ciphertext is equal to the probability of the
+adversary just guessing without the ciphertext. Equivalently:
+
+\begin{displaymath}
+\Pr_{M,K}{\left[ C \mid M \right]} = \Pr_{M,K}{\left[C\right]}
+\end{displaymath}
+\end{definition}
+
+\begin{theorem}
+If  a symmetric encryption scheme is perfectly secure, then $|\mathcal{M}| = |\mathcal{K}|$.
+\end{theorem}
+
+\begin{theorem}
+For $n \le k$, a one-time pad is perfectly secure.
+\end{theorem}
+
+\end{document}

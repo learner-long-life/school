@@ -1,0 +1,43 @@
+// qaddr is an arbitrary quantum address superposition
+// caddr is the classical address with which to entangle the data
+//       if it exists in qaddr
+// data  is the data input
+// readout is the output, which contains data if qaddr contains caddr
+
+qufunct QramSuperpose(quconst qaddr, int caddr, quconst data,
+                       qureg readout) {
+  int a = #qaddr;
+  int d = #data;
+  int r = #readout;
+  int i;
+  qureg f[a]; // intermediate control qubit array, starts at |0>
+
+  if (d != r) {
+    print "r=",r," d=",d;
+    exit "Data size mismatch";
+  }
+
+  for i=0 to a-1 { // iterate over bits in classical address
+    CNot(f[i], qaddr[i]);
+    if (bit(caddr,i)) {
+    } else {
+      Not(f[i]);
+    }
+  } // Now if f is all 1's, then we should flip the data bits
+
+  for i=0 to d-1 {
+    CNOT(readout[i], f & data[i]);
+  }
+
+  // Uncompute f
+  for i=0 to a-1 { // iterate over bits in classical address
+      CNot(f[i], qaddr[i]);
+    if (bit(caddr,i)) {
+    } else {
+      Not(f[i]);
+//      ZCNot(f[i], qaddr[i]);
+    }
+  }
+
+}
+

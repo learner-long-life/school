@@ -1,0 +1,61 @@
+100 Points Total
+
+02 Working ADT command-line option (AVL, Splay, Hash)
+14 AVL Tree Implementation
+   06 Basic Design (error-free compilation)
+   04 Unit Test
+   04 Correctness, Borderline tests
+14 Splay Tree Implementation
+   06 Basic Design  (error-free compilation)
+   04 Unit Test
+   04 Correctness, Borderline tests
+14 Hash Table Implementation
+   06 Basic Design  (error-free compilation)
+   04 Unit Test
+   04 Borderline tests
+      rehashing, collision handling
+10 WordCount Implementation
+   03 Basic Design  (error-free compilation)
+   02 Print frequency output
+   03 Sort implementation
+   02 Print number of unique words output
+09 Correlator Implementation
+   05 Basic Design  (error-free compilation)
+   04 Correctness
+09 Benchmarks
+   04 Implementation of benchmarks (does it measure what they claim)
+   05 Answers to two given questions
+28 README
+   01 #1
+   01 #2
+   01 #3
+   01 #4
+   02 #5
+   02 #6
+   02 #7
+   03 #8
+   03 #9
+   02 #10
+   02 #11
+   06 #12
+   01 #13
+   01 #14
+
+Extra Credit
+
+63 total
+
+02 Recursive vs. Iterative
+05 Red-Black Trees
+03 Keeping performance information
+04 Alternative hashing strategies
+02 Data locality
+02 Profiling
+03 Deletion
+04 Sorting
+03 Introspective sort
+02 Iterators
+07 Visualization
+07 Word Stemming
+07 Word co-occurrence
+12 Latent Semantic Analysis

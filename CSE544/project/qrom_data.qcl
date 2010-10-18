@@ -1,0 +1,14 @@
+include "qrom_init";
+
+int a = 2;
+int d = 3;
+int n = 2^a;
+int m = n*d;
+
+qureg data[m];
+
+QromInit(data, 7, 0, a, d);
+QromInit(data, 1, 1, a, d);
+QromInit(data, 3, 2, a, d);
+QromInit(data, 2, 3, a, d);
+

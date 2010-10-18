@@ -1,0 +1,251 @@
+CSE 521, Winter 2006.
+
+Notes on network flows sketching the key steps and proofs
+**********************************************************
+
+NETWORK FLOW
+------------
+
+Problem description: directed graph.  Source node. Sink node.  Each
+(directed) edge has a capacity which we assume to be a positive
+integer. The goal is to flow as much as possible from source to sink.
+
+Formally, a flow is a map f: E -> non-negative reals obeying the two rules:
+ Capacity constraint: on any edge, f(e) <= c(e)
+ Flow conservation: for any vertex except s and t, flow in = flow out. 
+
+The goal is to maximize the total flow on edges leaving the source s.
+
+How can one find a maximum flow and prove that it is correct?  Here is
+a very natural strategy: find a path from s to t and push as much flow
+on it as possible.  Then look at the leftover graph called the
+residual graph and repeat until there is no longer any path with
+capacity left to push any more flow on.  This is called the
+Ford-Fulkerson algorithm.
+
+Let us now formally define the leftover/residual graph G_f with
+respect to the current flow f:
+
+    * If e is an edge in the original network, and f(e) < c(e), then
+      G_f has the edge e with "residual capacity" c_f(e) = c(e) -
+      f(e). These edges are called "forward" edges.
+
+    * Also, if edge e=(u,v) carries flow f(e) > 0, we have a
+      "backedge" e' in opposite direction with c_f(e') = f(e) (the
+      idea being that we can reduce the flow on e up to f(e) --
+      routing flow on backedges amounts to reducing flow on the
+      corresponding original edge, and re-routing that elsewhere
+      through the network).
+
+Note: residual capacity can be *larger* than original capacity if we
+had flow going in opposite direction. For example if there is an edge
+(a,b) with capacity 2 and edge (b,a) with capacity 1 and the current
+flow sends one unit of flow on (b,a), then the capacity of the edge
+(a,b) in the residual graph will be 3. If this bothers you, you can
+equivalently allow multiple edges between (a,b) and keep the forward
+and backward edges separate with their respective capacities. 
+
+We are now ready to describe the natural, iterative flow algorithm:
+
+Basic Ford-Fulkerson algorithm
+------------------------------
+   Begin with the zero flow f(e) = 0 for all edges e.
+   While there exists an s-->t path P in G_f:
+      (i) push maximum possible flow along P (saturating at least one edge
+          on it) [These are called "augmenting paths"] 
+      (ii) update the flow f and the residual graph G_f
+   Output the flow f.
+
+RUNNING TIME: If capacities are all integers, the above algorithm
+always maintains an integer-valued flow. Therefore, after each
+augmentation the value of the flow increases by at least 1. Hence the
+running time is polynomial in the number of nodes and the value of the
+flow (which is clearly upper-bounded by the total capacity on edges
+leaving s).  But if we allow large capacities written in binary, this
+is not necessarily polynomial time in the description length of the
+input (it is what is called a pseudopolynomial time algorithm). We saw
+a simple graph with two disjoint paths of length two with capacity
+10000 edges and a capacity 1 link between the middle nodes of these
+paths. The algorithm can take 20000 iterations to compute the max flow
+of value 20000 (with an increase of 1 per augmentation, using the two
+zig-zag paths in turn).
+
+In your problem set, you will prove that by picking augmenting paths
+that are the shortest, one can get a polynomial time algorithm, and in
+fact a strongly polynomial time algorithm where the number of
+augmentations depends only on the number of edges and vertices and not
+on the capacities.
+
+CORRECTNESS:
+Algorithm by design finds a legal flow.  Why is it maximum?
+
+For this we turn to how one can provide an upper bound on the maximum
+flow (so we know when we have the best possible flow). This is done
+via "cuts", which identify bottlenecks in the network that impede lot
+of flow going from s to t.
+
+Definition: an s-t cut (A,B) is a partition of the vertex set into
+disjoint sets A and B such that s belongs to A and t belongs to B.
+The edges of the cut are then all edges going from A to B, and the
+capacity of the cut, denoted c(A,B), is the total capacity on all
+edges of the cut.
+
+Definition: For a flow f and a subset A containing s, let f^{out}(A)
+be the total flow on edges leaving A, and let f^{in}(A) be the total
+flow on edges entering A.
+
+We have the following lemma.
+
+Lemma: The value of any flow, v(f), satisfies v(f) = f^{out}(A) -
+f^{in}(A).
+
+Proof: v(f) = f^{out}(s) = f^{out}(s) - f^{in}(s) = sum_{v in A}
+f^{out}(v) - f^{in(v). Now in the last sum, the f(e) terms for edges e
+with both endpoints in A cancel out. The outgoing edges have f(e)
+appearing, and incoming edges have -f(e) appearing. It follows that
+this sum equals f^{out}(A) - f^{in}(A), as claimed.
+
+Corollary: If f is any flow and (A,B) any s-t cut, then v(f) <=
+c(A,B). (That is, the max s-t flow <= min s-t cut)
+
+Therefore, to prove that the flow f output by the algorithm is
+optimal, we only need to exhibit a cut (A,B) such that v(f) = c(A,B),
+and this is exactly what we do below.
+
+Lemma: The flow output by the Ford-Fulkerson algorithm is a maximum flow.
+
+Proof: Let f be the flow output by the algorithm. Let us look at the
+final residual graph G_f.  This graph must have s and t disconnected
+by definition of the algorithm.  Let A be all nodes reachable from s
+in G_f and B = rest. Now, we know we can't route flow greater than
+than c(A,B).  The claim is that we in fact *did* find a flow of value
+c(A,B) (which therefore implies it is maximum).  Here's why.
+
+    (i) each edge e=(u,v) from A to B carries a a flow f(e) =
+        c(e). Indeed, if not, e will be present in G_f and thus v
+        should have been in A.
+    
+    (ii) each edge e=(x,y) from B to A carries zero flow. Indeed, if
+         not there will be a backedge from y to x in G_f and hence x
+         should have been in A.
+
+It follows that f^{out}(A) = c(A,B) and f^{in}(A) = 0. By the above
+lemma, v(f) = f^{out}(A) - f^{in}(A) = c(A,B). We're done. 
+
+Note, we've actually proven the non-obvious MAXFLOW-MINCUT theorem.
+
+In any flow network, max flow from s to t = capacity of minimum (s,t)-cut.
+
+We started with saying max flow <= min cut. But now we've argued that
+this algorithm finds a flow of value equal to SOME cut, so it can't be
+less than the MINIMUM.
+
+We have also proven the INTEGRAL-FLOW THEOREM:  if all capacities are
+integers, then there is a max flow in which all flows are integers
+(and the Ford-Fulkerson algorithm finds such an integral flow).
+
+This integrality is often very useful; we will make good use of it right
+away for the maximum matching problem.
+
+Bipartite matching problem
+--------------------------
+
+One nice use of network flow is to solve the bipartite matching
+problem. A *matching* is a set of edges with no endpoints in
+common. What we want here is a  *perfect matching* - a matching that
+connects every point on the left hand side with some point on the
+right hand side.  More generally (say there is no perfect matching) we
+want a *maximum matching* - a matching with maximum possible number of
+edges.
+
+Here is a simple flow based algorithm to solve Maximum matching on
+bipartite graph H=(X,Y,E):
+
+1. Set up fake source node s connected to all in X. Connect all in Y to
+a fake sink node t.  Orient all edges left-to-right and give each a
+capacity of 1.
+
+2. Find a max flow from s to t using Ford-Fulkerson.
+
+3. Output matching corresponding to flow (edges in the matching are
+   precisely those edges from X to Y that carry a unit of flow)
+
+Running time: O(mn)
+
+*******************************************************************
+
+Minimum Cost Maximum Flow:
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+We saw that the min cost Max s-t flow problem can be reduced to a a
+min cost circulation problem by adding an infinite capacity edge from
+t to s with a very large negative cost. The incentive to push as much
+flow as possible on this negative cost edge, together with flow
+conservation, implies we can find a min cost max s-t flow using the
+min cost circulation in the new network.
+
+Recall in class we gave an algorithm for min cost circulation based on
+repeatedly finding negative-cost cycles in the residual graph, and
+then pushing flow on it till some edge on it is saturated. This is
+called the cycle canceling algorithm. Here is the argument for
+optimality of cycle canceling algorithm for min-cost circulation:
+
+We only need to prove:
+
+Lemma: A circulation f is optimal if and only if G_f has no negative
+cost cycles.
+
+Proof: One direction is obvious: if G_f has a negative cost cycle, we
+can circulate some positive flow on it. This will a new circulation f'
+with strictly smaller cost than f. Therefore, f is not optimal.
+
+For the other direction, we need to show that if f is not optimal,
+then G_f has a negative cost cycle. Let f^* be a flow of lower cost
+than f (it exists since f is not optimal). 
+
+What we want to say is that f^*-f is a circulation in G_f, but we need
+to be a little more precise about this. Let c_f denote the capacity
+function in G_f.  We define a flow F in the residual graph G_f
+as follows:
+  
+   * if f^*(e)-f(e) >= 0, F(e) = f^*(e) - f(e). 
+       [Note that 0 <= F(e) <= c(e) - f(e) = c_f(e)]
+   
+   * if f^*(e) -f(e) < 0, then we have f(e) > 0, and so G_f has a
+     backedge e' of capacity f(e), and we set F(e') = f(e) - f^*(e). 
+        [Note that 0 < F(e') <= f(e) = c_f(e)]
+
+The notes in brackets above show that F obeys capacity constraints in
+G_f. F also obeys flow conservation since both f^* and f do,
+(everything is nice and linear).
+Therefore, F is a legal circulation in G_f. Also, since f^* had lower cost
+than f, f^*-f and therefore F has negative cost.
+
+Now, we claim "any circulation with negative cost (such as our F
+above) must route positive flow along some cycle of negative
+cost". Note that this would imply that G_f has a negative cost cycle
+(since F only routes flow on edges in G_f), and this is exactly what
+we wanted to show.
+
+So, why is the claim true? One way prove this is by induction on the
+number of flow carrying edges. The base case is 2 edges -- in this
+case the circulation must route flow on a cycle of length 2 (i.e., an
+edge and the reverse edge) and this cycle must have negative cost.
+Now, given a circulation F, we can start at an arbitrary flow carrying
+edge, and continue walking on the network, at each step using a flow
+carrying edge out of the current node (by flow conservation, if
+positive flow entered a node, there must be at least one outgoing edge
+with positive flow).  This process must eventually close a cycle, say
+C. If C has negative cost, we are done finding a negative cost
+cycle. Otherwise, we can reduce the flow on each edge of C by the
+minimum value of flow on edges in C. This gives a new circulation F'
+of cost at most that of F (and hence F' also has negative
+cost). Moreover, F' has at least one less flow carrying edge (namely
+the edge(s) in C with minimum flow) compared to F. By induction, F'
+must route positive flow along some negative cost cycle, and of course
+F too routes positive flow along this same cycle.
+
+
+
+
+

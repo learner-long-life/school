@@ -1,0 +1,61 @@
+.PS 4.0
+
+# Make the TeX fonts smaller
+\footnotesize
+
+define TSBox
+{[
+Inner: box width 3 height 1 "\textsc{Two-Sort}"
+Out1: Inner.n - (1, 0)
+Out2: Inner.n + (1, 0)
+In1: Inner.s - (1, 0)
+In2: Inner.s + (1, 0)
+In1_End: In1
+In2_End: In2
+line from Out1 up 1 $3 rjust
+Out1_End: Here
+line from Out2 up 1 $4 ljust
+Out2_End: Here
+]}
+
+Box: {[
+
+TS1: TSBox("$y_1$ ", " $y_a$", "$z_1$ ", " $z_a$")
+line from TS1.In1 down 1 "$y_1$ " rjust
+line from TS1.In2 down 1 " $y_a$" ljust
+
+TS4: TSBox("", "", "$s_2$ ", " $w_2$") with .In1_End at TS1.Out2_End
+
+TS2: TSBox("$y_2$ ", " $y_{a+1}$", "$z_2$ ", " $z_{a+1}$") with .Out1_End at TS4.In2_End
+line from TS2.In1 down 1 "$y_2$ " rjust
+line from TS2.In2 down 1 " $y_{a+1}$" ljust
+
+TS5: TSBox("", "", "$s_3$ ", " $w_3$") with .In1_End at TS4.Out2_End
+line from TS2.Out2_End to TS5.In2_End
+TS6: TSBox("", "", "$s_4$ ", " $w_4$") with .In1_End at TS5.Out2_End
+
+TS3: TSBox("$y_3$ ", " $y_{a+2}$", "$z_3$ ", " $z_{a+2}$") with .Out1_End at (TS6.In2_End, TS2.Out2_End)
+
+move right 2
+box invis "\ldots"
+
+line from TS1.Out1_End up 1 "$s_1$ " rjust
+line invis from TS1.Out2 to TS4.In1 "$w_1$ " rjust
+
+line from TS3.In1 down 1 "$y_3$ " rjust
+line from TS3.In2 down 1 " $y_{a+2}$" ljust
+
+
+TS7: TSBox("", "", "$s_5$ ", " $w_5$") with .In1_End at TS6.Out2_End
+
+line from TS3.Out1_End to TS6.In2_End
+line from TS3.Out2_End to TS7.In2_End
+
+]}
+
+box width last [].wid+1 height last[].ht+1 with .nw at last [].nw + (-0.5,0.5)
+line invis from last box.nw down 1 " \large{\textsc{Sort-Circuit}}" ljust
+
+\normalsize
+
+.PE

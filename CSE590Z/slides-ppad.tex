@@ -1,0 +1,406 @@
+\documentclass[10pt]{beamer}
+\mode<beamer>{%
+\usetheme[hideothersubsections,right,width=22mm]{Goettingen}
+}
+\title{Introduction to PPAD [Papadimitriou 1992]}
+\author[P. Pham]{Paul Pham}
+\institute{UW CSE}
+%\titlegraphic{\includegraphics[width=20mm]{USTL}}
+\date{2006}
+
+\usepackage{eepic}
+\usepackage{color}
+\usepackage{rotating}
+\usepackage{latexsym} % For \Diamond
+
+\begin{document}
+\begin{frame}<handout:0>
+\titlepage
+\end{frame}
+
+%==============================================================================
+\section{Introduction}
+
+%------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Overview}
+
+Motivation:
+Finding a mixed-strategy Nash equilibrium in general-sum games is in PPAD.
+
+\begin{itemize}
+\item Define function complexity classes FP, FNP, and TFNP.
+\item Define interesting, closed subclasses of TFNP (PLS, PPA, PPAD).
+\item Provide an example of PPA: $SMITH$.
+\item Provide an example of PPAD: $2D-SPERNER$.
+\item At the end: ready to show $NASH \le_P BROUWER \le_P 2D-SPERNER$
+\end{itemize}
+
+\end{frame}
+
+%==============================================================================
+\section{FNP, TFNP, PLS}
+
+%------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Complexity Classes for Multi-valued Functions}
+
+Classes of \textbf{function problems} which correspond to
+\textbf{decision problems}:\\
+
+FP = function polytime, induced by P
+
+\begin{displaymath}
+P(x,y) \in \textrm{FP} \textrm{ if for some det. PTM, } P(x,M(x)) holds
+\end{displaymath}
+
+FNP = function nondeterministic polytime, induced by NP
+
+\begin{displaymath}
+\displaystyle
+P(x,y) \in \textrm{FNP} \textrm{ if for some nondet. PTM, } M(x,y) = P(x,y)
+\end{displaymath}
+
+Natural correspondence between NP-complete problems and FNP-complete problems.
+
+%\begin{displaymath}
+%\textrm{FP \subseteq FNP} \Leftrightarrow \textrm{P \subseteq NP}
+%\end{displaymath}
+
+\begin{displaymath}
+\textrm{FP = FNP} \Leftrightarrow \textrm{P = NP}
+\end{displaymath}
+
+\end{frame}
+
+%------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Total Functions}
+
+\textbf{Total functions} always have a solution.
+
+TFNP = total function nondeterministic polytime
+
+\begin{displaymath}
+\textrm{FP} \subseteq \textrm{\large{\textbf{TFNP}}} \subseteq \textrm{FNP}
+\end{displaymath}
+
+Examples:
+\begin{itemize}
+\item
+\end{itemize}
+
+\end{frame}
+
+%------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Semantic vs. Syntactic Classes}
+
+\textbf{Syntactic classes}
+
+\begin{itemize}
+\item Recursively enumerable
+\item Closed under reduction (have complete problems)
+\item Examples: P, NP (with polynomial clock)
+\end{itemize}
+
+\textbf{Semantic classes}
+\begin{itemize}
+\item Defined by promises, or behavior on inputs.
+\item Not enumerable.
+\item In general, no complete problems
+\item Examples: BPP, RP, TFNP
+\end{itemize}
+
+We want to define syntactic subclasses of TFNP which still contain
+important problems.
+
+\end{frame}
+
+%------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Class Hierarchy for PPAD}
+
+\begin{figure}[hbt]
+  \input{complexity}
+  \centerline{\box\graph}
+\end{figure}
+
+\end{frame}
+
+%------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Polynomial Local Search (PLS) Graph}
+
+\begin{quote}
+Every finite dag has a sink.
+\end{quote}
+
+\begin{figure}[hbt]
+  \input{dummy}
+  \centerline{\box\graph}
+\end{figure}
+
+\end{frame}
+
+%------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{PLS: Polynomial Local Search}
+
+\begin{itemize}
+\item \textbf{Input:} $x =$ a search graph
+\item \textbf{Node space:} $S(x) = \Sigma^{p(|x|)}$
+\item \textbf{Polytime algorithms:} $N(x,s)$ neighbor function, $c(x,s)$ cost function, $s \in S(x)$
+\item Polynomially many neighbors: $|N(x,s)| \le |x|^k$
+\item \textbf{Goal:} find a node with lower cost than its neighbors (local minima)
+\end{itemize}
+
+Implicitly encodes exponential-size dag in polynomial-size machine.
+
+\begin{displaymath}
+\textrm{FP} \subseteq \textrm{\large{\textbf{PLS}}} \subseteq \textrm{TFNP}
+\end{displaymath}
+
+\end{frame}
+
+%==============================================================================
+\section{PPA and SMITH}
+
+%------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Polynomial Parity Argument (PPA) Graph}
+
+\begin{quote}
+Every finite graph has an even number of odd-degree nodes.
+\end{quote}
+
+\begin{figure}[hbt]
+  \input{dummy}
+  \centerline{\box\graph}
+\end{figure}
+
+\end{frame}
+
+%------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{PPA: Polynomial Parity Argument for 2-degree}
+
+\begin{itemize}
+\item On input $x$:
+\item \textbf{Node space:} $S(x) = \Sigma^{p(|x|)}$
+\item \textbf{Polytime algorithms:} $N(x,s)$ neighbor function, $s \in S(x)$
+\item Cost function from PLS is uniform.
+\item $|N(x,s)| \le 2$
+\item \textbf{Goal:} Find a leaf other than the standard leaf $(0\cdots 0)$.
+\end{itemize}
+
+\begin{displaymath}
+\textrm{\large{\textbf{PPA}}} \subseteq \textrm{PLS} \subseteq \textrm{TFNP} \subseteq
+\textrm{FNP}
+\end{displaymath}
+
+\end{frame}
+%------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{PPA': Polynomial Parity Argument for $n$-degree}
+
+$n$-degree graphs equivalent to $2$-degree graphs by construction:
+
+\begin{itemize}
+\item At each node, divide the $k$ degrees into $\lfloor \frac{k}{2} \rfloor$
+      pairs, $k \le n$.
+\item Create a new node for each pair with degree 2.
+\item If $k$ is odd, then one new node is a leaf.
+\end{itemize}
+
+This preserves the number of odd-degree nodes in a graph.
+Without loss of generality, consider only 2-degree graphs.
+
+\begin{figure}[hbt]
+  \input{dummy}
+  \centerline{\box\graph}
+\end{figure}
+
+\begin{displaymath}
+PPA' = PPA
+\end{displaymath}
+
+\end{frame}
+%------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{SMITH: Finding a second Ham-cycle}
+
+\begin{itemize}
+\item \textbf{Input:} $x =$ odd-degree graph promised to have one Ham-cycle.
+\item \textbf{Node space:} $S(x) = $ rotations of Ham-paths with one fixed endpoint.
+\item \textbf{Neighbors:} $N(x,s) = s'$ if $s$ and $s'$ differ by one edge.
+\item $|N(x,s)| \le 2$, edges are undirected (symmetric)
+\item \textbf{Goal:} Find a second Ham-cycle.
+\end{itemize}
+
+\begin{figure}[hbt]
+  \input{dummy}
+  \centerline{\box\graph}
+\end{figure}
+
+\end{frame}
+
+%------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{SMITH: Finding a second Hamilton cycle}
+
+On a Ham-cycle, pick arbitrary edge $(u,v)$.
+
+\begin{itemize}
+\item Delete $(u,v)$ to create starting Ham-path.
+\item Fix one endpoint ($u$).
+\item While $v$ is not an endpoint, rotate other edges to create new Ham-path.
+\end{itemize}
+
+\begin{figure}[hbt]
+  \input{dummy}
+  \centerline{\box\graph}
+\end{figure}
+
+\end{frame}
+
+%==============================================================================
+\section{PPAD and 2D-SPERNER}
+
+%------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{PPAD: Polynomial Parity Argument Directed}
+
+\begin{itemize}
+\item Same inputs, node space, and polytime algorithms as PPA except
+      neighbors are \textbf{directed}.
+\item \textbf{Goal:} find a source or sink other than standard source.
+\end{itemize}
+
+Characterized by lemma:
+
+\begin{quote}
+Every finite dag has an even number of source-sinks.
+\end{quote}
+
+\begin{displaymath}
+\textrm{\large{\textbf{PPAD}}} \subseteq \textrm{PPA} \subseteq \textrm{PLS} \subseteq
+\textrm{TFNP} \subseteq \textrm{FNP}
+\end{displaymath}
+
+\end{frame}
+
+%------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{2D-SPERNER: Finding a trichromatic triangle}
+
+\
+\textbf{Sperner's Lemma:} Every admissible coloring of a triangulation has
+a trichromatic triangle.
+
+\textbf{Admissible coloring:} vertices of big triangle are colored 0, 1, and 2.
+Edge $ij$ of big triangle does not contain color $3-i-j$.
+
+\textbf{Comp. problem:} Given an admissible coloring, find a trichromatic
+triangle.
+
+\begin{figure}[hbt]
+  \input{dummy}
+  \centerline{\box\graph}
+\end{figure}
+
+\end{frame}
+%------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{kD-SPERNER: Generalizing to higher-dimensions}
+
+Any $k-1$ points form a surface in $k$-dimensions called a \textbf{simplex}.
+
+\begin{itemize}
+\item Triangle $\Rightarrow$ simplex
+\item Triangulation (subdivision into triangles) $\Rightarrow$ Simplicization
+\item Trichromatic triangle $\Rightarrow$ panchromatic simplex
+\end{itemize}
+
+Examples:
+
+\begin{itemize}
+\item 1-simplex = point
+\item 2-simplex = line
+\item 3-simplex = triangle
+\item 4-simplex = tetrahedron
+\end{itemize}
+
+Sperner's theorem can be proven for $k$-dimensions by induction on $k$.
+
+\end{frame}
+%------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{2D-SPERNER: Rectangular form}
+
+No easy way to subdivide a tetrahedron (4-simplex) $\Rightarrow$\\
+Hard to generalize 2D to 3D (and beyond).
+\vspace{\baselineskip}
+
+\textbf{Solution:} Simulate a $d$-simplex with a $(d-1)$-dimensional hypercube
+\vspace{\baselineskip}
+
+\textbf{2D Case:}
+\begin{itemize}
+\item Three vertices of big square are colored 0, 1, and 2.
+\item Remaining vertex is not colored 0.
+\end{itemize}
+\vspace{\baselineskip}
+
+\begin{figure}[hbt]
+  \input{dummy}
+  \centerline{\box\graph}
+\end{figure}
+
+%\begin{displaymath}
+%\xymatrix{
+%2 \ar@{-}[r] \ar@{-}[d] & 1 \ar@{-}[r] \ar@{-}[d] & 2 \ar@{-}[d]\\
+%0 \ar@{-}[r] \ar@{-}[d] & 0 \ar@{-}[r] \ar@{-}[d] & 2 \ar@{-}[d]\\
+%0 \ar@{-}[r] & 1 \ar@{-}[r] & 1 }
+%\end{displaymath}
+
+\end{frame}
+%------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{2D-SPERNER: Square simulating a triangle}
+
+\begin{figure}[hbt]
+  \input{dummy}
+  \centerline{\box\graph}
+\end{figure}
+
+%\begin{displaymath}
+%\xymatrix{
+%2 \ar@{-}[ddd] \ar@{-}[dddr] \ar@{-}[dddrr]\\
+%\\
+%\\
+%2 \ar@{-}[r] \ar@{-}[d] & 1 \ar@{-}[r] \ar@{-}[d] & 2 \ar@{-}[d]\\
+%0 \ar@{-}[r] \ar@{-}[d] & 0 \ar@{-}[r] \ar@{-}[d] & 2 \ar@{-}[d]\\
+%0 \ar@{-}[r] \ar@{-}@/^1pc/[uu] \ar@{-}@/^/[u] \ar@{-}@/_/[r] \ar@{-}@/_1pc/[rr] &
+%1 \ar@{-}[r] & 1 & & & 1 \ar@{-}[lll] \ar@{-}[ulll] \ar@{-}[uulll]}
+%\end{displaymath}
+
+\end{frame}
+
+%==============================================================================
+\section{Conclusion}
+
+\begin{frame}
+\frametitle{Conclusion}
+
+\begin{itemize}
+\item TFNP (semantic class) not closed under reduction.
+\item Syntactic subclasses with important problems: PLS, PPA, PPAD.
+\item $\textrm{PPA}' = \textrm{PPA}$
+\item $SMITH \in \textrm{PPA}$
+\item $2D-SPERNER \in \textrm{PPAD}$
+\item Ready to show $NASH \le_P BROUWER \le_P 2D-SPERNER$
+\end{itemize}
+\end{frame}
+
+\end{document}

@@ -1,0 +1,253 @@
+\documentclass[12pt]{article}
+
+\usepackage{fullpage}
+\usepackage{fancyhdr}
+\usepackage{cse-scribe}
+\usepackage{xypic}
+\pagestyle{fancy}
+
+\rhead{Problem \thesection\\Page \thepage\\Spring 2006}
+\lhead{Paul Pham [ppham@cs.washington.edu]\\CSE 544: Databases\\Homework 4}
+
+%\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\addtolength{\headheight}{42pt} % make space for the rule
+\addtolength{\headsep}{6pt} % make space for the rule
+
+\renewcommand{\labelenumi}{(\alph{enumi})}
+\renewcommand{\labelenumii}{\roman{enumii}.}
+%\renewcommand{\thesection}{\small{Problem \arabic{section}.}}
+%  \makeatletter
+%   \renewcommand{\section}{\@startsection{section}{1}{0mm}
+%   {\baselineskip}%
+%   {\baselineskip}{\normalfont\normalsize}}%
+%   \makeatother
+%\renewcommand{\section}{\@startsection{section}{1}}
+\def\qopnamewl@#1{\mathop{\fam\z@#1}\nlimits@}
+\def\Exp#1{\mathop{\rm {E}}[#1]}
+\def\argmax{{\rm arg} \mathop{\rm {max}}}
+\def\argmin{{\rm arg} \mathop{\rm {min}}}
+\def\dist{{\rm dist}\,}
+\def\PR#1{\mathop{\rm {Pr}}\left[#1\right]}
+
+\newenvironment{lscommand}%
+    {\nopagebreak\par\small\addvspace{3.2ex plus 0.8ex minus 0.2ex}%
+     \vskip -\parskip
+     \noindent%
+     \begin{tabular}{|l|}\hline\rule{0pt}{1em}\ignorespaces}%
+    {\\\hline\end{tabular}\par\nopagebreak\addvspace{3.2ex plus 0.8ex
+        minus 0.2ex}%
+     \vskip -\parskip}
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem 1
+\section{Timestamp concurrency manager}
+
+\begin{enumerate}
+%------------------------------------------------------------------------------
+\item % Part A
+$w_1(C)$ is \textbf{accepted}
+because Transaction 2 should be rolled back and restarted.
+
+%------------------------------------------------------------------------------
+\item % Part B
+Transaction 1 is \textbf{rolled back}
+and restarted because it wrote too late to B.
+
+%------------------------------------------------------------------------------
+\item % Part C
+$w_1(A)$ is \textbf{ignored}
+because Transaction 3 has also written to $A$ and has
+already committed.
+
+%------------------------------------------------------------------------------
+\item % Part D
+Transaction 1 is \textbf{delayed}. If Transaction 2 commits,
+$w_1(A)$ can be ignored, but not otherwise in general.
+
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem 2
+\section{Logical plans}
+
+\begin{enumerate}
+%------------------------------------------------------------------------------
+\item % Part A
+
+\begin{displaymath}
+\xymatrix{
+ & & \Pi_{a,sum(T.d)} \ar[d] & \\
+ & & \sigma_{sum(S.h) > 10} \ar[d] & \\
+ & & \gamma_{a, sum(T.d), sum(S.h)} \ar[d] & \\
+ & & \Join_{S.c = T.c} \ar[dl] \ar[ddr] &\\
+ & \Join_{R.b=S.b} \ar[dl] \ar[ddr] & &\\
+\sigma_{f=5} \ar[d] & &          & \sigma_{g=9} \ar[d] \\
+R(a,b,f)            & & S(b,c,h) & T(c,d,g)
+}
+\end{displaymath}
+
+%------------------------------------------------------------------------------
+\item % Part B
+\begin{center}
+\begin{tabular}[t]{ll}
+\textsc{Select} & $R.a, T.g$\\
+\textsc{From}   & $R,S,T$\\
+\textsc{Where}  & $(R.a > 5)$ and $(T.g < 9)$ and $(R.b=S.b)$ and $(S.c=T.c)$
+\end{tabular}
+\end{center}
+
+\end{enumerate}
+
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem 3
+\section{Drinkers, beers, bars}
+
+\begin{enumerate}
+%------------------------------------------------------------------------------
+\item % Part A
+
+\begin{tabular}[t]{ll}
+\textsc{Select Distinct} & $drinkers$\\
+\textsc{From}   & Likes $\ell$, Frequents $f$, Serves $s$\\
+\textsc{Where}  & $(\ell.drinker = f.drinker)$ and \\
+                & $(f.bar = s.bar)$ and \\
+                & $(\ell.beer = s.beer)$ and \\
+                & \textsc{Not Exists} (
+\begin{tabular}[t]{ll}
+\textsc{Select} & *\\
+\textsc{From}   & Frequents $f_2$, Serves $s_2$\\
+\textsc{Where}  & $(l.drinker = f_2.drinker)$ and \\
+                & $(f_2.bar = s_2.bar)$ and \\
+                & $(l.beer \ne s_2.beer)$ )
+\end{tabular}
+\end{tabular}
+
+%------------------------------------------------------------------------------
+\item % Part B
+
+\begin{tabular}[t]{ll}
+\textsc{Select Distinct} & $drinkers$\\
+\textsc{From}   & Likes $\ell$, Frequents $f$, Serves $s$\\
+\textsc{Where}  & $(\ell.drinker = f.drinker)$ and \\
+                & $(f.bar = s.bar)$ and \\
+                & $(\ell.beer = s.beer)$ and \\
+                & \textsc{Not Exists} (
+\begin{tabular}[t]{ll}
+\textsc{Select} & *\\
+\textsc{From}   & Frequents $f_2$, Serves $s_2$\\
+\textsc{Where}  & $(l.drinker = f_2.drinker)$ and \\
+                & $(f_2.bar = s_2.bar)$ and \\
+                & $(l.beer = s_2.beer)$ )
+\end{tabular}
+\end{tabular}
+
+\end{enumerate}
+
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem 4
+\section{Selectivity estimation}
+
+\begin{enumerate}
+%------------------------------------------------------------------------------
+\item % Part A
+We abbreviate the event that field $A=a$ as simply $A$ and similarly for
+the events $B=b$ and $C=c$.
+We want to determine the following probability.
+%
+\begin{eqnarray*}
+\PR{ABC} & = & \PR{C}\PR{B\mid C}\PR{A\mid BC}\\
+         & = & \PR{C}\PR{B\mid C}\PR{A\mid B}
+\end{eqnarray*}
+%
+The first step follows from the chain rule for conditional probabilities
+and the second step follows from the conditional independence of $A$ and $C$
+given $B$. We then have the following:
+%
+\begin{eqnarray*}
+& \PR{B \mid C} = \PR{BC} / \PR{C} = p_{23} / p_{3} \\
+& \PR{A \mid B} = \PR{AB} / \PR{B} = p_{12} / p_{2} \\
+& \PR{ABC} = p_{23} p_{12} / p_{2} \\
+\end{eqnarray*}
+%
+The answer is the final expression multiplied by the size of the
+relation ($n$) to get the estimated result size.
+
+%------------------------------------------------------------------------------
+\item % Part B
+
+If the second \textsc{AND} is replaced with an \textsc{OR}, we can apply
+the sum rule for probabilities and use the expression in the previous
+part to subtract the intersection.
+%
+\begin{displaymath}
+\PR{AB \cup C} = \PR{C} + \PR{B}\PR{A\mid B} - \PR{ABC}
+\end{displaymath}
+%
+This expression is simply $p_{3} + p_{12} - (p_{23} p_{12} / p_{2})$,
+multiplied by the size of the
+relation ($n$) to get the estimated result size.
+
+\end{enumerate}
+
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem 5
+\section{Plan search space}
+
+\begin{enumerate}
+%------------------------------------------------------------------------------
+\item % Part A
+The number of left-linear chain join plans among $n$ relations where order
+matters is equal to the sum of ways to join when $R_1$ is chosen
+first, when $R_2$ is chosen first, etc., up until $R_n$ is chosen first.
+If $R_i$ is chosen first, then the remaining $n-1$ choices are fixed
+(ways of ``moving right'') except for $i-1$ choices (ways of ``moving left'')
+which must always appear in decreasing order ($R_{i-1}, R_{i-2}, \ldots$).
+
+\begin{displaymath}
+\sum_{i=1}^{n} \binom{n-1}{i-1} = \sum_{i=0}^{n-1} \binom{n-1}{i} = 2^{n-1}
+\end{displaymath}
+
+The last step follows from the Binomial Theorem by setting $x=y=1$.
+
+\begin{displaymath}
+\sum_{j=0}^{n} \binom{n}{j}x^{n-j}y^j = (x+y)^n
+\end{displaymath}
+
+%------------------------------------------------------------------------------
+\item % Part B
+The number of star join plans among $n$ relations is the number of ways of
+permuting the relations: $n!$.
+
+%------------------------------------------------------------------------------
+\item % Part C
+The number of left-linear chain subplans considered by dynamic programming is
+equal to the sum of all ``joins'' of 1 relation in
+the base case ($n$) plus the number of ways to inductively compose a join
+of $k$ relations from a chain join of $k-1$ relations in the fixed 
+order (two ways).
+%
+\begin{eqnarray*}
+n + \sum_{i=1}^n \sum_{k=1}^{n-i} 2 & = & n + \sum_{i=1}^n 2(n-i)\\
+                                    & = & n + 2\sum_{i=0}^{n-1} i \\
+                                    & = & n + 2(\frac{(n-1)n}{2})\\
+                                    & = & n^2
+\end{eqnarray*}
+
+%------------------------------------------------------------------------------
+\item % Part D
+Dynamic programming does not reduce the number of star chain subplans
+considered which is still $n!$.
+
+\end{enumerate}
+
+\end{document}

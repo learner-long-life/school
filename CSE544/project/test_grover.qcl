@@ -1,0 +1,34 @@
+set check 1;
+
+include "search";
+
+qureg addr[a];
+qureg readout[d];
+qureg f[1];
+int i;
+
+Mix(addr);
+QramLookup(addr, data, readout);
+dump readout;
+
+int l=a+d;        // no. of qubits
+int N=2^l;
+int iterations = ceil(((pi/4)*sqrt(N)) - ((pi/24)*sqrt(1.0/N))) + 1;
+
+print "m = ",iterations;
+for i = 1 to iterations {
+  Query(addr, readout, data, f, D-1);     // calculate C(q)
+//  print "First";
+//  dump f;
+//  dump addr & readout;
+  CPhase(pi, f);     // negate |n>
+  !Query(addr, readout, data, f, D-1);     // calculate C(q)
+//  print "Second";
+//  dump addr & readout;
+  diffuse(addr, data, readout);       // diffusion operator
+//  print "Third";
+  print i;
+  dump addr & readout;
+}
+
+//grover(a, d, data, D-1);

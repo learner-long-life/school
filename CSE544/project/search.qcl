@@ -1,0 +1,51 @@
+include "qrom_rnd_data";
+include "lookup";
+
+operator diffuse(qureg addr, quconst data, qureg readout) {
+  QramLookup(addr, data, readout);
+  H(addr);                   // Hadamard Transform
+  Not(addr & readout);       // Invert q
+  CPhase(pi, addr & readout); // Rotate if q=1111..
+  !Not(addr & readout);      // undo inversion
+  !H(addr);        // undo Hadamard Transform
+  !QramLookup(addr, data, readout);
+}
+
+procedure grover(int a, int r, qureg data, int n) {
+  int l=a+r;        // no. of qubits
+  int N=2^l;
+//  int m = ceil(((pi/4)*sqrt(N)) + ((pi/24)*sqrt(1.0/N)) - 0.5);
+  int m=ceil(pi/8*sqrt(2^l))+1;     // no. of iterations
+  int resultData;
+  int resultAddr;
+  int i;
+  int tries;
+  qureg f[1];
+  qureg addr[a];
+  qureg readout[r];
+//  qureg scratch[r];
+  print l,"qubits, using",m,"iterations";
+  tries = 0;
+  {
+    reset;
+    //H(readout);
+    fillData(data, a, r);
+    Mix(addr);
+    QramLookup(addr, data, readout);
+    for i= 1 to m {     // main loop
+      Query(addr, readout, data, f, n);     // calculate C(q)
+      CPhase(pi, f);     // negate |n>
+      dump f;
+      !Query(addr, readout, data, f, n);    // undo C(q)
+      diffuse(addr, data, readout);       // diffusion operator
+      dump addr & readout;
+    }
+    measure readout, resultData;        // measurement
+    measure addr,    resultAddr;
+    print "measured",resultData, " at addr ",resultAddr;
+    tries = tries + 1;
+  } until resultData==n;
+  print "Tries: ", tries;
+  reset;                // clean up local registers
+}
+

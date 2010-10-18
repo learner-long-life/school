@@ -1,0 +1,226 @@
+\documentclass{article}[10pth]
+\usepackage{amssymb}
+\usepackage{fullpage}
+\usepackage{eepic}
+\usepackage{color}
+%\usepackage[pdftex]{graphicx,color,hyperref}
+
+\begin{document}
+
+\begin{center}
+\Large{CSE 326 Autumn 2006}\\
+\large{Section 2 Notes}
+\end{center}
+
+I glossed over some calculation details and also made some flat-out
+mistakes in section. Here is a (more) correct version of the notes.
+Sorry for the confusion.
+
+First some useful identities and sums to know for solving recurrences:
+\begin{eqnarray}
+c\log_b{a} = \log_b{a^c} \label{ident0:eqn}\\
+b^{\log_b{a}} = a \label{ident1:eqn}\\
+c^{\log_b{a}} = a^{\log_b{c}} \label{ident2:eqn}\\
+\sum_{i=0}^n r^i = \frac{r^{n+1} - 1}{r-1} \label{ident3:eqn}
+\end{eqnarray}
+
+If you are interested in the proofs, e-mail me.
+
+\begin{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem 1
+\item{Example recurrences}
+
+It isn't really important to understand the details of multiplication
+algorithms. We just solve the recurrences below:
+
+Note that the analysis below is sloppy with respect to rounding logarithms
+to the nearest integer, but it does not change the asymptotic bounds.
+
+\begin{enumerate}
+
+%------------------------------------------------------------------------------
+\item{3rd grade algorithm} % Part a
+
+The naive 3rd grade recursive algorithm divides numbers into 4 parts and
+does 4 multiplications, giving us the following recurrence:
+
+\begin{equation}
+T(n) = 4T(\frac{n}{2}) + O(n)
+\label{recur:eqn}
+\end{equation}
+
+We can expand the term $T(\frac{n}{2})$ by substituting $\frac{n}{2}$ in
+equation \ref{recur:eqn} wherever we see an $n$.
+
+\begin{eqnarray}
+T(n) & = & 4 [ 4 T(\frac{n}{4}) + O(\frac{n}{2})] + O(n)\\
+     & = & 4\cdot 4 [ 4 T(\frac{n}{8}) + O(\frac{n}{4}) ] + 4O(\frac{n}{2}) + O(n)
+\end{eqnarray}
+
+How many times can we divide $n$ by 2 before we get to the base case,
+$T(1) = O(1)$? That is, how many times can we expand the recurrence?
+We will call this number $k$ below.
+
+\begin{equation}
+\frac{n}{2^k} = 1 \Rightarrow n = 2^k \Rightarrow k = \log_2{n}
+\end{equation}
+
+This is the definition of a logarithm, the inverse of exponentiation.
+
+Now we can express the recurrence as a sum:
+%
+\begin{eqnarray}
+T(n) & = & 4^{\log_2{n}}T(1) + \sum_{i=0}^{\log_2{n}} 4^i(\frac{1}{2})^iO(n)\\
+     & = & 2^{2\log_2{n}} + O(n)\sum_{i=0}^{\log_2{n}}2^i
+\end{eqnarray}
+
+\pagebreak
+We can simpify the first term with identity \ref{ident0:eqn} and the second
+term (which is a sum) with identity \ref{ident3:eqn}.
+
+\begin{equation}
+T(n) = 2^{\log_2{n^2}} + O(n) \frac{2^{\log_2{n}+1} - 1}{2 - 1}
+\end{equation}
+
+We can apply identity \ref{ident1:eqn} to both terms to simplify it further:
+
+\begin{eqnarray}
+T(n) & = & n^2 + O(n)(2n-1)\\
+     & = & O(n^2)
+\end{eqnarray}
+
+%------------------------------------------------------------------------------
+\item{Karatsuba's algorithm} % Part b
+
+The recurrence for Karatsuba's algorithm performs 3 multiplications on subparts
+instead of 4.
+
+\begin{equation}
+T(n)= 3T(\frac{n}{2}) + O(n)
+\end{equation}
+
+Again we expand the recurrence:
+\begin{eqnarray}
+T(n) & = & 3 [ 3 T(\frac{n}{4}) + O(\frac{n}{2})] + O(n)\\
+     & = & 3\cdot 3 [ 3 T(\frac{n}{8}) + O(\frac{n}{4}) ] + 3O(\frac{n}{2}) + O(n)\\
+     & = & 3^{\log_2{n}} + O(n) \sum_{i=0}^{\log_2{n}}(3/2)^i\\
+     & = & n^{\log_2{3}} + O(n) \frac{3^{\log_2{n}+1}2^{-\log_2{n}+1} - 1}{1/2}\\
+     & = & n^{\log_2{3}} + O(n) \frac{3^{\log_2{n}+1}2^{-\log_2{n}+1} - 1}{1/2}\\
+     & = & n^{\log_2{3}} + 2O(n) n^{\log_2{3}+1}2^{\log_2{n^{-1}}} - 1\\
+     & = & n^{\log_2{3}} + 2O(n) n^{\log_2{3}+1}n^{-1} - 1\\
+     & = & n^{\log_2{3}} + 4n^{\log_2{3}} - 1\\
+     & = & O(n^{\log_2{3}})\\
+     & \approx & O(n^{1.585})
+\end{eqnarray}
+
+Therefore, Karatsuba's algorithm is asymptotically faster than the 3rd-grade
+algorithm.
+
+\end{enumerate}
+
+\pagebreak
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\item{Asymptotic notation: Big-O and friends}
+
+Unfortunately, I reversed the definitions of $O(n)$ with $\Omega(n)$ and
+likewise of $o(n)$ with $\omega(n)$. Ack! I hang my head in shame. Thanks to
+Joanna Salacka for pointing this out.
+Here is the diagram again and the
+definition of the functions:
+
+\input{asymptotic}
+
+Here are the correct asymptotic relationships:
+
+\begin{eqnarray*}
+f(x) \in o(j(x)) \Rightarrow f(x) \in O(j(x))\\
+f(x) \in \omega(k(x)) \Rightarrow f(x) \in \Omega(k(x))\\
+f(x) \in O(g(x))\\
+f(x) \in \Omega(h(x))
+\end{eqnarray*}
+
+Note that $\sin^2{x}$ varies between 0 and 1, and that by definition $f(x)$ is
+tightly lower-bounded by $x^{1.5}$ and tightly upper-bounded by $x^2$.
+I did this to be tricky in the following ways.
+
+The upper bound function $x^2$ is in $\omega(x^{1.5})$,
+So, $x^2$ will always intersect the lower bound of $f(x)$ no matter
+how small of a constant we multiply it with. So $g(x) = x^2$ will always grow faster
+than $f(x)$'s lower bound but there exists some (small)
+constants $c$ for which $cg(x)$ cannot grow as fast as $f(x)$'s upper bound.
+For these
+constants, $f(x)$ and $cg(x)$ intersect an infinite number of
+times, and therefore, $f(x)$ is \textit{not} in $o(x^2)$.
+However, it is still in $O(x^2)$ because there are other (large)
+constants $c$ for
+which $f(x) \le cg(x)$.
+
+Likewise, there are (small) constants $c$ for which $f(x) \ge ch(x)$, so
+that's why $f(x) \in \Omega(h(x))$. However, there are also some (large)
+constants $c$ for which $ch(x)$ can grow faster than $f(x)$'s lower bound, and
+again we will have an infinite number of intersections between the two
+functions.
+Therefore, $f(x)$ is not in $\omega(h(x))$.
+
+In reality, most algorithm running times are polynomials, and you will never
+see trigonometric functions like sine. I'll make future examples simpler and
+more realistic.
+
+\pagebreak
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\item{Merge sort}\\
+
+I made a mistake in both sections about the arguments to mergesort.
+The algorithm
+should take a beginning and ending index, and the midpoint should be
+defined as their average (rounded to an integer).
+
+Here is the correct pseudocode for merge sort.
+
+\begin{verbatim}
+global arrays x[m], y[m]
+
+MergeSort(start, end)
+
+  if (start == end)
+    return
+
+  midpoint = floor((end + start)/2)
+  MergeSort(start, midpoint)
+  MergeSort(midpoint + 1, end)
+  i = start, j = midpoint + 1, k = 1
+
+  while (i < midpoint or j < end)
+    if (x[i] < x[j])
+      y[k] = x[i], i++, k++
+    else
+      y[k] = x[j], j++, k++
+
+  copy y[1 to (end-start)] to x[start to end]
+  return
+\end{verbatim}
+
+Here is the recurrence for mergesort:
+
+\begin{equation}
+T(n)= 2T(\frac{n}{2}) + O(n)
+\end{equation}
+
+And here is how to solve it:
+
+\begin{eqnarray}
+T(n) & = & 2 [ 2 T(\frac{n}{4}) + O(\frac{n}{2})] + O(n)\\
+     & = & 2\cdot 2 [ 2 T(\frac{n}{8}) + O(\frac{n}{4}) ] + 2O(\frac{n}{2}) + O(n)\\
+     & = & 2^{\log_2{n}} + O(n) \sum_{i=0}^{\log_2{n}}1\\
+     & = & n + O(n) \log_2{n}\\
+     & = & O(n\log_2{n})
+\end{eqnarray}
+
+Therefore, mergesort is asymptotically faster than insertion or selection
+sort, which both take $O(n^2)$ time.
+
+\end{enumerate}
+
+\end{document}

@@ -1,0 +1,153 @@
+\documentclass[12pt]{article}
+
+\usepackage{fullpage}
+\usepackage{fancyhdr}
+\usepackage{scribe}
+\pagestyle{fancy}
+
+\rhead{Problem \thesection\\Page \thepage\\Autumn 2006}
+\lhead{Paul Pham [ppham@cs.washington.edu]\\CSE 533: Error-Correcting Codes \\Problem Set 1}
+
+%\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\addtolength{\headheight}{42pt} % make space for the rule
+\addtolength{\headsep}{6pt} % make space for the rule
+
+\renewcommand{\labelenumi}{\textbf{\alph{enumi})}}
+\renewcommand{\labelenumii}{\textbf{\arabic{enumii}}}
+%\renewcommand{\thesection}{\small{Problem \arabic{section}.}}
+%  \makeatletter
+%   \renewcommand{\section}{\@startsection{section}{1}{0mm}
+%   {\baselineskip}%
+%   {\baselineskip}{\normalfont\normalsize}}%
+%   \makeatother
+%\renewcommand{\section}{\@startsection{section}{1}}
+\def\qopnamewl@#1{\mathop{\fam\z@#1}\nlimits@}
+\def\Exp{\mathop{\rm {E}}}
+\def\dist{{\rm dist}\,}
+
+\begin{document}
+\newcommand{\ket}[1]{|#1 \rangle}
+\newcommand{\normtwo}{\frac{1}{\sqrt{2}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\setcounter{section}{0}
+\section{Operations on Codes}
+
+\begin{enumerate}
+
+%------------------------------------------------------------------------------
+% Part A
+\item
+Given an $(n,k,d)_q$ code, there exist two $n$-symbol codewords,
+$c_1$ and $c_2$
+which are separated by the minimum distance $d$. Consider two cases.
+
+If we delete a symbol position in the code where $c_1$ and $c_2$ \emph{differ}
+then the distance between them is decreased by one. In the worst case,
+this was the only minimal distance in the original code, so now we have
+decreased the minimum distance by one to $(d-1)$.
+
+If we delete a symbol position in the code where $c_1$ and $c_2$ are the same,
+the minimum distance does not change. If the distance changes for some other
+pair of codewords, this degenerates to the first case.
+
+Therefore we now have a new $(n-1,k,d'\ge d-1)_q$ code.
+
+%------------------------------------------------------------------------------
+% Part B
+\item
+
+%------------------------------------------------------------------------------
+% Part C
+\item
+
+%------------------------------------------------------------------------------
+% Part D
+\item
+
+%------------------------------------------------------------------------------
+% Part E
+\item
+
+%------------------------------------------------------------------------------
+% Part F
+\item
+
+\end{enumerate}
+
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem 2
+\setcounter{section}{1}
+\section{Generalized Plotkin Bound}
+
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem 3
+\section{Bounds for Linear Codes}
+
+\begin{enumerate}
+%------------------------------------------------------------------------------
+\item %a
+
+%------------------------------------------------------------------------------
+\item %b
+
+%------------------------------------------------------------------------------
+\item %c
+
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem 4
+\section{Binary Symmetric Channel}
+
+\begin{enumerate}
+%------------------------------------------------------------------------------
+\item %a
+
+%------------------------------------------------------------------------------
+\item %b
+
+%------------------------------------------------------------------------------
+\item %c
+
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem 5
+\section{$q$-ary Erasure Channel}
+
+\begin{enumerate}
+%------------------------------------------------------------------------------
+\item %a
+
+%------------------------------------------------------------------------------
+\item %b
+
+%------------------------------------------------------------------------------
+\item %c
+
+%------------------------------------------------------------------------------
+\item %d
+
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem 6
+\section{Tensor Product of Codes}
+
+\begin{enumerate}
+%------------------------------------------------------------------------------
+\item %a
+
+%------------------------------------------------------------------------------
+\item %b
+
+\end{enumerate}
+
+\end{document}

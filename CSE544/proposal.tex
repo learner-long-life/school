@@ -1,0 +1,229 @@
+\documentclass{toc}
+
+\usepackage{times}
+\usepackage{fullpage}
+\usepackage{eprint}
+
+%\tocdetails{%
+%   volume=0, number=5, year=2005, firstpage=78,
+%   received={October 15, 2004}, 
+%   published={December 31, 2004}
+%}
+
+\theoremstyle{plain}
+\newtheorem{idea}[theorem]{Idea}
+%\newtheorem{idea}{Idea}[section]
+
+\theoremstyle{definition}
+\newtheorem{thought}[theorem]{Thought}
+%\newtheorem{thought}{Thought}[section]
+
+\DeclareMathOperator{\cov}{\textsf{Cov}}
+
+\title{CSE 544 Project Proposal\\Spring 2006}
+\author{Paul T. Pham\\ppham@cs.washington.edu}
+
+\runningauthor{\begin{minipage}{.9\textwidth}\centering P. Pham,
+    \end{minipage}}
+\runningtitle{Typesetting guidelines}
+%\copyrightauthor{Alex Rusell and the extremely unnecessaily 
+%large ficticious family of authors}
+
+\begin{document}
+
+\begin{center}
+\LARGE{CSE 544 Project Proposal, Spring 2006}\\
+\vspace{\baselineskip}
+\Large{Paul T. Pham\\ (ppham@cs.washington.edu)}
+\end{center}
+
+\section{Abstract}
+
+The new field of quantum computing has given us many speedups over classical
+solutions, especially for searching functions, finding function collisions,
+counting solutions, and related problems. These problems are generally
+associated with the term ``quantum database,'' although there is no
+direct connection to the relational model of classical databases.
+In this project, I propose to summarize the current state-of-the-art in
+quantum search, determine which problems are amenable to a quantum
+solution, formalize a model and a matching architecture for these
+problems, and simulate/measure its operation in software.
+Under this model, I will consider the efficiency of basic operations such
+as lookup, join, and difference; the feasibility and
+effects of indexing; and the possible application to harder problems such as
+nearest-neighbor search, subset search, and probabilistic query evaluation.
+
+\section{Introduction}
+
+In recent years, quantum computing has emerged as a more general and
+powerful model of computation than the more familiar digital logic.
+Using the properties of quantum physics, we can solve many problems which are
+provably hard on classical computers, such as
+perfectly secure cryptographic communication \cite{lc99},
+symmetric private information retrieval without shared randomness \cite{kw04},
+and the Byzantine generals problem for fault-tolerant distributed computation
+\cite{cabello03}.
+
+One of the oldest results in this field, and one with the most applications,
+is quantum
+search in an unordered list due to Grover \cite{grover96}. Although the
+literature often refers to this and related problems as
+``quantum database search,'' it is more accurate to say they deal with
+quantum function search. The model consists of a list of $N$ items taken
+from a set $B$ which are stored at addresses from a set $A$. The items
+are accessed through a ``database function'' $f: A \rightarrow B$ which
+takes addresses to items. A item $b \in B$ is said to exist in the database
+if for some $a \in A$, $f(a) = b$.
+Given a target key $k \in B$, search complexity is
+defined as the number of oracle queries to $f$ needed to determine the
+address of $k$ in the database, if it exists. We will denote the number of
+quantum queries needed as $Q(N)$ and the number of deterministic, classical
+queries as $D(N)$, for some bounded error probability (say $< \frac{1}{2}$).
+This can be amplified in either case by $O(\log{1/\epsilon})$ independent
+trials to bring the error down to $\epsilon$ at the cost of greater query
+complexity. Although there are obvious limitations to this model,
+it still allows
+many surprisingly good quantum speedups; both are discussed in Section 2.
+In Section 3 we outline the proposed tasks for this project, with a timeline
+and list of deliverables in Section 4. Finally, we conclude with some of the
+deeper motivation and implications of this project in Section 5.
+
+\section{Related Work}
+
+In Grover's original model, the list is unsorted, $N$ is
+a power of two ($2^n$), the addresses are binary numbers
+($A = \{0,1\}^n$), the items are Boolean values ($B = \{0,1\}$), and
+$f$ is 1 on a single target state and 0 everywhere else.
+In the classical case,
+$D(N) \in O(N)$ while Grover showed that $Q(N) \in O(\sqrt{N})$
+(in fact it is optimal \cite{grover98}).
+There are several natural variations. For a sorted list,
+$D(N) \in O(\log{n})$ using a binary (or bounded-fanout) search, while
+only a constant speedup is possible: $Q(N) \ge \log{n}/12 - O(1)$
+\cite{ambainis99}.
+For multiple ($k \ge 1$) target items, generalized from 1 bit to $m$ bits each,
+to find any one solution in an unsorted database takes $D(N) \in O(N/k)$ and
+$Q(N) \in O(\sqrt{N/k})$
+queries, even when the number $k$ is not known. To
+find all $k$ items takes $Q(N) \in O(\sqrt{Nk})$ versus $D(N) \in O(N)$
+\cite{bbht98}.
+For a partial search that only determines the first $\ell$ bits of an address,
+$Q(\ell, N) \le \frac{\pi}{4}(1 - c/\sqrt{2^\ell})\sqrt{N}$ for some
+constant $c$, a sliding
+optimization that is not available to the classical case \cite{gr04}.
+To find a single collision (join) between two unordered databases of size
+$N$,
+$Q(N) \in O(N^{3/4}\log{N})$ versus $D(N) \in O(N\log{N})$, while in the
+ordered case $Q(N) \in O(N^{1/2}\log{N})$
+\cite{heiligman00}.
+
+While most of these results are quite promising, there are some
+important limitations. First of all, the true complexity of a problem must
+take into account the overhead of the query itself. So far we have ignored
+this, but the quantum and classical cases are not equal with respect to
+evaluating $f$. A row, or tuple, in a classical relation can be accessed
+in $O(1)$ time with simple pointer lookups. In the quantum case, the
+database function must be encoded into a unitary transformation: for
+$n$ quantum bits, this generally requires $\Omega(n)$ quantum operations
+as preprocessing. Furthermore, classical databases can store arbitrary
+relations on $n$-bit addresses taking up $O(2^n)$ space. The
+``database functions'' $f$ generally considered in the literature are very
+restricted and highly structured; for example, they have a compact
+representation, such as a $k$-SAT formula, even though their solution space
+is the same $O(2^n)$ size as the classical case.
+Moreover, quantum algorithms often require greater
+overhead in terms of preprocessing, postprocessing, and error handling.
+
+Above, we have seen the ambiguity associated with the terms ``database''
+and ``function''.
+At this point, it is hard to compare quantum and classical databases without
+coming up with a formal quantum model and exploring the implications of
+that model in terms of efficient algorithms and relationship to other
+database problems. This comprises the project proposal, which we present in
+the next section.
+
+\section{Proposal}
+
+Given the previous discussion, it is clear that quantum computers and
+classical computers each have their own advantages and disadvantages.
+Furthermore, it is unlikely that quantum computers will ever be suitable
+for user interface tasks, deterministic control, networking, office work,
+or everyday computing tasks. Therefore, any feasible database model hoping
+to exploit quantum search advantages must be a hybrid model.
+
+The prospects for a quantum speedup for lookup and indexing are grim,
+but there is still hope that a quantum database can be justified by
+faster algorithms for more complex operations.
+As the first task of this project, we will conduct further research to
+determine how quantum search can
+be applied to classical database problems: for example, subset search,
+nearest-neighbor search, and probabilistic query evaluation.
+
+As the second task of this project, we will devise a model given what is
+known about the current state-of-the-art in search algorithms and
+useful applications from database research. There may be several such models,
+consisting primarily of storage and control components, as well as the data
+and query themselves, any of which may
+be classical or quantum. We will also conjecture possible applications
+for quantum data and quantum queries; if these are compelling, they alone
+would justify a quantum database.
+
+As a third task, we will design a concrete implementation of the abstract
+model using what is currently known today about quantum and classical
+hardware. As the final task, we will simulate the quantum components of
+our model using commonly available simulation software and analyze the
+results against the theoretical bounds.
+
+\section{Results and Timeline}
+
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Date} & \textbf{Milestone}\\
+\hline
+April 17 & Proposal finalized.\\
+May   1  & Background research complete.\\
+May   8  & Formal models complete.\\
+May   15 & Architecture design complete.\\
+May   22 & Simulation and analysis complete.\\
+May   29 & Project report and presentation complete.\\
+May   31 & Project presentation.\\
+\hline
+\end{tabular}
+\end{center}
+
+\section{Conclusion}
+
+It is difficult for a programming project to be more ambitious than our
+above outline given the experimental status of quantum computing. The many
+points left vague in this proposal reflect both the author's inexperience and
+the lack of previous work on this topic. There is a chance of failure, that
+no models will be feasible or no quantum search algorithm will be efficient
+on a realistic architecture. However, we believe this risk is outweighed by the
+promise of this research and that even modest results are significant in a
+new area.
+
+Thus, we hope to serve two main purposes beyond fulfilling the requirements
+of a course project. The first is to increase awareness and collaboration
+between the relational database community and the quantum algorithms
+community. There are many applications for real-life databases
+which would help motivate the young quantum computing field if they were
+cast in the right model. Likewise classical problems would
+benefit from efficient quantum solutions if they were translated into a
+realistic, implementable architecture.
+
+The second goal is personal, and that is to help focus the author's
+long-term research interests on a specific area with useful applications
+and good potential for a quals project.
+Using this work as a foundation, we hope to produce
+publishable work at the intersection of traditional computer science theory
+and architecture and its newer quantum cousin. Having spent my previous
+career on the experimental side, I am convinced that quantum computing will
+be a reality within my lifetime. It will not only require pushing from
+engineers and experimentalists, but pulling from theorists and dreamers
+(and I hope to be both).
+
+\bibliography{proposal}
+\bibliographystyle{tocplain}
+
+\end{document}

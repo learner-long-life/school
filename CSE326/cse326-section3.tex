@@ -1,0 +1,337 @@
+\documentclass{article}[10pt,letterpaper]
+\usepackage{amssymb}
+\usepackage{fullpage}
+\usepackage{eepic}
+\usepackage{color}
+\usepackage{pstricks}
+\usepackage{pst-3dplot}
+%\usepackage[pdftex]{graphicx,color,hyperref}
+
+\def\lattice{
+%%   \pstThreeDDot(0,0,0)
+%%   \pstThreeDDot(0,0,0.2)
+%%   \pstThreeDDot(0,0,0.4)
+%%   \pstThreeDDot(0,0.2,0)
+%%   \pstThreeDDot(0,0.2,0.2)
+%%   \pstThreeDDot(0,0.2,0.4)
+%%   \pstThreeDDot(0,0.4,0)
+%%   \pstThreeDDot(0,0.4,0.2)
+%%   \pstThreeDDot(0,0.4,0.4)
+%%   \pstThreeDDot(0.2,0,0)
+%%   \pstThreeDDot(0.2,0,0.2)
+%%   \pstThreeDDot(0.2,0,0.4)
+%%   \pstThreeDDot(0.2,0.2,0)
+%%   \pstThreeDDot(0.2,0.2,0.2)
+%%   \pstThreeDDot(0.2,0.2,0.4)
+%%   \pstThreeDDot(0.2,0.4,0)
+%%   \pstThreeDDot(0.2,0.4,0.2)
+%%   \pstThreeDDot(0.2,0.4,0.4)
+%%   \pstThreeDDot(0.4,0,0)
+%%   \pstThreeDDot(0.4,0,0.2)
+%%   \pstThreeDDot(0.4,0,0.4)
+%%   \pstThreeDDot(0.4,0.2,0)
+%%   \pstThreeDDot(0.4,0.2,0.2)
+%%   \pstThreeDDot(0.4,0.2,0.4)
+%%   \pstThreeDDot(0.4,0.4,0)
+%%   \pstThreeDDot(0.4,0.4,0.2)
+%%   \pstThreeDDot(0.4,0.4,0.4)
+  \pstThreeDLine[linestyle=dotted,linewidth=0.5pt,linecolor=black](0,0,0)(0,0,0.4)
+  \pstThreeDLine[linestyle=dotted,linewidth=0.5pt,linecolor=black](0.2,0,0)(0.2,0,0.4)
+  \pstThreeDLine[linewidth=0.5pt,linecolor=black](0.4,0,0)(0.4,0,0.4)
+  \pstThreeDLine[linestyle=dotted,linewidth=0.5pt,linecolor=black](0,0.2,0)(0,0.2,0.4)
+  \pstThreeDLine[linestyle=dotted,linewidth=0.5pt,linecolor=black](0.2,0.2,0)(0.2,0.2,0.4)
+  \pstThreeDLine[linewidth=0.5pt,linecolor=black](0.4,0.2,0)(0.4,0.2,0.4)
+
+  \pstThreeDLine[linewidth=0.5pt,linecolor=black](0,0.4,0)(0,0.4,0.4)
+  \pstThreeDLine[linewidth=0.5pt,linecolor=black](0.2,0.4,0)(0.2,0.4,0.4)
+  \pstThreeDLine[linewidth=0.5pt,linecolor=black](0.4,0.4,0)(0.4,0.4,0.4)
+
+  \pstThreeDLine[linestyle=dotted,linewidth=0.5pt,linecolor=black](0,0,0)(0,0.4,0)
+  \pstThreeDLine[linestyle=dotted,linewidth=0.5pt,linecolor=black](0.2,0,0)(0.2,0.4,0)
+  \pstThreeDLine[linewidth=0.5pt,linecolor=black](0.4,0,0)(0.4,0.4,0)
+  \pstThreeDLine[linestyle=dotted,linewidth=0.5pt,linecolor=black](0,0,0.2)(0,0.4,0.2)
+  \pstThreeDLine[linestyle=dotted,linewidth=0.5pt,linecolor=black](0.2,0,0.2)(0.2,0.4,0.2)
+  \pstThreeDLine[linewidth=0.5pt,linecolor=black](0.4,0,0.2)(0.4,0.4,0.2)
+  \pstThreeDLine[linewidth=0.5pt,linecolor=black](0,0,0.4)(0,0.4,0.4)
+  \pstThreeDLine[linewidth=0.5pt,linecolor=black](0.2,0,0.4)(0.2,0.4,0.4)
+  \pstThreeDLine[linewidth=0.5pt,linecolor=black](0.4,0,0.4)(0.4,0.4,0.4)
+
+  \pstThreeDLine[linestyle=dotted,linewidth=0.5pt,linecolor=black](0,0,0)(0.4,0,0)
+  \pstThreeDLine[linestyle=dotted,linewidth=0.5pt,linecolor=black](0,0.2,0)(0.4,0.2,0)
+  \pstThreeDLine[linewidth=0.5pt,linecolor=black](0,0.4,0)(0.4,0.4,0)
+  \pstThreeDLine[linestyle=dotted,linewidth=0.5pt,linecolor=black](0,0,0.2)(0.4,0,0.2)
+  \pstThreeDLine[linestyle=dotted,linewidth=0.5pt,linecolor=black](0,0.2,0.2)(0.4,0.2,0.2)
+  \pstThreeDLine[linewidth=0.5pt,linecolor=black](0,0.4,0.2)(0.4,0.4,0.2)
+  \pstThreeDLine[linewidth=0.5pt,linecolor=black](0,0,0.4)(0.4,0,0.4)
+  \pstThreeDLine[linewidth=0.5pt,linecolor=black](0,0.2,0.4)(0.4,0.2,0.4)
+  \pstThreeDLine[linewidth=0.5pt,linecolor=black](0,0.4,0.4)(0.4,0.4,0.4)
+}
+
+\def\emptycube{
+\begin{pspicture}(-0.5,-0.5)(0.5,0.5)
+  \psset{dotstyle=*,linecolor=black,drawCoor=false,Alpha=15,Beta=20}
+\lattice
+\end{pspicture}
+}
+
+\def\emptysquare{
+\begin{pspicture}(-0.5,-0.5)(0.5,0.5)
+  \psset{dotstyle=*,linecolor=black,drawCoor=false,Alpha=0,Beta=0}
+\lattice
+\end{pspicture}
+}
+
+\begin{document}
+
+\begin{center}
+\Large{CSE 326 Autumn 2006}\\
+\large{Section 3 Notes}
+\end{center}
+
+\section{Heap Summary}
+
+\begin{itemize}
+\item
+In the table below, $n$ represents the number of nodes in a heap, and
+we assume it is a min-heap everywhere, but the analysis is nearly
+identical for a max-heap.
+\item
+All heaps satisfy the constraint of \textit{heap order}, that is,
+$key(parent) \le key(child)$.
+\item
+The running time analysis is always worst-case, but amortized worst-case
+is averaged over \textit{any} sequence of operations.
+\item
+The space requirements are those beyond what is required to store the
+key at each node, which is the same $O(n)$ for all heap types.
+\item
+Constant factors are given for comparison but are actually
+implementation-dependent.
+\item
+Logarithms are base 2 unless otherwise specified, but all logarithmic
+bases are asymptotically the same.
+\item
+Leftist and skew heaps are unbalanced in general, although specific cases
+can be balanced.
+\item
+\textsc{Insert} is a special-case of \textsc{Merge} with a one-node heap.
+\item
+\textsc{DeleteMin} is a special-case of \textsc{Merge} on the left and
+right subtrees after the root has been deleted.
+\end{itemize}
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\textbf{Heap Type} & \multicolumn{2}{c|}{\textbf{Representation}} & \textbf{Balanced} & \textbf{Node Info} & \textbf{Space}\\
+\hline
+Binary Heap & \multicolumn{2}{c|}{Array} & Yes & None & $O(1)$ \\
+$d$-Heap & \multicolumn{2}{c|}{Array} & Yes & None & $O(1)$\\
+Leftist Heap & \multicolumn{2}{c|}{Singly-linked nodes} & No & $npl$ & $O(2n)$\\
+Skew Heap & \multicolumn{2}{c|}{Singly-linked nodes} & No & None & $O(n)$\\
+Binomial Queue & \multicolumn{2}{c|}{Forest of binary heaps} & No & None & $O(n)$\\
+\hline
+\textbf{Heap Type} & \textbf{\textsc{Insert}} & \textbf{\textsc{DeleteMin}} & \textbf{\textsc{Merge}} & \textbf{\textsc{BuildHeap}} & \textbf{Analysis}\\
+\hline
+Binary Heap & $O(\log_2{n})$ & $O(\log_2{n})$ & $\Omega(n)$ & $O(n)$ & Worst-case\\
+$d$-Heap & $O(\log_d{n})$ & $O(d\log_d{n})$ & $\Omega(n)$ & $O(n)$ & Worst-case\\
+Leftist Heap & $O(2\log_2{n})$ & $O(2\log_2{n})$ & $O(2\log_2{n})$ & $O(n\log_2{n})$ & Worst-case\\
+Skew Heap & $O(\log_2{n})$ & $O(\log_2{n})$ & $O(\log_2{n})$ & $O(n\log_2{n})$ & Amortized \\
+Binomial Queue & $O(\log_2{n})$ & $O(\log_2{n})$ & $O(\log_2{n})$ & $O(n)$ & Worst-case\\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{description}
+\item[\textbf{Binary Heaps}:] A node with index $i$ has a parent at
+$\lfloor i/2 \rfloor$ and children at $2i$ and $(2i+1)$, with the root at
+index 1. The merge time has a linear lower-bound  $\Omega(n)$ simply because
+it requires $O(n)$ time to write the new merged array beginning with
+two separate arrays. \textsc{Insert} and \textsc{DeleteMin} use
+\textsc{PercolateUp} and \textsc{PercolateDown}, respectively, which in
+the worst-case requires traversal of the entire heap height, hence
+$O(\log_2{n})$.
+
+The basic binary heap has an amortized \textsc{BuildHeap} time of $O(n)$, which
+consists of $n$ inserts and no other operations in between.
+\textit{Only in this case} can we assume that \textsc{Insert} is $O(1)$.
+
+\item[\textbf{$d$-Heaps}:] 
+A node with index $i$ has a parent at
+$\lfloor i/d \rfloor$ and children at $di$ up to $(di+(d-1))$, with the root at
+index 1. However, this is not a compact representation in that it doesn't
+use all array positions. To make it compact, node $i$ has a parent at
+$\lfloor (i-1)/d \rfloor$ and children at $(di+1)$, $(di+2)$, $\ldots$,
+$(di+d)$,
+with the root at index 0. In contrast to a binary tree with at most two
+children, a $d$-heap has at most $d$ children, which lowers the
+\textsc{Insert} time, but increases the \textsc{DeleteMin} time because
+\textsc{PercolateDown} must now compare keys with $d$ children instead of
+2. If $d$ is constant, we can neglect this factor, but if we want to vary
+$d$ to get better performance, we should be aware of this tradeoff.
+
+\item[\textbf{Leftist Heaps}:] All operations are performed
+on the right-subtrees, which are kept short. This is done by keeping
+extra information at each node, the \textit{null path length} ($npl$), or
+the length of the shortest path to a leaf. Leftist heaps improve on
+array-based heaps by allowing efficient merge but require a linked-list node
+representation with child pointers. Therefore, we have space $O(2n)$.
+The running times for \textsc{Merge}, and therefore \textsc{Insert}
+and \textsc{DeleteMin}, have a factor of 2 because a check is required
+at each recursive level of the merge to maintain the \textit{leftist property}:
+$npl(left) \ge npl(right)$.
+
+\item[\textbf{Skew Heaps}:] Virtually identical to leftist heaps, but the
+$npl$ check is omitted and the left and right subtrees are always swapped.
+This is based on empirical evidence that the subtrees are usually
+unbalanced after each recursive merge. Therefore, we no longer need to keep
+the extra information for each node. We are down to $O(n)$ for the child
+pointers and improve on the leftist heap's logarithmic running time by
+a constant factor.
+
+\item[\textbf{Binomial Queues}:] An array (forest) of binary heaps are
+kept, with array position $i$ corresponding to a binary heap of height $i$,
+called $B_i$. Some positions may be empty, but a binomial queue has at most
+one heap of any height. $B_0$ is a one-node heap.
+The \textit{binomial queue property}
+is that $B_{k+1}$ is formed by making $B_0$, $\ldots$, $B_k$ subtrees of
+a new root node. Merging binomial queues is analogous to adding binary
+numbers, and there are $O(\log_2{n})$ binary heaps in each forest.
+Binomial queues improve on leftist and skew heaps by having an amortized
+worse-case \textsc{BuildHeap} time (insertions with no deletions) of $O(1)$
+while still keep $O(\log_2{n})$-time merge operations.
+
+\end{description}
+
+\section{Sum identities}
+
+Because I ran out of time, here are the full proofs of the sums I
+intended to do plus a few miscellaneous goodies.
+But first, recall the following useful identities:
+
+\begin{eqnarray}
+\sum_{i=0}^n i = \frac{n(n+1)}{2}\\
+\sum_{i=m}^n f(i) = \left[\sum_{i=0}^n f(i)\right] + \left[\sum_{i=m}^n f(i)\right]\\
+\end{eqnarray}
+
+The following nested sums are useful in
+solving the running times of nested loops.
+
+%------------------------------------------------------------------------------
+\section{Sum of squares}
+
+First, let's write out the first couple of integer squares and draw
+them pictorially in a suggestive way.
+
+\begin{center}
+\begin{tabular}{ccccc}
+1 & 4 & 9 & 16 & \ldots\\
+$\square$ & $\square$$\square$ & $\square$$\square$$\square$ & $\square$$\square$$\square$$\square$ & \ldots\\
+& $\square$$\square$ & $\square$$\square$$\square$ & $\square$$\square$$\square$$\square$ & \ldots\\
+& & $\square$$\square$$\square$ & $\square$$\square$$\square$$\square$ & \ldots\\
+& &  & $\square$$\square$$\square$$\square$ & \ldots
+\end{tabular}
+\end{center}
+%
+What I mean by ``suggestive'' is that if we sum the first row of blocks,
+this is just the sum of the first $n$ integers starting from 1
+(and Gauss already told us
+how to solve this with the identity above!). If we sum the second row of
+blocks, this is just the same sum but starting from 2 (and the other
+identity above tells us how to start from a number other than 1).
+Likewise, the sum of the third row of blocks is the same sum starting from 3,
+and so on.
+We can then write the sum of squares as a double sum of non-square integers,
+and then simplify using identities from above.
+
+\pagebreak
+\begin{eqnarray}
+f(n) & = & \sum_{i=1}^n i^2\\
+     & = & \sum_{i=1}^n \sum_{j=i}^n j\\
+     & = & \sum_{i=1}^n \left[ \left( \sum_{j=1}^n \right) -
+                               \left( \sum_{j=1}^{i-1} \right) \right]\\
+     & = & \sum_{i=1}^n \left[ \frac{n(n+1)}{2} - \frac{(i-1)i}{2} \right]\\
+     & = & \frac{n^2(n+1)}{2} -\frac{1}{2} \sum_{i=1}^n i^2 + \frac{1}{2} \sum_{i=1}^n i\\
+     & = & \frac{n^2(n+1)}{2} -\frac{1}{2} f(n) + \frac{n(n+1)}{2}\\
+\frac{3}{2}f(n) & = & \frac{n^2(n+1)}{2} + \frac{n(n+1)}{4}\\
+     & = & \frac{2n^2(n+1) + n(n+1)}{4}\\
+     & = & \frac{n(2n + 1)(n+1)}{4}\\
+f(n) & = & \frac{n(2n + 1)(n+1)}{6}
+\end{eqnarray}
+
+%------------------------------------------------------------------------------
+\section{Sum of $\frac{i}{2^i}$}
+
+I incorrectly told some of you that this sum did not converge to a constant
+in section, when in fact it does. You can use the example shown in Chapter 1
+of the text to compute this by expanding the sum, multiplying both sides
+by a constant, and then subtracting to get a known sum.
+
+%------------------------------------------------------------------------------
+\section{Running time of basic \textsc{BuildHeap}}
+
+As an alternative to the method shown in Chapter 6, pages 211-214,
+where $h$ is the height
+of the heap and we sum over each level $i$.
+
+\begin{eqnarray}
+S & = & \sum_{i=0}^h 2^i(h-i)\\
+  & = & h\sum_{i=0}^n 2^i - \sum_{i=0}^h i2^i\\
+  & = & h\frac{2^{h+1}-1}{2-1} - \sum_{i=0}^h i2^i
+\end{eqnarray}
+%
+Again, we draw a suggestive picture to help us transform $i2^i$ into a
+double sum of something we already know how to solve. This is the same
+meaning of ``suggestive'' as the previous problem.
+%
+\begin{center}
+\begin{tabular}{cccc}
+$1\cdot 2$ & $2\cdot 4$ & $3\cdot 8$ & \ldots\\
+$\square\square$ & \emptysquare & \emptycube & \ldots\\
+& \emptysquare & \emptycube & \ldots\\
+& & \emptycube & \ldots
+\end{tabular}
+\end{center}
+%
+\begin{eqnarray}
+T(n) & = & h\frac{2^{h+1}-1}{2-1} - \sum_{i=0}^h \sum_{j=i}^h 2^j\\
+  & = & h2^{h+1}-h - \sum_{i=0}^h
+                \left( \left[\sum_{j=0}^h 2^j \right] -
+                       \left[\sum_{j=0}^{i-1} 2^j \right] \right)\\
+  & = & h2^{h+1}-h  - \sum_{i=0}^h
+                \left( \frac{2^{h+1} - 1}{2-1} - \frac{2^i-1}{2-1} \right)\\
+  & = & h2^{h+1}-h - \left(\sum_{i=0}^h 2^{h+1} - 2^i\right)\\
+  & = & h2^{h+1}-h - h2^{h+1} + \frac{2^{h+1}-1}{2-1}\\
+  & = & h2^{h+1}-h - h2^{h+1} + 2^{h+1}-1\\
+  & = & 2^{h+1} - h -1
+\end{eqnarray}
+
+This is off by one from what the book got, so I missed something somewhere.
+Meh, close enough. If you were off by one on a test, you'd probably
+still get most of the credit. See if you can find my mistake!
+
+Anyway, as I was saying:
+\begin{eqnarray}
+h = \log_2{n} & \Rightarrow & T(n) = 2^{\log_2{n} + 1} - \log_2{n} - 1\\
+              & \Rightarrow & T(n) = O(n)
+\end{eqnarray}
+
+%------------------------------------------------------------------------------
+\section{Size of a binomial queue}
+
+Why do we assume that a binomial queue has $O(\log{n})$ heaps?
+By analogy with binary numbers, the number $n$ has $\log_2{n}$ bits.
+By a more rigorous sum, we bound the number of nodes that can be
+contained in a binomial queue of a certain size, $m$.
+
+\begin{eqnarray}
+\sum_{i=0}^{m} 2^i & \le & n\\
+\frac{2^{m+1} - 1}{2-1} & \le & n\\
+2^{m+1} & \le & n+1\\
+m & \le & \log_2{(n+1)} - 1\\
+\end{eqnarray}
+
+Therefore, the number of trees in the forest, $m$, is upper-bounded by
+$\log_2{n}$.
+
+\end{document}

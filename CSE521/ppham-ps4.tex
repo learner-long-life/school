@@ -1,0 +1,464 @@
+\documentclass[12pt]{article}
+
+\usepackage{fullpage}
+\usepackage{fancyhdr}
+\usepackage{cse-scribe}
+\pagestyle{fancy}
+
+\rhead{Problem \thesection\\Page \thepage\\Winter 2006}
+\lhead{Paul Pham [ppham@cs.washington.edu]\\CSE 521: Algorithms\\Problem Set 4}
+
+%\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\addtolength{\headheight}{42pt} % make space for the rule
+\addtolength{\headsep}{6pt} % make space for the rule
+
+\renewcommand{\labelenumi}{\textbf{\alph{enumi})}}
+\renewcommand{\labelenumii}{\textbf{\arabic{enumii}}}
+%\renewcommand{\thesection}{\small{Problem \arabic{section}.}}
+%  \makeatletter
+%   \renewcommand{\section}{\@startsection{section}{1}{0mm}
+%   {\baselineskip}%
+%   {\baselineskip}{\normalfont\normalsize}}%
+%   \makeatother
+%\renewcommand{\section}{\@startsection{section}{1}}
+\def\qopnamewl@#1{\mathop{\fam\z@#1}\nlimits@}
+\def\Exp{\mathop{\rm {E}}}
+\def\argmax{{\rm arg} \mathop{\rm {max}}}
+\def\argmin{{\rm arg} \mathop{\rm {min}}}
+\def\dist{{\rm dist}\,}
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem 1
+\section{Linear programming}
+
+\begin{enumerate}
+%------------------------------------------------------------------------------
+\item % Part A
+Introduce slack variables into the constraints:
+%
+\begin{eqnarray*}
+\begin{array}{llllll}
+w_1 & = & 2  & -x_1  & -2x_2 & -x_3\\
+w_2 & = & -1 & -2x_1 & -x_2  & +x_3\\
+w_3 & = & 3  & -3x_1 & -2x_2 & -x_3\\
+\end{array}\\
+x_1,x_2,x_3,w_1,w_2,w_3 \ge 0
+\end{eqnarray*}
+%
+Since this is an infeasible dictionary, introduce a new objective function
+$-x_0$ and solve an auxiliary problem:
+%
+\begin{eqnarray*}
+\begin{array}{lllllll}
+\zeta & = &  &       &       &      & -x_0\\
+w_1 & = & 2  & -x_1  & -2x_2 & -x_3 & +x_0\\
+w_2 & = & -1 & -2x_1 & -x_2  & +x_3 & +x_0\\
+w_3 & = & 3  & -3x_1 & -2x_2 & -x_3 & +x_0\\
+\end{array}\\
+x_0,x_1,x_2,x_3,w_1,w_2,w_3 \ge 0
+\end{eqnarray*}
+%
+$x_0$ enters and $w_2$ leaves.
+%
+\begin{eqnarray*}
+\begin{array}{lllllll}
+\zeta & = & -1 & -2x_1 & -x_2 & +x_3 & -w_2\\
+w_1 & = & 3 & +x_1  & -x_2 & -2x_3 & +w_2\\
+x_0 & = & 1 & +2x_1 & +x_2 & -x_3  & +w_2\\
+w_3 & = & 4 & -x_1  & -x_2 & -2x_3 & +w_2\\
+\end{array}\\
+x_0,x_1,x_2,x_3,w_1,w_2,w_3 \ge 0
+\end{eqnarray*}
+%
+We now have a feasible solution. $x_3$ enters and $x_0$ leaves.
+%
+\begin{eqnarray*}
+\begin{array}{lllllll}
+\zeta & = & 0 & & & -x_0 & \\
+w_1 & = & 1 & -3x_1  & -3x_2 & +2x_0 & -w_2\\
+x_3 & = & 1 & +2x_1 & +x_2 & -x_0  & +w_2\\
+w_3 & = & 2 & -5x_1  & -3x_2 & +2x_0 & -w_2\\
+\end{array}\\
+x_0,x_1,x_2,x_3,w_1,w_2,w_3 \ge 0
+\end{eqnarray*}
+%
+Therefore the auxiliary problem has an optimal solution when $x_0 = 0$.
+We then drop $x_0$ to convert back to our original problem.
+%
+\begin{eqnarray*}
+\begin{array}{llllll}
+\zeta & = & & 3x_2 & +x_3 & \\
+w_1 & = & 1 & -3x_1  & -3x_2 & -w_2\\
+x_3 & = & 1 & +2x_1 & +x_2 & +w_2\\
+w_3 & = & 2 & -5x_1  & -3x_2 & -w_2\\
+\end{array}\\
+x_0,x_1,x_2,x_3,w_1,w_2,w_3 \ge 0
+\end{eqnarray*}
+%
+$x_2$ enters, $w_1$ leaves.
+%
+\begin{eqnarray*}
+\begin{array}{lllllll}
+\zeta & = & 1 & -3x_1 & -w_1 & -w_2 & +x_3 \\
+x_2 & = & \frac{1}{3} & -x_1 & -\frac{1}{3}w_1 & -\frac{1}{3}w_2 &\\
+x_3 & = & \frac{4}{3} & +x_1 & -\frac{1}{3}w_1 & +\frac{2}{3}w_2 &\\
+w_3 & = & 1 & -2x_1  & +w_1 & &\\
+\end{array}\\
+x_0,x_1,x_2,x_3,w_1,w_2,w_3 \ge 0
+\end{eqnarray*}
+%
+There are no other choices for an entering variable, so the simplex
+algorithm terminates with an optimal solution. Setting all the
+non-basic variables to 0, we have $x_2 = \frac{1}{3}$, $x_3 = \frac{4}{3}$, and
+$\zeta = \frac{7}{3}$.
+
+%------------------------------------------------------------------------------
+\item % Part B
+Denote the leaving basic variable $x_l$ and the
+entering non-basic variable $x_k$.
+
+In each iteration, the constraint beginning with $x_l$ changes to begin
+with $x_k$ instead:
+$x_k$ takes on the
+coefficient of +1 and moves to the basic side of the equation, and
+$x_l$, which was formerly basic and had a coefficient of
++1, is moved to the non-basic side of the equation with a negative coefficient.
+
+$x_k$ was chosen to have the highest positive coefficient in $\zeta$.
+Therefore, $x_l$ now appears with a negative coefficient in $\zeta$ and
+will not be chosen by the simplex algorithm in the next iteration.
+
+\end{enumerate}
+
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem 2
+\section{Integral optimal LP solutions}
+
+\begin{enumerate}
+%------------------------------------------------------------------------------
+\item % Part A
+In the simplex method, a basic solution is recovered by setting all non-basic
+variables to 0, which is an integer. Therefore it suffices to show that
+if a basic optimal solution exists, then the basic variables in some
+optimal solution has integer values.
+
+If $B$ and $N$ are the indices of the basic and non-basic variables in
+a basic optimal solution and $C_B\tilde{x}_B + C_N\tilde{x}_N = b$, then
+setting $\tilde{x}_N$ to 0 gives us $\tilde{x}_B = C_B^{-1}b$.
+
+If every square submatrix of $A$ has determinant $0$, $1$, or $-1$, then
+no combination of row operations can give constant $b_i's$ which are
+not integers. Therefore there exists a basic optimal solution with
+integer values.
+
+%------------------------------------------------------------------------------
+\item % Part B
+Suppose we are given a bipartite graph $G = (V_1,V_2,E)$ where
+the edges go between $V_1$ and $V_2$.
+Define a variable $x_e \in \{0,1\}$ for every edge $e \in E$ that is 1 if the
+edge is picked in a matching and 0 otherwise.
+
+Maximize the following objective function, which corresponds to finding a
+maximum matching:
+%
+\begin{displaymath}
+\sum_{e \in E} x_e
+\end{displaymath}
+%
+subject to the constraints that no vertex appears in more than one match,
+and some vertices may appear in no matches.
+%
+\begin{eqnarray*}
+\sum_{\begin{subarray}{c} v_1 \in V\\e=(v_1,v_2) \in E\end{subarray}} x_e \le 1\\
+\sum_{\begin{subarray}{c} v_2 \in V\\e=(v_1,v_2) \in E\end{subarray}} x_e \le 1\\
+\end{eqnarray*}
+%
+If we use the coefficient $a_{ev}=1$ when edge $e$ is incident on vertex $v$ and
+0 otherwise, we can rewrite the constraints as follows:
+%
+\begin{eqnarray*}
+\sum_{e \in E} a_{ev}x_e \le 1 & \textrm{for $v \in (V_1 \cup  V_2)$}\\
+\end{eqnarray*}
+
+%------------------------------------------------------------------------------
+\item % Part C
+If we multiply each constraint in the previous part by a constant $y_v$, we
+get new constraints for every vertex in the graph. The sum of coefficients
+should not exceed the coefficients in the primal objective function, which
+are all 1s.
+%
+\begin{eqnarray*}
+\sum_{v \in (V_1 \cup V_2)} a_{ev}y_v \ge 1 & \textrm{for $e \in E$}\\
+\end{eqnarray*}
+%
+The new objective function is to minimize
+%
+\begin{displaymath}
+\sum_{v \in (V_1 \cup V_2)} y_v
+\end{displaymath}
+%
+with the relaxation that $y_v \ge 0$ instead of $y \in \{0,1\}$.
+
+This dual problem is a relaxation of finding a minimum edge cover.
+
+%------------------------------------------------------------------------------
+\item % Part D
+Because the coefficients $a_{ev}$ in the primal and dual problems above
+are taken from $\{0,1\}$, any square submatrix of $A$ will have determinant
+0, 1, or -1. The constants in the primal constraints ($b_e$) and
+dual constraints ($c_v$) are all 1s, which are integers as required by
+Part (a). Therefore the primal and dual problems both have integral
+optimal solutions.
+
+%------------------------------------------------------------------------------
+\item % Part E
+A maximum bipartite matching corresponds to a minimum edge cover in the
+graph. Or, the size of a maximum bipartite matching is the side of the
+minimum edge cover.
+
+\end{enumerate}
+
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem 3
+\section{Edge-dominating sets}
+\begin{enumerate}
+%------------------------------------------------------------------------------
+\item % Part A
+Suppose that a graph has a minimum edge-dominating set $E$ which is not a
+matching. That is, there exist two edges $e_1 = (u,v) \in E$ and
+$e_2 = (u,w) \in E$ that are both incident on some common vertex $u$.
+Then wlog, replace $e_2$ in $E$ with some other edge $(w,y)$ incident on $w$
+where no other edge in $E$ is incident on $y$. Such an edge preserves the
+edge-domination property and does not increase the size of our minimum set.
+If there is no such edge,
+then all edges out of $w$ (and $u$) are covered, and we can form a smaller
+edge-dominated set by excluding $e_2$. This contradicts our assumption
+that $E$ is a minimum set.
+
+%------------------------------------------------------------------------------
+\item % Part B
+
+\begin{itemize}
+\item Initialize the edge-dominating set $E_D = \emptyset$.
+\item While there are unvisited edges:
+\begin{itemize}
+\item Choose an arbitrary edge $e \in E$.
+\item $E_D \gets E_D \cup \{e\}$
+\item Remove all edges in $E$ that are dominated by some edge in $E_D$.
+\end{itemize}
+\end{itemize}
+
+\textbf{Claim:} This algorithm produces an edge-dominating set $E_D$
+no more than
+twice the size of the minimum edge-dominating set.
+
+\textbf{Proof:} By the previous part, every graph has a minimum edge-dominating
+set which is a matching (each vertex appears at most in one edge of the set);
+call this matching $M$. $M$ also dominates every edge in $E_D$, and every
+edge $m \in M$ has two vertices to dominate at most two edges
+$e_1,e_1 \in E_D$.
+In the worst case, each $m$ dominates a different $e_1$ and $e_2$, and
+we have $|E_D| \le 2 |M|$.
+
+\end{enumerate}
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem 4
+\section{Server location}
+
+We iteratively choose servers by the greedy heuristic of minimum average
+cost. For every server $s \in S$ we define the neighborhood $U_s$ as
+the subset of users $U$ which minimizes the average cost of belonging to $s$:
+
+\begin{displaymath}
+U_s = \argmin_{\{u_{i_1}, \ldots u_{i_d}\}} \frac{f_s + \sum_{j=1}^d d_{u_{i_j}s}}{d}
+\end{displaymath}
+
+We later augment this set in our algorithm to include users $u$ with minimal
+distance to $s$, $d_{us}$, that is less than any other average cost or
+distance to an active server.
+We define $v_s$ as the \textit{a priori}
+average cost for a user to belong to $U_s$, i.e., to be
+served by server $s$.
+
+\begin{displaymath}
+v_s = \frac{f_s + \sum_{u \in U_s} d_{us}}{|U_s|}
+\end{displaymath}
+
+Now we define an algorithm to choose server locations based on this heuristic:
+
+\textsc{Greedy-Server-Select}: On inputs\\
+$(U = \{u_1,\ldots,u_n\}, S = \{s_1,\ldots,s_m\}, f:S\rightarrow \mathbb{R}^+, d:U \times S \rightarrow \mathbb{R}^+)$
+\begin{itemize}
+\item Initialize the remaining set of users: $R \gets U$.
+\item Initialize the active servers: $A \gets \emptyset$.
+\item For every $s \in S$:
+\begin{itemize}
+\item Sort all $u \in U$ in increasing (non-decreasing) order of $d_{us}$.
+\item Compute $U_s$ and $v_s$ for every $s \in S$ according to the formulae above.
+\end{itemize}
+\item While $R \ne \emptyset$:
+\begin{itemize}
+\item Choose the server with minimal average cost: $s_k \gets \argmin_{s \in S} v_{s_k}$
+\item Find the remaining user with minimal distance to an active server:
+$(u_0, s_0) \gets \argmin_{\begin{subarray}{c} s \in A\\ u \in R \end{subarray}} d_{us}$,
+$c_{u_0} \gets d_{u_0s_0}$
+\item If $v_{s_k} < c_{u_0}$, then:
+\begin{itemize}
+\item Activate this server: $A \gets A \cup \{s_k\}$
+\item Calculate the actual total cost of all users being served by $s_k$, or its ``weight:'' $w_k = f_{s_k} + \sum_{u \in (U_{s_k} \cap R)} d_{us_k}$.
+\item Divide by the number of actual users being served by $s_k$ to get
+average cost: $\forall_{u \in (U_{s_k} \cap R)}: c_u = w_k / |U_{s_k} \cap R|$
+\item Update the remaining users: $R \gets R - U_{s_k}$
+\item Sort the remaining users in order of decreasing minimum distance to an
+active server.
+\item Remove the server from future consideration: $S \gets S - \{s_k\}$
+\end{itemize}
+active server ($\min_{s \in A} d_{us}$).
+\item Otherwise assign $u_0$ to its minimal-distance active server $s_0$:
+\begin{itemize}
+\item Augment the set of users served by $s_0$: $U_{s_0} \gets U_{s_0} \cup \{u_0\}$
+\item Recalculate $w_0$
+\item Update the remaining users: $R \gets R - \{u_0\}$
+\end{itemize}
+\end{itemize}
+\end{itemize}
+
+%\begin{displaymath}
+%\sum_{s \in A} \sum_{u \in U_s} c_u \le \sum_{s \in A} f_s + \sum_{u \in U} \min_{s \in A}d_{us}
+%\end{displaymath}
+
+\begin{lemma}
+\begin{displaymath}
+\forall_{s_k \in S} \sum_{u \in U_{s_k}} c_u \le H(|U_{s_k}|)\cdot w_k
+\end{displaymath}
+\end{lemma}
+
+\begin{proof}
+Without loss of generality and to simplify notation as done in Section 11.3
+of the textbook, we choose an arbitrary server $s_k$
+and label the users $u \in U_{s_k}$ as the first $d = |U_{s_k}|$ users in the
+order that they are assigned a cost:
+$\{u_1,\ldots u_d\}$. Then consider that some user $u_j \in U_{s_k}$ may be
+covered by either $s_k$ or some server $s_i$ with smaller or equal average
+cost in an earlier iteration, with $1 \le j \le d$ and
+$|U_{s_k} \cap R| \ge d-j+1$.
+Then the average cost of belonging to set $s_k$ is
+
+\begin{displaymath}
+\frac{w_k}{|U_{s_k} \cap R|} \le
+\frac{w_k}{d-j+1}
+\end{displaymath}
+
+We know that for each $u_j \in U_{s_k}$, the assigned cost of being served
+by some cheaper server $s_i$ can be no greater
+than the current average cost of being served by $s_k$.
+
+\begin{displaymath}
+c_{u_j} = \frac{w_i}{|U_{s_i} \cap R|} \le \frac{w_k}{|U_{s_k} \cap R|} \le \frac{w_k}{d-j+1}
+\end{displaymath}
+
+Adding up these inequalities for all the users in $U_{s_k}$ we obtain:
+
+\begin{displaymath}
+\sum_{u \in U_{s_k}} c_u = \sum_{j=1}^d c_{u_j} \le \sum_{j=1}^d \frac{w_k}{d-j+1} = w_k
+\left(\frac{1}{d}+\frac{1}{d-1}+\ldots + 1 \right) = H(d)\cdot w_k
+\end{displaymath}
+
+\end{proof}
+
+%\begin{lemma}
+%Assigning a user to a server that differs from the greedy heuristic will
+%never decrease the total cost.
+%\end{lemma}
+
+%\begin{proof}
+%Suppose that the greedy heuristic assigns a user $u_0$ to $s_k$ such that
+%it has the minimum average cost, $c_{u_0} = w_k / |U_{s_k} \cap R|$.
+%If some other
+%heuristic assigns $u_0$ to a different server, $s_i$, then according to our
+%algorithm it will incur a higher average cost $c'_{u_0}$.
+%Otherwise, it would not be a different server as we assumed.
+%
+%\begin{displaymath}
+%c'_{u_0} = \frac{f_{s_i} + \sum_{u \in (U_{s_i} + \{u_0\}) \cap R}d_{us_i}}{|(U_{s_i}+\{u_0\}) \cap R} \ge \frac{w_k}{|U_{s_k} \cap R|} = c_{u_0}
+%\end{displaymath}
+%
+%Furthermore, we have defined $U_{s_k}$ and $U_{s_i}$ to be the sets which
+%minimize average cost. Since average cost is monotonically non-increasing as
+%users are added before (and after reaching) the minimum, it is monotonically
+%non-decreasing as users are removed. Therefore, removing any user from
+%these sets will never decrease
+%the average cost.
+%
+%\begin{displaymath}
+%\frac{f_{s_k} + \sum_{u \in (U_{s_k} - \{u_0\}) \cap R} d_{us_k}}{|(U_{s_k} - \{u_0\})  \cap R|} \ge \frac{w_k}{|U_{s_k} \cap R}
+%\end{displaymath}
+%
+%Therefore, any sum which includes $c'_{u_0}$ will never be less than a sum
+%which includes $c_{u_0}$ instead.
+%\begin{displaymath}
+%f_{s_k} + \sum_{u \
+%\end{displaymath}
+%\end{proof}
+
+\begin{theorem}
+The active servers selected by \textsc{Greedy-Server-Select} has
+activation cost at most $H(n)$ times the optimal cost $w^*$.
+\end{theorem}
+
+\begin{proof}
+Let $A^*$ denote an optimal set of active servers; that is, it possesses
+a minimal total activation cost:
+
+\begin{displaymath}
+w^* = \sum_{s \in A^*} f_s + \sum_{u \in U}\min_{s\in A^*}d_{us}
+\end{displaymath}
+
+For each of the servers $s_i$ in $A^*$ our previous lemma implies:
+
+\begin{displaymath}
+w_i \ge \frac{1}{H(|U_{s_i}|)}\sum_{u \in U_{s_i}}c_u
+\end{displaymath}
+
+Because these servers cover all users, we have:
+
+\begin{displaymath}
+\sum_{s \in A^*} \sum_{u \in U_{s}} c_u \ge \sum_{u \in U} c_u
+\end{displaymath}
+
+%Because we have chosen our sets $U_s$ to have minimum average cost,
+%we know that assigning a user to a server that differs from our greedy
+%heuristic will result in an net increase in total cost. Suppose not.
+%the sum of minimum user cost to any active server
+%cannot be less than the sum of minimum average costs.
+
+%\begin{displaymath}
+%\sum_{u \in s_i} c_u = \sum_{u \in s_i} \frac{w_i}{|U_{s_i} \cap R|} \le f_{s_i} + \sum_{u \in U_{s_i}} \min_{s_j \in A}d_{us_j}
+%\end{displaymath}
+
+Combining these inequalities, we have:
+
+\begin{displaymath}
+w^* = \sum_{s_i \in A^*} f_{s_i} + \sum_{u \in U}\min_{s \in A^*}d_{us} \ge
+\sum_{s_i \in A^*} w_i \ge \sum_{s_i \in A} \frac{1}{H(|U_{s_i}|)}\sum_{u \in U_{s_i}}c_u \ge \frac{1}{H(|n|)}\sum_{u \in U}c_u
+\end{displaymath}
+
+\end{proof}
+
+%\begin{fact}
+%\begin{displaymath}
+%\sum_{u \in U} c_u \le \sum_{s \in A} (f_s + \sum_{u \in U_s} d_{us})
+%\end{displaymath}
+%\end{fact}
+
+\end{document}

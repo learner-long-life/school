@@ -1,0 +1,34 @@
+include "util";
+
+qufunct qram_lookup(quconst addr, quconst data, quvoid readout) {
+  int a = #addr;
+  int n = 2^a;
+  int r = #readout; // word width
+  int m = n * r;
+  int d = #data;
+  int i, j;
+  quscratch f[1]; // intermediate control qubit
+
+  if (d != m) {
+    print "n=",n," m=",m," d=",d;
+    exit "Data size mismatch";
+  }
+  
+  for i=0 to #n-1 { // iterate over each word address
+
+    f = false; // do not flip by default
+    for j=0 to #a-1 { // iterate over bits in address
+      
+    for j=0 to #r-1 { // iterate over bits in each word
+      if (
+     // x -> NOT (x XOR n)
+    if not bit(n,i) { Not(x[i]); }
+  }
+  CNot(f,x);            // flip f if x=1111..
+  for i=0 to #x-1 {     // x <- NOT (x XOR n)
+    if not bit(n,i) { !Not(x[i]); }
+  }
+}
+
+
+

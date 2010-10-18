@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>CSE 444: Assignment 1</title>
+</head>
+<body>
+<center>
+<h1>Assignment 1: SQL Queries</h1>
+</center>
+<p>
+</p>
+This assignment requires you to formulate SQL queries over a relational
+movie database, populated with data from the <a
+ href="http://www.imdb.com/">IMDB</a> website. The database is named <span
+ style="font-style: italic;">IMDB</span>, and is loaded on the
+PostgreSQL 8.0.7 server running on cubist.cs.washington.edu. You will
+need to log into cubist, and run <span style="font-style: italic;">psql</span>,
+the command-line client for talking to the database server. You will
+also need to specify the name of the database you want to use, and your
+PostgreSQL user name. So, user <span style="font-style: italic;">xyz</span>
+will run the following command:<br>
+<span style="font-style: italic;">/usr/local/pgsql/bin/psql IMDB -U xyz</span><br>
+<h2></h2>
+<p>Additional documentation on PostgreSQL can be found&nbsp;<a
+ href="http://cubist.cs.washington.edu/doc/postgresql/">here.</a>&nbsp;
+</p>
+<big><big><span style="font-style: italic; font-weight: bold;"></span></big></big>
+<h2>Homework Description</h2>
+The database schema is shown below:<br>
+<ul>
+  <li> <span style="font-style: italic;">ACTOR (</span><span
+ style="text-decoration: underline; font-style: italic;">id</span><span
+ style="font-style: italic;">, fname, lname, gender)</span></li>
+  <li><span style="font-style: italic;">MOVIE (<span
+ style="text-decoration: underline;">id</span>, name, year, rank)</span></li>
+  <li><span style="font-style: italic;">DIRECTOR (</span><span
+ style="text-decoration: underline; font-style: italic;">id</span><span
+ style="font-style: italic;">, fname, lname)</span></li>
+  <li><span style="font-style: italic;">CASTS (pid, mid, role)</span></li>
+  <li><span style="font-style: italic;">MOVIE_DIRECTOR (did, mid)<br>
+    </span></li>
+</ul>
+The<i> id </i>column in ACTOR, MOVIE &amp; DIRECTOR tables is a key
+for the respective table. CASTS.pid is a foreign key referring to
+ACTOR.id, CASTS.mid refers to MOVIE.id, MOVIE_DIRECTOR.did refers to
+DIRECTOR.id, and MOVIE_DIRECTOR.mid refers
+to MOVIE.id.&nbsp; Write SQL queries for the following: <br>
+<p> </p>
+<p> </p>
+<ol>
+  <li>(8') a. List all the actors who acted in at least one film in 2nd
+half
+of the 19th century and in at least one film in the 1st half of the
+20th century.<br>
+b. List all the directors who directed a film in a leap year. <br>
+&nbsp;</li>
+  <li>(8') List all the movies that have the same year as the movie
+'Shrek', but a better rank (Note: bigger value of rank implies a
+better rank).<br>
+&nbsp;</li>
+  <li>(8') List first name and last name of all the actors who played
+in the
+movie 'Officer 444'.<br>
+&nbsp;</li>
+  <li>(8') List all directors in descending order of the number of
+films
+they directed.<br>
+&nbsp;</li>
+  <li>(8')&nbsp; a. Find the film(s) with the largest cast.&nbsp;&nbsp;
+    <br>
+b. Find the film(s)
+with the
+smallest cast.<br>
+In both cases, also return the size of the cast. List the largest and
+smallest cast sizes you obtained in your submitted solution.<br>
+&nbsp;</li>
+  <li>(8') Find all the actors who acted in films by at least 10
+distinct
+directors (<span style="font-style: italic;">i.e. </span>actors who
+worked with at least 10 distinct directors).<br>
+&nbsp;</li>
+  <li>(8') Find all actors who acted only in films before 1960. <br>
+&nbsp;</li>
+  <li>(8') Find the films with more women actors than men.<br>
+&nbsp;</li>
+  <li>(8') For every pair of male and female actors that appear
+together in
+some film, find the total number of films in which they appear
+together. Sort the answers in decreasing order of the total number of
+films.<br>
+&nbsp;</li>
+  <li>(8') For every actor, list the films he/she appeared in their
+debut
+year. Sort the results by last name of the actor.<br>
+&nbsp;</li>
+  <li>(10') The <i>Bacon number</i> of an actor is the length of the
+shortest path between the actor and Kevin Bacon in the "co-acting"
+graph. That is, Kevin Bacon has Bacon number 0; all actors who acted in
+the same film as KB have Bacon number 1; all actors who acted in the
+same film as some actor with Bacon number 1 have Bacon number 2, etc.
+Return all actors whose Bacon number is
+2. <br>
+    <b>Bonus:</b> <span style="color: rgb(204, 0, 0);"></span>Suppose
+you
+write a single SELECT-FROM-WHERE SQL query that returns all actors
+having <big><span style="font-style: italic;">finite</span></big>
+Bacon numbers. How big is the query?<br>
+&nbsp;</li>
+  <li>(10') A <i>decade</i> is a sequence of 10 consecutive years. For
+example 1965, 1966, ..., 1974 is a decade, and so is 1967, 1968, ...,
+1976. Find the decade with the largest number of films. List the answer
+you obtained in your submitted solution.<br>
+&nbsp;</li>
+  <li><span style="font-weight: bold;">Bonus: </span>Rank the actors
+based on their popularity, and compute a list of all actors in
+descending order of their popularity ranks.&nbsp; You need to come up
+with your own metric for computing the popularity ranking.&nbsp; This
+may include information such as the number of movies that an actor has
+acted in, the ranks of these movies, the 'popularity' of these movies'
+directors (where the
+directors' popularity is the number of movies they have directed),
+etc.&nbsp; Be creative in how you choose your criteria of computing the
+actors' popularity.&nbsp;&nbsp; For this answer, in addition to the
+query, also turn in the criteria you used to rank the actors.</li>
+</ol>
+&nbsp;&nbsp;&nbsp;<font size="+1"> <span style="color: rgb(255, 0, 0);">Due
+Date: </span></font>Apr 10. Email a text file containing ur
+ready-to-run queries to Bhushan.<br>
+<br>
+&nbsp;&nbsp;&nbsp; The <a href="HW1_Soln.txt">Sample Solution</a> is
+now available.<br>
+</body>
+</html>

@@ -1,0 +1,100 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% This file should be called scribe.sty
+%
+% Your main LaTeX file should look like this:
+%
+%   \documentclass[12pt]{article}
+%   \usepackage{scribe}
+%
+%   \Scribe{YOUR NAME}
+%   \Lecturer{Venkatesan Guruswami}
+%   \LectureNumber{N}
+%   \LectureDate{DATE}
+%   \LectureTitle{A TITLE FOR THE LECTURE}
+%
+%   \begin{document}
+%   \MakeScribeTop
+%
+%   \section{SECTION NAME}
+%
+%   NOTES GO HERE
+%
+%   \section{ANOTHER SECTION NAME}
+%
+%   MORE NOTES GO HERE
+%
+%   etc.
+%
+%   \end{document}
+%
+%
+%
+% There are some environments and macros you might use below...
+
+
+\oddsidemargin 0in \evensidemargin 0in \marginparwidth 40pt
+\marginparsep 10pt \topmargin 0pt \headsep 0in \headheight 0in
+\textheight 8.5in \textwidth 6.5in \brokenpenalty=10000
+
+\usepackage{amssymb} \usepackage{amsfonts} \usepackage{amsmath} \usepackage{latexsym} \usepackage{amsthm} \usepackage{times} \usepackage{hyperref}
+
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{fact}[theorem]{Fact}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{observation}[theorem]{Observation}
+\newtheorem{conjecture}[theorem]{Conjecture}
+
+
+
+\newcommand{\ignore}[1]{}
+
+\newcommand{\poly}{\mathrm{poly}}
+\newcommand{\polylog}{\mathrm{polylog}}
+
+\renewcommand{\P}{\mathrm{P}}
+\newcommand{\NP}{\mathrm{NP}}
+
+\newcommand{\bits}{\{0,1\}}
+\newcommand{\eps}{\varepsilon}
+\renewcommand{\epsilon}{\varepsilon}
+
+
+\def\ScribeStr{??}
+\def\LecStr{??}
+\def\LecNum{??}
+\def\LecTitle{??}
+\def\LecDate{??}
+\newcommand{\Scribe}[1]{\def\ScribeStr{Scribe: #1}}
+\newcommand{\Scribes}[1]{\def\ScribeStr{Scribes: #1}}
+\newcommand{\Lecturer}[1]{\def\LecStr{Lecturer: #1}}
+\newcommand{\Lecturers}[1]{\def\LecStr{Lecturers: #1}}
+\newcommand{\LectureNumber}[1]{\def\LecNum{#1}}
+\newcommand{\LectureDate}[1]{\def\LecDate{#1}}
+\newcommand{\LectureTitle}[1]{\def\LecTitle{#1}}
+
+\newdimen\headerwidth
+
+\newcommand{\MakeScribeTop}{
+\noindent
+\begin{center}
+  \framebox{
+    \vbox{
+      \headerwidth=\textwidth
+      \advance\headerwidth by -0.22in
+      \hbox to \headerwidth {{\bf CSE 533: Error-Correcting Codes \hfill (Autumn 2006)} }
+      \vspace{4mm}
+      \hbox to \headerwidth {{\Large \hfill Lecture \LecNum: \LecTitle \hfill}}
+      \vspace{2mm}
+      \hbox to \headerwidth {\hfill \LecDate \hfill}
+      \vspace{2mm}
+      \hbox to \headerwidth {{\it \LecStr \hfill \ScribeStr}}
+      }
+    }
+\end{center}
+\vspace*{4mm}}

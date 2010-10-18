@@ -1,0 +1,23 @@
+The summary of database history "What Goes Around Comes Around" by
+Stonebraker and Hellerstein has many useful lessons, conveniently
+summarized at intervals. The most interesting parts, which do not
+overlap with the previous Codd paper, deal with the object-relational
+(OR) model and XML, and most of the controversial statements are
+crammed into the summary at the very end.
+
+The authors insist that XML is only useful for semi-structured data, their
+"Case 2" with schema last, and therefore XML databases are a niche market.
+This seems unfounded in light of their other comments about XML as a useful
+data transfer format (and some disappointing and misleading comments about
+"going through a firewall"), and the ease of which they claim XML can be
+generated from the relational model. In Section 10.3, they claim that
+XML can be parsed/shredded back into tuples in a similar manner to the
+way they are generated, but earlier they stated that homogenizing data
+was difficult. There is a discrepancy here.
+
+I don't think that enterprises or most people use XML for this purely
+semi-structured purpose. I also think that application designers and
+database administrators agree upon the schema for generation and shredding
+in advance, which is like getting the hard work of homogenizing over with
+at the beginning. Therefore the distinction of schema cases is true, but
+not very useful in practice.

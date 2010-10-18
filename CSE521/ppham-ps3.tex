@@ -1,0 +1,254 @@
+\documentclass[12pt]{article}
+
+\usepackage{fullpage}
+\usepackage{fancyhdr}
+\usepackage{cse-scribe}
+\pagestyle{fancy}
+
+\rhead{Problem \thesection\\Page \thepage\\Winter 2006}
+\lhead{Paul Pham\\ppham@cs.washington.edu\\CSE 521 Problem Set 3}
+
+%\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\addtolength{\headheight}{42pt} % make space for the rule
+\addtolength{\headsep}{6pt} % make space for the rule
+
+\renewcommand{\labelenumi}{\textbf{\alph{enumi})}}
+\renewcommand{\labelenumii}{\textbf{\arabic{enumii}}}
+%\renewcommand{\thesection}{\small{Problem \arabic{section}.}}
+%  \makeatletter
+%   \renewcommand{\section}{\@startsection{section}{1}{0mm}
+%   {\baselineskip}%
+%   {\baselineskip}{\normalfont\normalsize}}%
+%   \makeatother
+%\renewcommand{\section}{\@startsection{section}{1}}
+\def\qopnamewl@#1{\mathop{\fam\z@#1}\nlimits@}
+\def\Exp{\mathop{\rm {E}}}
+\def\dist{{\rm dist}\,}
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem 1
+\section{Fair carpooling}
+
+\begin{enumerate}
+%------------------------------------------------------------------------------
+\item % Part A
+%
+Construct a bipartite graph $G = (V = X \cup Y, E)$ as follows:
+\begin{itemize}
+\item A node $x_j \in X$ for every driver $p_j$. ($|X|=k$).
+\item A node $y_i \in Y$ for every carpool day $S_i$. ($|Y|=d$).
+\item An edge $(x_j,y_i) \in E$ with capacity 1 if $p_j \in S_i$.
+\item An edge from the source $s$ to $x_j$ with capacity $\lceil \Delta_j \rceil$.
+\item An edge from each $y_i$ to the sink $t$ with capacity 1.
+\end{itemize}
+%
+We know that the sum of all the driving obligations is $d$ from the following.
+%
+\begin{displaymath}
+\sum_{j=1}^{k} \Delta_j = \sum_{j=1}^{k} \sum_{i:p_j \in S_i}
+\frac{1}{|S_i|} = \sum_{i=1}^{d} \sum_{j:p_j \in S_i} \frac{1}{|S_i|}
+= \sum_{i=1}^{d} 1 = d
+\end{displaymath}
+%
+We also know:
+$\sum_{j=1}^{k} \lceil \Delta_j \rceil \ge \sum_{j=1}^{k} \Delta_j = d$
+and that $|E| \ge d$ since every carpool day must have at least one
+person. So the smallest $s-t$ cut in the graph is on the edges between $Y$
+and $t$, and the max flow equals the capacity of this min cut ($d$).
+With integer flows, we can read off the drivers for each
+day as all the edges $(x_j,y_i)$ with flow 1, where person $p_j$ is the
+driver for the $i$th day. There are $d$ such edges, guaranteeing a driver
+for every day. To conserve flow out of each $y_i$, each day has at most
+one driver.
+The capacities on edges from $s$ guarantee that obligations
+are not exceeded. Therefore, a fair driving schedule exists for every
+set of drivers and carpool days.
+
+%------------------------------------------------------------------------------
+\item % Part B
+Find the max flow / min cut on the graph formed in Part (a) using
+Ford-Fulkerson. The sum of capacities out of $s$ is at most $2d$, and in
+the worst case every driver rides every day of the carpool ($|E|=kd$).
+Ford-Fulkerson, using a DFS/BFS method for augmenting paths, runs in
+time bounded by the product of source capacity and
+$O(|V|+|E|) = O((k+d)+kd) = O(kd)$
+So this runs in time $O(kd^2)$.
+
+%------------------------------------------------------------------------------
+\item % Part C
+We can exploit the structure of our graph to choose a smarter way of
+augmenting paths than simple DFS/BFS as in the previous part.
+
+Namely, once a day $y_i \in Y$ has been assigned a driver
+$x_j \in X$ there is no way for another $s-t$ path to go through
+$y_i \leadsto t$.
+In each of the $d$ steps of the Ford-Fulkerson algorithm, we increase
+the flow by at exactly one by assigning a driver $x_j$ to $y_i$.
+Then we should also remove all residual graph edges corresponding to other
+possible drivers for that day: $x_{j'} \in S_i$, $x_{j'} \ne x_j$.
+In the worst case, all drivers ride on
+all days, so this edge removal takes $O(k)$ time.
+For any driver $x_{j'}$ in
+the residual graph, any remaining residual edge leads to a day node
+without a driver, which is guaranteed to be a new $s-t$ path.
+
+Therefore, in each of $d$ BFS augmentations,
+it takes $O(k)$ to find a path to a driver $x_j$ whose
+obligation is not exceeded (capacity on $s \leadsto x_j$ path)
+and who has
+an edge to some $y_i \leadsto t$ path and $O(k)$ to remove all other
+driver edges.
+The final running time is then $O(k^2d)$.
+
+\end{enumerate}
+
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem 2
+\section{Network failures}
+
+Find the $k$ disjoint paths using the algorithm in Section 7.6 of the
+book. This takes $O(mn)$ time. For each of the $k$ disjoint paths,
+use a binary search approach of pinging nodes along the path,
+reducing the search space in half at each step. In the worst case,
+all paths have length $O(n)$, and the binary search takes $O(\log{n})$ pings
+for each path.
+Therefore this algorithm uses $O(k\log{n})$ pings.
+
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem 3
+\section{Graph density}
+\begin{enumerate}
+%------------------------------------------------------------------------------
+\item % Part A
+Given an undirected graph $G=(V,E)$, construct the following directed graph
+$G'=(V',E')$:
+
+\begin{itemize}
+\item
+Create a source $s$ and connect it with a directed edge \textit{to}
+every $v \in V$ with capacity $\alpha$.
+\item
+Create a sink $t$ and connect to it \textit{from} every $v \in V$
+with capacity $deg(v)/2$.
+\item
+For every $(u,v) \in E$, create two directed edges $(u,v),(v,u) \in E'$
+with capacity $\frac{1}{2}$.
+\end{itemize}
+%
+Run the Ford-Fulkerson algorithm to find a min $s-t$ cut on $G'$, which will
+divide $V'$ into $S'$ (containing $t$) and $V'/S'$ (containing $s$) to
+minimize the sum of the following capacities:
+%
+\begin{enumerate}
+\item Edge capacities from $s$ to every node in $S'$ to get $\alpha|S'|$.
+\item Edge capacities from every node in $V'/S'$ to $t$ to get the number
+of edges internal to $V'/S'$, $E(V'/S')$.
+\item Edge capacities which cross \textit{from} $V'/S'$ \textit{to} $S'$ to
+get the number of edges that are not internal to either $S'$ or $V'/S'$.
+\end{enumerate}
+%
+We then use the following facts: minimizing (1) above means maximizing its
+negative, and minimizing the sum of (2) and (3) above means maximizing
+its complement in $|E'|$. Therefore we have:
+\begin{displaymath}
+\displaystyle \min_{S' \subseteq V'}\left[\alpha|S'| + \sum_{v \in V'/S'}\frac{1}{2}deg(v) +
+\sum_{\begin{subarray}{l}
+(u,v) \in E'\\u \in V'/S'\\v \in S' \end{subarray}}\frac{1}{2}\right] =
+%\max_{S' \subseteq V'}\left[-\alpha|S'| + \sum_{v \in S'}\frac{1}{2}deg{v}\right] =
+\max_{S' \subseteq V'}\left[-\alpha|S'| + E(S')\right]
+\end{displaymath}
+Therefore the min cut returns a subset $S' \subseteq V'$ containing $t$
+whose corresponding $S \subseteq V$ maximizes the desired quantity.
+%------------------------------------------------------------------------------
+\item % Part B
+Maximizing $|E(S)|-\alpha|S|$ is equivalent to testing if a graph contains
+a maximum density $\alpha$. We know the density must be 
+rational because it is defined as the ratio of a number of edges and
+a number of vertices, both integers.
+
+The maximum value of $|E(S)|$ is $\binom{|S|}{2} = O(|S|^2)$,
+in the case of a completely
+connected component. Therefore, the density of any component is
+$O(|S|^2/|S|) = O(|S|)$, and the maximum vertex subset is all of
+$V$.
+Using a binary search strategy, we can call our algorithm from part (a),
+which uses Ford-Fulkerson to find the max flow,
+with a search space of $O(|V|)$ rational values,
+since the least common multiple of all density values is at worst $|V| = n$.
+This takes $O(\log{n})$ max flow executions as required,
+with the initial range of the
+search from $0$ to $|E|/|V|$.
+After each ``maximization test'', if
+the maximum value is negative, then we know that no subset $S$
+has density $\alpha$ and we pivot to a lower value, otherwise we pivot
+to a higher value (both rounded to the nearest multiple of $1/|V|$).
+When the binary search terminates, return the highest density found.
+
+\end{enumerate}
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem 4
+\section{BFS augmentation}
+
+\begin{enumerate}
+%------------------------------------------------------------------------------
+\item % Part A
+In updating the residual graph, we either add a back edge or decrease the
+capacities of existing edges (and possibly remove them).
+Decreasing capacities or removing edges
+does not change the shortest hop distance $(s,v)$ and may increase it if
+the removed edge was on an existing shortest path.
+
+Therefore, we argue that adding backedges cannot decrease shortest paths.
+Suppose that after taking a forward edge $(u,w)$ in
+$G_f$, we add a back edge $(w,u)$ that
+decreases some $(s,y)$ path in $G_{f'}$. The new
+shortest path is now
+$s \leadsto w \leadsto u \leadsto y$. However, in that case
+a shorter path already existed before the back edge:
+$s \leadsto u \leadsto y$. This either still exists in $G_{f'}$ or has been
+disconnected since $G_f$, so any path that BFS augmentation finds later
+can be no shorter.
+%------------------------------------------------------------------------------
+\item % Part B
+In the previous part, we showed that the shortest path $(s,u)$ never
+decreases while updating $G_f$. When $(u,v)$ is first a bottleneck, it
+is on the shortest path $s \leadsto u \leadsto v \leadsto t$.
+$d_f(s,v) \ge d_f(s,u) + 1$, otherwise we have a shorter path
+$s \leadsto v \leadsto t$ that bypasses $u$. After being updated, the back edge
+$(v,u)$ is added and $(u,v)$ removed (in $G_{f'}$).
+
+If $(u,v)$ is a bottleneck for a second time in the future,
+then previously $(v,u)$
+must have been updated on a shortest path $s \leadsto v \leadsto u \leadsto t$.
+Therefore,
+$d_{f'}(s,u) \ge d_{f'}(s,v) + 1$, otherwise we have a shorter path
+$s \leadsto u \leadsto t$ that bypasses $v$.
+
+Therefore, $d_{f'}(s,u) \ge d_{f'}(s,v) + 1 \ge d_f(s,u) + 2$.
+
+%------------------------------------------------------------------------------
+\item % Part C
+In each iteration, we are finding a bottleneck edge in the shortest $s-t$ path
+and replacing it with a backedge of equal capacity; that is,
+we remove at least one forward edge on each BFS traversal.
+There are $|E|$ such edges that can be bottlenecks.
+The maximum number of times that an edge $(u,v)$
+can be a bottleneck is $|V|/2$ by the previous parts, since in the worst case
+$d_f(s,u)$ starts as 1 and grows to $|V|$ in increments of $2$ every time
+the edge becomes a bottleneck, never decreasing.
+Therefore, the number of augmentations needed
+is $O(|E||V|)$.
+
+\end{enumerate}
+
+\end{document}

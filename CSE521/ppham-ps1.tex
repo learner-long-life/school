@@ -1,0 +1,640 @@
+\documentclass[12pt]{article}
+
+\usepackage{fullpage}
+\usepackage{fancyhdr}
+\usepackage{cse-scribe}
+\pagestyle{fancy}
+
+\rhead{Problem \thesection\\Page \thepage\\Winter 2006}
+\lhead{Paul Pham\\ppham@cs.washington.edu\\CSE 521 Problem Set 1}
+
+%\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\addtolength{\headheight}{42pt} % make space for the rule
+\addtolength{\headsep}{6pt} % make space for the rule
+
+\renewcommand{\labelenumi}{\textbf{\alph{enumi})}}
+\renewcommand{\labelenumii}{\textbf{\arabic{enumii}}}
+%\renewcommand{\thesection}{\small{Problem \arabic{section}.}}
+%  \makeatletter
+%   \renewcommand{\section}{\@startsection{section}{1}{0mm}
+%   {\baselineskip}%
+%   {\baselineskip}{\normalfont\normalsize}}%
+%   \makeatother
+%\renewcommand{\section}{\@startsection{section}{1}}
+\def\qopnamewl@#1{\mathop{\fam\z@#1}\nlimits@}
+\def\Exp{\mathop{\rm {E}}}
+\def\dist{{\rm dist}\,}
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\setcounter{section}{0}
+\section{Stable matching between hospitals and residents}
+
+We give an algorithm for hospital-resident matching similar to the stable
+marriage problem.
+A hospital only offers positions to \textit{new students} in each
+iteration, those to whom it has
+not yet offered a position.
+
+The algorithm is as follows:
+
+\begin{itemize}
+\item
+Initially, all students and hospitals are free, and hospitals have all
+empty positions.
+\item While some hospital has an empty position:
+\begin{itemize}
+\item Choose such a hospital $h$.
+\item Of all the students $h$ offers a position to its highest-ranked
+      new student $s$.
+\item If $s$ is free, then:
+\begin{itemize}
+\item $(s,h)$ become a match.
+\item $s$ is committed.
+\item If $h$ has filled last available position, it becomes committed.
+\end{itemize}
+\item else $s$ is committed to some other hospital $h'$:
+\begin{itemize}
+\item If $s$ prefers $h$ to $h'$, then:
+\begin{itemize}
+\item $(s,h')$ is removed and $(s,h)$ becomes a match.
+\item If $h$ has filled last available position, it becomes committed.
+\item $h'$ has an available position now and is free.
+\end{itemize}
+\end{itemize}
+\end{itemize}
+\end{itemize}
+
+The first kind of instability cannot occur because a student never becomes
+free once committed. Only free students are assigned to no hospital at
+the end of the algorithm. If $h$ prefers $s'$ to $s$, it would have
+offered a position to $s'$ before $s$, and $s$ would have accepted if free,
+such as at the end of the algorithm. This is a contradiction.
+
+The second kind of instability cannot occur because a student always changes
+their commitment for a higher-ranked hospital. If $s'$ prefers $h$ to $h'$,
+then $s'$ would have accepted any offer from $h$ regardless of
+commitment to $h'$. If $h$ prefers $s'$ to $s$, $h$ would have offered
+a position to $s$, and $s$ would have accepted. $h$ would not have ended
+up with $s'$, which is a contradiction.
+
+Therefore this algorithm always returns a stable match.
+
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\setcounter{section}{1}
+\section{Truthfulness in Gale-Shapley algorithm}
+
+The G-S algorithm is not truthful. The following counterexample shows
+how $w$ could get a higher-ranked man by lying about her preferences for
+lower-ranked men.
+
+\vspace{\baselineskip}
+\begin{tabular}{|c|ccc|}
+\hline
+Person & \multicolumn{3}{c|}{True Preference List}\\
+\hline
+$w$ & $m''$ & $m'$ & $m$ \\
+$w'$ & $m'$ & $m''$ & $m$ \\
+$m$ & $w$ & w' & \\
+$m'$ & $w$ & $w'$ & \\
+$m''$ & $w'$ & $w$ & \\
+\hline
+\end{tabular}
+\vspace{\baselineskip}
+
+In successive rounds:
+\begin{itemize}
+\item
+$\{(m,w)\}$ $m$ proposes to $w$ and she accepts because she is free.
+\item
+$\{(m',w)\}$ $m'$ proposes to $w$ and she accepts because she prefers
+him to $m$.
+\item
+$\{(m',w),(m'',w')\}$ $m''$ proposes to $w'$ and she accepts because she is free.
+\item
+$\{(m',w),(m'',w')\}$ $m$ is now free and proposes to $w'$, but she refuses because she prefers $m''$ to $m$.
+\end{itemize}
+
+Now $w$ can lie about her preferred ordering of $m$ and $m'$ (in boldface
+below) if she knows
+that $w'$ prefers one of them over $m''$ (but not both) and that $m''$
+prefers $w'$ over $w$.
+
+\vspace{\baselineskip}
+\begin{tabular}{|c|ccc|}
+\hline
+Person & \multicolumn{3}{c|}{False Preference List} \\
+\hline
+$w$ & $m''$ & \textbf{$m$} & \textbf{$m'$} \\
+$w'$ & $m'$ & $m''$ & $m$ \\
+$m$ & $w$ & $w'$ & \\
+$m'$ & $w$ & $w'$ & \\
+$m''$ & $w'$ & $w$ & \\
+\hline
+\end{tabular}
+\vspace{\baselineskip}
+
+In successive rounds:
+\begin{itemize}
+\item
+$\{(m,w)\}$ $m$ proposes to $w$ and she accepts because she is free.
+\item
+$\{(m,w)\}$ $m'$ proposes to $w$ but she rejects because she lied about preferring $m$ to $m'$.
+\item
+$\{(m,w),(m',w')\}$ $m'$ proposes to $w'$ and she accepts because she is free.
+\item
+$\{(m,w),(m',w')\}$ $m''$ proposes to $w'$ but she rejects him because she prefers $m'$.
+\item
+$\{(m'',w),(m',w')\}$ $m''$ proposes to $w$ and she accepts because she prefers $m''$ to $m$.
+\end{itemize}
+
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Coin change minimization}
+
+We call a set of coin denominations an \textit{efficient set} if its
+members are $\{b^0, b^1,\ldots ,b^k\}$,
+for some integers $b > 1, k \ge 0$.
+%Note that every efficient set must contain at least a 1-cent coin,
+%$b^0$.
+A \textit{solution} 
+is a set of coin choices $\vec{c} = \{c_i\}$ over an efficient set $D$ such that
+$c_i \in D$ and $\sum{c_i} = N$.
+
+% the inputs $D$ and $N$ are implicitly
+%associated with every solution.
+%An optimal solution uses the fewest coins of any solution.
+
+%\textbf{Fact:} Every solution can transformed to
+%contain the same number of $d_1$ coins (pennies),
+%namely $N \mod d_2$, by exchanging $d_2$ pennies for a single $d_2$ coin.
+%Otherwise some coin larger than $d_1$ would not be
+%a multiple of $d_2$, contradicting our definition. Therefore we can 
+%neglect pennies without loss of generality in our proof:
+%below, all solutions have been thus transformed and the
+%pennies discarded, and all amounts $N$ are actually $\mod d_2$ of
+%the original amount.
+
+%\textbf{Fact:} $b\ge2$, therefore for any $0 \le i \le k$,
+%$b^i < \frac{1}{2}b^{i+1}$.
+
+A \textit{greedy coin algorithm} returns a solution
+$\vec{g} = \{g_1\,\ldots ,g_m\}$,
+ such that at every
+step, it picks the largest denomination less than or equal to the remaining
+amount. Starting with the initial amount $N$, it successively ``mods'' out
+remainders of non-increasing denominations until no change remains
+to be made. Exact amounts can be made because every efficient set includes
+a $b^0$, or 1-cent, piece. We can now state the
+following useful lemma.
+
+\begin{lemma}
+For efficient sets, no non-greedy solution can do better than a greedy coin
+algorithm.
+\end{lemma}
+
+\begin{proof}
+By a stay-ahead argument and proof by contradiction, we will show that
+a greedy solution is optimal.
+First, assume that a non-greedy optimal solution $\vec{o}$ can make the
+same amount $N$ as a greedy solution with fewer coins ($|\vec{o}| < | \vec{g}|$),
+over an efficient set $D$.
+
+Sort the coins in $\vec{o}$ in non-increasing order to match $\vec{g}$, and
+step through corresponding choices of both solutions as a ``race'' to see which
+solution can reach $N$ cents in the fewest number of coins.
+Both solutions start at zero and keep a running total at each
+step $i$ denoted as $T^g_i = \sum_{j=1}^i{g_j}$ and
+$T^o_i = \sum_{j=1}^i{o_j}$, where $T^g_0=T^o_0 = 0$.
+
+The two solutions must differ in at least one coin; choose the
+first such step and call it $j$.
+Since
+the greedy choice $g_j$ is the largest coin that ``fits'' within the remaining
+amount, $o_j$ must be of some smaller denomination: $o_j \le \frac{1}{b}g_j$.
+$\vec{o}$ is now behind $\vec{g}$ since $T^o_j < T^g_j$.
+
+%Assume that $\vec{o}$ catches up at
+%some future step $j''$ to $\vec{g}$'s step $j'$, such that
+%$T^o_{j''} \ge T^g_{j'}$.
+%Otherwise if $\vec{o}$ never catches up,
+%the two solutions do not sum to $N$, a contradiction.
+
+We have sorted the coins in non-increasing order, so all coins after
+$o_j$ are of equal or lesser value.
+%$o_{j''} \le o_{j+1} \le o_j$.
+%Because the set is efficient, and $o_j < g_j$ by our fact above,
+%we have $o_j + o_{j+1} \le 2o_j \le \frac{2}{b}g_j$.
+The best $\vec{o}$ can do is to choose the $b-1$ coins to be equal to
+$o_j$; otherwise it will use up even more coins by the time it has
+caught up with $\vec{g}$ in terms of cent value.
+So after 
+$o_{j+b-1}$, $\vec{o}$ has used up $b-1$ more coins than $\vec{g}$ 
+and they are even again.
+
+\textbf{Fact: If two solutions are even with each other at any point,
+this is equivalent to starting the algorithm again on the remaining cent
+value.} Assume that $\vec{o}$ at some step $j'$ has the same value
+(call it $N'$) as
+$\vec{g}$ at some step $j''$, such that $T_o^{j'} =T_g^{j''}=N'$.
+For example, one such occurrence would happen at the end
+if the two solutions add up to the same value
+($j'=j''=|\vec{g}|=|\vec{o}|$). This is equivalent to the beginning of
+our algorithm before step 1, when both solutions were even,
+except for the non-zero coin counts.
+We can save the current coin counts,
+$j'$ and $j''$, recursively find a new solution for $(N-N')$ cents, and
+add the resulting coin counts to our saved values.
+
+We have now shown that whenever a solution makes a non-greedy choice,
+it falls behind. Using the fact above, we have shown that this
+non-greedy algorithm never catches up. Therefore, a greedy coin algorithm
+is optimal for efficient sets.
+
+\end{proof}
+%and
+%is still behind. The only way it can make up this one coin deficit is
+%to choose one coin that is bigger than two of $\vec{g}$'s choices.
+%That is, $o_j \ge o_{j''} > g_{j'-1} + g_{j'}$
+
+% Note that $j' < j''$ because $\vec{o}$ had to
+%catch up.
+%To catch up, $o_{j''}$ must be bigger than the greedy choice $g_{j'}$.
+
+\pagebreak
+
+\begin{enumerate}
+
+%------------------------------------------------------------------------------
+\item
+
+In American coin denominations, pennies, nickels, and quarters form an
+efficient set ($5^0, 5^1, 5^2$), and by our lemma, the greedy coin
+algorithm given above is optimal over it.
+However, with the addition of the dime,
+we must prove two special cases of the greedy solution staying ahead of
+any other solution.
+
+\begin{itemize}
+\item
+1st Case: At the first different step, our greedy solution $\vec{g}$ chooses a quarter and some other
+solution $\vec{o}$ chooses a dime. $\vec{o}$ can only choose dimes or
+smaller from now on. The best it can do is spend another dime and be
+five cents behind. If it is able to spend another dime, $\vec{g}$ spends
+at least a nickel, and $\vec{g}$ is even (or ahead, covered by
+lemma above).
+\item
+2nd Case: At the first different step, our greedy solution $\vec{g}$ chooses a dime and some other
+solution $\vec{o}$ chooses a nickel. $\vec{o}$ can only choose nickels
+or smaller from now on. The best it can do is spend another nickel and
+be even with $\vec{g}$.
+\end{itemize}
+
+In both of these cases, $\vec{o}$ uses one more coin than $\vec{g}$.
+If it makes any
+other choices than those above, it ends up using even more coins.
+Regardless, $\vec{g}$ and $\vec{o}$ will be even again,
+and we can start the algorithm over on the remaining cents according to
+the fact above, and the non-greedy solution will never catch up.
+
+Therefore, the greedy coin
+algorithm gives an optimal solution over the set of American coin
+denominations.
+
+%------------------------------------------------------------------------------
+\item
+The set $\{b^0, b^1,\ldots , b^k\}$ for $b > 1, k \ge 1$ is efficient
+according to the definition above.
+By our lemma, the greedy coin algorithm gives an optimal
+solution over this set.
+
+%------------------------------------------------------------------------------
+\item
+Let our set be $\{1, 14, 15\}$. Then we can verify that
+to form 28 cents, a greedy algorithm would use one 15 cent coin and
+thirteen 1 cent coins for a total of 14 coins. The optimal solution would
+use two 14 cent coins for a total of 2 coins.
+
+\end{enumerate}
+
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Zero skew trees}
+
+Intuitively, we want to associate with each node the maximum delay from the
+leaves. We also want to recursively push this information to their parent
+who will adjust the intervening delay locally to correct for
+discrepancies between the left and right child. Finally, we want the global
+property that every path from the root to a leaf has equal delay (zero skew).
+
+Given a complete binary tree $T$ of size $n$:
+
+\begin{itemize}
+\item Initialize a queue Q to be the set of all leaves, all nodes to have max delays of 0, and all nodes to be unvisited.
+\item While the queue is not empty:
+\begin{itemize}
+\item Remove the first queue item $v$.
+\item If $v$ has left child $l$ and right child $r$, then:
+\begin{itemize}
+\item $d_l \gets$ edge delay to $l$; $d_r \gets$ edge delay to $r$.
+\item $m_l \gets$ max delay of $l$; $m_r \gets$ max delay of $r$.
+\item $m_v \gets \max{\left[d_l+m_l,d_r+m_r\right]}$
+\item $d_l \gets (m_v - m_l)$
+\item $d_r \gets (m_v - m_r)$
+\end{itemize}
+\item If parent $p$ of $v$ is unvisited, then
+\begin{itemize}
+\item Mark $p$ visited and add $p$ to the back of the queue.
+\end{itemize}
+\end{itemize}
+\end{itemize}
+
+Each node is added to the queue once, and a node is removed in every
+iteration of the loop. Therefore the queue will eventually become empty
+and the loop will terminate.
+
+To prove correctness, we will show by induction that the
+entire tree has zero skew.
+In the base case, the
+leaves have no children and no edge delays, so they have zero skew
+by definition.
+Our inductive step
+at every node $v$ is to assume that the subtrees rooted at its children have
+zero skew and delays $m_l$ and $m_r$, respectively.
+Then we consider two cases. When the left delays are greater
+than the right delays ($m_l + d_l > m_r + d_r$),
+then the following facts are true:
+
+\begin{itemize}
+\item
+Then the left edge delay becomes $(m_v - m_l) = (m_l + d_l) - m_l = d_l$
+and does not decrease (in fact, stays the same).
+\item
+The right edge delay becomes $(m_v - m_r) = (m_l + d_l) - m_r > (m_r + d_r) - m_r = d_r$, and also does not decrease.
+\item The delays from $v$ to the leaves of its subtree (both left and
+right sides) are now all equal to $(m_l + d_l)$.
+\end{itemize}
+
+Analogous facts are true for the right delays being greater than
+the left delays. We carry the induction up to the root and conclude that
+the entire tree has equal delays down to all leaves. Therefore the tree has
+zero skew.
+$\Box$
+
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{MST with time varying edge costs}
+
+\textbf{Collaboration:} This problem was discussed with John P. John and
+Mike Piatek.
+
+Our greedy algorithm first divides time $t$ into intervals where
+edges can be well-ordered based on cost, independent of time.
+After the MST
+is built for each interval, the cost function $c_G(t)$ is calculated as
+the sum of parabolas (also a parabola). These curves 
+have positive second derivative, so we can find minima using the first
+derivative.
+
+Given as input a graph $G=(V,E)$ and a time-varying cost function for each
+edge, $\{f_e(x) = ax^2 + bx + c \mid e \in E, f_e:\mathbb{R}\rightarrow\mathbb{R}, a>0\}$:
+
+\begin{itemize}
+\item
+Calculate the intersections of all the parabolas $\{f_e\}$.
+\item
+Divide time $t$ into intervals separated by these intersections.
+\item
+In each interval:
+\begin{itemize}
+\item
+Order edges within each interval by cost function as follows:
+evaluate each function at the midway point of the interval,
+then run mergesort on the values.
+\item
+Run Kruskal's algorithm based on this edge ordering to obtain an MST.
+\item
+Calculate a time-varying cost function $c_G(t)$ based on the resulting MST.
+\item
+Find the minimum time by taking the first derivative of $c_G(t)$,
+setting it equal to zero, and solving for $t$.
+\end{itemize}
+\item
+Find the minimum of the minimum times of each interval and return it.
+\end{itemize}
+
+This algorithm runs in time polynomial in the number of vertices and
+edges at each step. There are $|E| = m$ edges and corresponding parabolas.
+If we imagine successively adding parabolas to a blank Cartesian grid,
+each parabola can intersect at most two times with each preceding
+parabola. This leads to the following recurrence, where $x_n$ is the
+number of intersections after $n$ parabolas have been drawn.
+We stipulate $x_1 = 0$.
+\begin{displaymath}
+x_m = 2(m-1) + \sum_{i=2}^{m-1}{2(i-1)} = 2(m-1) + (m-2)(m-1) = m^2 -m
+\end{displaymath}
+
+The number of intervals is polynomial in the number of edges, and solving
+for each intersection can be done in constant time using arithmetic.
+The main loop of the algorithm then runs $O(m^2)$ times, once for each
+interval. Within the loop, the edge cost functions can be evaluated in
+constant time and then sorted in $O(m\log{m})$ time.
+Kruskal's algorithm can be run in $O(m\log{n})$ time.
+The cost function $c_G(t)$ can be summed from the $m$ parabolas in
+$O(m)$ time, and the minimum can be found in constant time.
+In short, each loop iteration takes $O(m^2(m\log{m}+m\log{n}))$ time, which
+is polynomial.
+Finding the minimum of the interval minima takes $O(m^2)$ time, so the
+intersection-finding and loop iterations dominate. The total algorithm
+runtime is $O(m^3\log{n})$ since $m = O(n^2)$ and $\log{m} = O(\log{n})$.
+
+The algorithm is correct because the intervals represent all possible
+MSTs, and the global minimum cost is less than or equal to the minimum cost
+of
+any interval/MST. Within each interval, the minimum time is minimal for
+any graph by the definition of an MST.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Feasibility of degree sequence}
+
+The following greedy algorithm determines whether a given list of degrees
+results in a \textit{feasible} undirected graph, that is, one without
+parallel edges, self-loops, or empty degrees.
+An \textit{available degree} is a slot for a vertex to fill with one endpoint
+of an edge.
+An \textit{empty degree} is an available degree assigned to a vertex which
+cannot be fulfilled by an edge because all other vertex degrees are full.
+
+Intuitively, the algorithm below creates vertices with available degrees
+corresponding to the input
+%for every integer in the input $\{d_1,\ldots ,d_n\}$.
+%Then it constructs undirected edges between
+%these vertices, always choosing the vertices with the highest and lowest
+%available degrees.
+and decrements available degrees two at a time (adds edges) until they are
+all zero (if graph is feasible) or until the empty degrees all
+belong to a single
+vertex (if graph is infeasible).
+The empty degrees cannot be on distinct vertices;
+if they were, we could simply fulfill them two at a time by connecting those
+vertices with an edge. We can normalize all infeasible graphs so that the
+empty degrees, if any, will be located on the highest-degree vertex, called
+$v_n$. If the
+empty degrees are on any other vertex, then $v_n$ is
+full; you can swap $v_n$'s edge endpoints to fill
+empty degrees elsewhere, transferring the empty degrees to the
+$v_n$.
+
+On input $\{d_1,\ldots ,d_n\}$, a list of positive integer degrees,
+
+\begin{enumerate}
+\item
+Sort the degrees into ascending order with $d_1$ being the smallest and
+$d_n$ being the largest.
+\item
+Initialize counters for available degrees, $\{v_1,\ldots ,v_n\}$,
+corresponding to vertices in a
+graph, such that $v_i = d_i$ for $1 \le i \le n$.
+\item
+While there is a $v_i$ that is greater than zero:
+\begin{enumerate}
+\item Choose the smallest $v_i$ (break ties arbitrarily) and
+call it $v_j$.
+\item Choose the largest $v_i$ (break ties arbitrarily) such
+that $v_i \ne v_j$ and call it $v_k$. If there is no such $v_k$, output
+\textsc{Infeasible}.
+\item Otherwise there are such distinct $v_j$ and $v_k$, and we decrement both.
+\end{enumerate}
+\item
+At the end of the while loop, output \textsc{Feasible}.
+\end{enumerate}
+
+This algorithm terminates because in each iteration of the loop, either
+some $v_i$ is being decremented or the algorithm halts with an output.
+If the algorithm does not halt, then the sum of all $v_i$'s is being
+decremented, and it is finite, so eventually it will be zero. If the sum
+is zero, all $v_i$'s must be zero, so the while loop will terminate and the
+algorithm will again halt with an output.
+
+This algorithm is greedy because at each step it always matches the
+smallest-degree vertex with the largest-degree vertex. Ties can be broken
+arbitrarily because no assignment of edges can change the number of
+empty degrees.
+
+We now show that a greedy algorithm is optimal
+by an exchange argument. Suppose the greedy solution has an edge
+$(v_i,v_j)$ but some non-greedy optimal solution does not; call this
+lack of an edge an \textit{inversion}.
+Instead, the optimal graph has edges $(v_i,v_i')$ and
+$(v_j,v_j')$ that are not in the greedy graph. Such a $v_i'$ and a $v_j'$ must
+exist; otherwise, $v_i$ and $v_j$ are connected exactly as they are in the
+greedy graph except they have empty degrees where the optimal graph fails
+to connect them to each other. Since fixing this inversion does not
+remove connections that exist in both greedy and optimal graphs, it does
+not create new inversions. Therefore, the optimal graph can eventually
+be transformed into the greedy graph by only swapping endpoints and
+never changing the empty degrees. Feasible graphs remain feasible and
+infeasible graphs remain infeasible.
+This preserves completeness and soundness, so the greedy algorithm is
+optimal.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Hidden surface removal}
+
+The divide-and-conquer algorithm below for detecting visible lines uses
+the intersection/interval model from the time-varying MST problem, but only
+after recursively dividing to avoid the $O(n^2)$ time. This algorithm
+actually returns visible lines and the intervals over which they are
+visible.
+
+\vspace{\baselineskip}
+\textsc{Visible-Line}(lines $L^1_n = \{a_1x + b_1,\ldots ,a_nx + b_n\}$):
+
+\begin{itemize}
+\item
+If $n$ is greater than a constant $k$ (say 2), then:
+\begin{itemize}
+\item
+Arbitrarily divide the
+lines in half and recursively call the algorithm on each half.
+Each one will return a list of sorted intersection points and
+the visible line in the interval between successive points.
+\item
+$\{l_1, x_1,\ldots ,x_{\lfloor n/2\rfloor-1},l_{\lfloor n/2\rfloor}\} \gets
+L^1_{n/2}$
+\item
+$\{l_{\lceil n/2 \rceil}, x_{\lceil n/2\rceil},\ldots ,x_{n-1},l_n\} \gets
+L^{n/2}_{n}$
+\item
+Since the return lists are sorted,
+go through them mergesort style, merging values into a new sorted list.
+Begin
+with the first two intervals $(-\infty,x_1)$ and
+$(\infty,x_{\lceil n/2\rceil})$ and continue to the last two intervals,
+$(x_{\lfloor n/2\rfloor-1},\infty)$ and $(x_{n-1},\infty)$.
+\begin{itemize}
+\item
+Compare the two lines available for the current interval
+and copy the uppermost (visible) one to
+the new list.
+\item
+Choose the lowest interval (by second endpoint) available and merge it
+to the end of the last interval in the new list.
+\end{itemize}
+\item
+There is always one more interval/line than intersection point, so
+find the last visible line here.
+\item
+Return the new list.
+\end{itemize}
+\item
+Otherwise, for the constant $k$ lines:
+\begin{itemize}
+\item
+Calculate their intersection points $\{x_1,\ldots ,x_{k-1}\}$ and sort them in
+order of
+increasing $x$-coordinate.
+\item
+Use the intersection points to divide up the $x$-axis into intervals
+$\{(x_1,x_2),\ldots ,(x_{k-2},x_{k-1})\}$
+which will already be sorted in order of increasing $x$-coordinate.
+\item
+For each constant number of intervals, evaluate each line at the
+interval's midpoint.
+\item
+Find the line with the maximum value at each interval midpoint, $l_i$.
+\item
+Return the sorted list of intersection points and the visible line
+associated with each interval: $\{l_1, x_1, l_2, \ldots ,x_{k-1}, l_k\}$.
+\end{itemize}
+\end{itemize}
+
+This algorithm terminates because a finite number of lines is being
+subdivided until it reaches a constant size. The algorithm is correct
+because the global set of visible lines is equal to the intersection/merging of
+the visible lines in each interval.
+
+The algorithm's
+running time can be expressed as a recurrence $T(n) = 2T(\frac{n}{2}) + f(n)$
+where we will now determine $f(n)$, the cost of dividing and merging.
+The cost of dividing is $O(1)$ since the division is decided by the
+order of the input encoding. When the recursion bottoms out, the
+intersection points can be calculated for a constant number of lines in
+$O(1)$ time. Likewise, all the operations on a constant number of
+intersection points and lines can be done in $O(1)$ time, up to
+finding the visible line in each interval. Back in the merging step,
+we are stepping through two lists of length $O(n)$. Each comparison
+between the visible lines and the current intervals can be done in
+$O(1)$ time, so the merging step takes $O(n)$ time.
+By the Master Theorem, the above recurrence relationship and the merging
+time give a total running time that is $O(n\log{n})$ as desired.
+
+\end{document}

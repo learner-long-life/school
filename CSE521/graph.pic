@@ -1,0 +1,71 @@
+.PS 4.0
+
+# Make the TeX fonts smaller
+\footnotesize
+
+S: circle rad 0.5 "s"
+move right 3
+Source: Here
+move right 2
+Col2: Here
+move right 2
+Col3: Here
+move right 2
+Col4: Here
+move right 2
+Col5: Here
+move right 2
+T: circle rad 0.5 "t"
+
+A1: circle rad 0.5 at Source + (0, 4)
+A2: circle rad 0.5 at Source + (0, 2)
+A3: circle rad 0.5 at Source
+A4: circle rad 0.5 at Source - (0, 2)
+A5: circle rad 0.5 at Source - (0, 4)
+
+B2: circle rad 0.5 at Col2 + (0,2)
+B3: circle rad 0.5 at Col2
+C3: circle rad 0.5 at Col3
+C4: circle rad 0.5 at Col3 - (0,2)
+D4: circle rad 0.5 at Col4 - (0,2)
+D5: circle rad 0.5 at Col4 - (0,4)
+E5: circle rad 0.5 at Col5 - (0,4)
+
+arrowht = arrowht * 2
+arrowwid = arrowwid * 2
+spline -> from S up 3.5 right 1 then to A1 "1" above chop 0.5
+spline -> from S + (-0.1,0.1) up 3.8 right 1 then to A1+(-0.1,0.1) chop 0.5 dotted 0.1
+
+spline -> from S up 2 right 1 to A2 "1" above chop 0.5
+spline -> from S to A3 "1" above chop 0.5
+spline -> from S down 2 right 1to A4 "1" below chop 0.5
+spline -> from S down 3.5 right 1 to A5 "1" below chop 0.5
+spline -> from A1 to A2 "1" ljust chop 0.5
+line -> from A1-(0.2,0) to A2-(0.2,0) chop 0.5 dotted 0.1
+spline -> from A2 to B2 "1" above chop 0.5
+line -> from A2-(0,0.2) to B2-(0,0.2) chop 0.5 dotted 0.1
+spline -> from B2 to B3 "1" ljust chop 0.5
+line -> from B2-(0.2,0) to B3-(0.2,0) chop 0.5 dotted 0.1
+spline -> from B3 to C3 "1" above chop 0.5
+line -> from B3-(0,0.2) to C3-(0,0.2) chop 0.5 dotted 0.1
+spline -> from C3 to C4 "1" ljust chop 0.5
+line -> from C3-(0.2,0) to C4-(0.2,0) chop 0.5 dotted 0.1
+spline -> from C4 to D4 "1" above chop 0.5
+line -> from C4-(0,0.2) to D4-(0,0.2) chop 0.5 dotted 0.1
+spline -> from D4 to D5 "1" ljust chop 0.5
+line -> from D4-(0.2,0) to D5-(0.2,0) chop 0.5 dotted 0.1
+spline -> from D5 to E5 "1" above chop 0.5
+line -> from D5-(0,0.2) to E5-(0,0.2) chop 0.5 dotted 0.1
+spline -> from A1 to T "1" above chop 0.5
+spline -> from B2 to T "1" above chop 0.5
+spline -> from C3 to T "1" above chop 0.5
+spline -> from D4 to T "1 " above chop 0.5
+spline -> from E5 to T "1 " above chop 0.5
+line -> from E5+(0.2,0) to T+(0.2,0) chop 0.5 dotted 0.1
+spline -> from A3 to B3 "1" above chop 0.5
+spline -> from A4 to C4 "1" above chop 0.5
+spline -> from A5 to D5 "1" above chop 0.5
+
+\normalsize
+
+.PE

@@ -1,0 +1,128 @@
+	Homework 2 Solutions
+
+1. <result>
+      {
+      for $d in document("mondial-3.0.xml")/mondial/country[@name = "Peru"],
+      $x in distinct-values($d//city/name/text())
+      order by $x
+      return <cityname> {$x} </cityname>
+      }
+   </result>
+
+2. <result>
+      {
+      for $d in document("mondial-3.0.xml")/mondial/country
+      let $c := $d/province
+      where count($c) > 20
+      return $d/name
+      }
+   </result>
+
+ 3. <result>
+      {
+      for $x in distinct-values(document("mondial-3.0.xml")/mondial/country/ethnicgroups/text())
+      let $y := document("mondial-3.0.xml")/mondial/country[ethnicgroups/text() = $x]
+      where count($y) > 10
+      return <ethnicgroup> { $x } </ethnicgroup>
+      }
+    </result>
+
+4. <result>
+      {
+      for $x in document("mondial-3.0.xml")/mondial/sea[@name = "Pacific Ocean"],
+      $y in distinct-values($x/located/@country),
+      $z in document("mondial-3.0.xml")/mondial/country[@id = $y]/name
+      return $z
+      }
+   </result>
+   
+5. <result>
+      {
+      for $x in document("mondial-3.0.xml")/mondial/country
+      let $c := document("mondial-3.0.xml")/mondial/mountain[located/@country = $x/@id][@height > 2000]
+      where count($c) >= 3
+      return <answer>
+      { $x/name }
+      {
+      for $y in document("mondial-3.0.xml")/mondial/mountain[located/@country = $x/@id]
+      return
+      <mountain>
+      <name> {string($y/@name)}</name>
+      <height> {string($y/@height)}</height>
+      </mountain>
+      }
+      </answer>
+      }
+   </result>
+
+6. <user>
+      {
+      for $x in document("mondial-3.0.xml")/mondial/river[@length >= 2000]
+      return
+      <river>
+      <name>{string($x/@name)}</name>
+      {
+      for $y in document("mondial-3.0.xml")/mondial/country[@id = $x/located/@country]
+      return <country>{$y/name/text()}</country>
+      }
+      </river>
+      }
+   </user>
+
+7. <result>
+      {
+      for $d in document("mondial-3.0.xml")/mondial/country[@name="China"]/province,
+      let $y := $d/city[@id = $d/@capital]  	  
+      order by $d/@name
+      return 
+      <province>
+      	<Name>{string($d/@name)}</Name>       	    	
+      	<Capital>{$y/name/text()}</Capital>
+      </province>}
+   </result>
+
+8. <result>
+      {
+      for $d in document("mondial-3.0.xml")/mondial/country[@name="United States"]/province
+      let $y := $d/@population div $d/@area
+      order by $y
+      return 
+      <province>
+      	<Name>{string($d/@name)}</Name>    
+      	<Ratio>{string($y)}</Ratio>
+      </province>
+      }
+   </result>
+
+9. <result>
+      {
+      for $d in document("mondial-3.0.xml")/mondial/country[@name="United States"],
+          $x in $d/province
+      let $y := $x/@population  div  $d/@population            
+      where $x/@population > 11000000
+      order by $y descending
+      return 
+      <Province>
+      	<Name>{string($x/@name)}</Name> 
+      	<Ratio>{string($y)}</Ratio>
+      </Province>
+      }
+   </result>
+
+10. <result>
+      {
+      for $d in document("mondial-3.0.xml")/mondial/river
+      let $x := document("mondial-3.0.xml")/mondial/country[@id = $d/located/@country]
+      where count($x) >= 2
+      order by count($x) descending
+      return 
+      <river>
+      <name>{string($d/@name)}</name> 
+      {
+      for $y in $x
+      return <country>{$y/name/text()}</country>
+      }
+      <country_count>{count($x)}</country_count>      
+      </river>
+      }
+    </result>

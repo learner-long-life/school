@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+  <title></title>
+</head>
+<body>
+<h1>Homework 2<br>
+</h1>
+<dl>
+</dl>
+Consider the XML data instance Mondial, avaialable <a
+ href="http://www.cs.washington.edu/research/xmldatasets/"> here </a>
+(at the bottom of the page). Write XQueries to answer the following
+questions. In formulating your questions, you need to understand how
+various elements are nested: e.g. what is under a <b>country</b>,
+under which element is a <b>city</b> etc. For that it helps if you
+inspect the DTD (ignore the warning that the data is not valid), or
+inspect the data directly. For each question below turn in the XQuery,
+and the result of running the query on the XML data (which should be an
+XML document).
+<p> </p>
+<ol type="i">
+  <li> Retrieve all the names of all cities located in Peru, sorted
+alphabetically. </li>
+  <li> Find all countries with more than 20 provinces. </li>
+  <li> Find all ethnic groups that live in more than more than 10
+countries. </li>
+  <li> Find the countries adjacent to the 'Pacific Ocean' sea. </li>
+  <li> Find the names of all countries that have at least 3
+mountains over 2000m high, and list the names and heights of all
+mountains in these countries (regardless of their height). Note: the <b>height</b>
+attribute is in meters, so you don' have to do any conversions. </li>
+  <li> One user is interested in long rivers. Produce the following
+view of the data, containing only rivers longer than 2000 (all units
+are in km), in the format described below:
+    <ul>
+      <li> The root element is <b>user</b> and contains several <b>river</b>
+elements </li>
+      <li> Each <b>river</b> contains a <b>name</b> element with
+the river's name, and several <b>country</b> elements, one for each
+country through which it flows. (Note: some rivers may not have any
+country, due to noise in the data. It is OK to include these rivers,
+even if they look as they flow through no country at all.) </li>
+      <li> Each <b>country</b> element contains only the name of
+the country (a string).</li>
+    </ul>
+  </li>
+  <li>For each province of China, return its capital. Order the result
+by province name.</li>
+  <li>For each province(state) in the United States, compute the ratio
+of its population to area, and return each province's name, its
+computed ratio, and order them by ratio.</li>
+  <li>Find all the provinces(states) of&nbsp; the United States with
+population more than 11,000,000. Compute the ratio of each qualified
+state's population to the whole popolution of the country. Return each
+state's name and the ratio. Order by the ratio in descending order.</li>
+  <li>For each river which crosses at least 2 countries, return its
+name, and the names of the countries it crosses. Order by the numbers
+of countries crossed.<br>
+  </li>
+</ol>
+<p> For this question you need to run <b>galax</b>, which you can
+download from&nbsp;<a href="http://www.galaxquery.org/distrib.html">here</a>.
+<span style="text-decoration: underline;"><a href="q1.xq">This</a></span>&nbsp;is
+what an input file for the galax executable will look like.<br>
+</p>
+<p><font size="+1"><span style="color: rgb(255, 0, 0);">Due Date: </span></font>Apr
+19. Email your solutions to Bhushan.<br>
+</p>
+<p>The <a href="hw2-solution.txt">Sample Solution</a> is now available.<br>
+</p>
+<!-- hhmts start --><!-- hhmts end -->
+</body>
+</html>

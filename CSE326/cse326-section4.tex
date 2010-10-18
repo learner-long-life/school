@@ -1,0 +1,146 @@
+\documentclass{article}[10pth]
+\usepackage{amssymb}
+\usepackage{fullpage}
+\usepackage{xytree}
+%\usepackage[pdftex]{graphicx,color,hyperref}
+
+\begin{document}
+
+\begin{center}
+\Large{CSE 326 Autumn 2006}\\
+\large{Section 4 Notes}
+\end{center}
+
+%------------------------------------------------------------------------------
+\section{Binary Search Tree Summary}
+
+\begin{itemize}
+\item
+All search trees below are binary in the sense that each node has at most
+two children, so we will call them collectively \textit{binary search trees}
+(BSTs). However, the basic, unbalanced binary search tree is also called the
+BST. It will be clear from the context which one is meant.
+\item
+In the table below, $n$ represents the number of nodes in a tree.
+\item
+All BSTs satisfy the constraint of \textit{BST order}, that is,
+$key(leftchild) < key(parent) < key(rightchild)$.
+\item
+The BST order does not use $\le$ inequalities because we can handle
+duplicates by keeping a counter at each node. This is just a
+performance hack, but note that the path between two copies with the
+same key will only pass between more copies of that key.
+\item
+The running time analysis is always worst-case, but amortized worst-case
+is averaged over any sequence of operations.
+\item
+The space requirements are those beyond what is required to store the
+key and child pointer at each node, which is the same $O(2n)$ for all BSTs.
+\item
+Constant factors are given for comparison but are actually
+implementation-dependent.
+\item
+Logarithms are base 2 unless otherwise specified, but all logarithmic
+bases are asymptotically the same.
+\item
+\textsc{Insert} is a special-case of \textsc{Contains} which adds the new
+node at the first null child reached in a traversal.
+\item
+\textsc{Remove} is a special-case of \textsc{Contains} on the left and
+right subtrees in which the desired key is first found, then removed, and
+finally the remaining tree is rearranged to fill the ``hole.''
+\end{itemize}
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\textbf{BST Type} & \textbf{\textsc{Insert}} & \textbf{\textsc{Remove}} & \textbf{\textsc{Contains}} & \textbf{Space} & \textbf{Analysis}\\
+\hline
+Basic BST & $O(n)$ & $O(n)$ & $O(n)$ & $O(1)$ & Worst-case\\
+AVL Trees & $O(2\log_2{n})$ & $O(2\log_2{n})$ & $O(2\log_2{n})$ & $O(n)$ & Worst-case\\
+Splay Trees & $O(\log_2{n})$ & $O(\log_2{n})$ & $O(\log_2{n})$ & $O(1)$ & Amortized \\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{description}
+\item[\textbf{Basic BST}:] In the worst-case, the tree can be completely
+unbalanced with all nodes in a linear chain. However, no extra information
+needs to be maintained at each node. This is analogous to a basic
+binary heap.
+
+\item[\textbf{AVL Trees}:] 
+We can force the trees to be balanced by keeping some extra information
+(the height) at each node, trading off increased space for decreased
+running time. This is analogous to leftist heaps versus the basic binary
+heap.
+
+The height information is used to maintain the
+\textit{AVL property}, which states that the heights of the left and
+right subtrees never differ by more than 1. In symbols:
+$|height(left) - height(right)| \le 1$. We can show that this
+bounds the height of the entire tree to $O(\log{n})$, which improves
+the running times of \textsc{Contains} and by extension all other
+operations.
+
+The AVL property is maintained by single and double rotations.
+
+\item[\textbf{Splay Trees}:] Similar to AVL trees, but the last accessed item
+is always moved to the top, using \textit{zig-zag} rotations (which are the
+same as AVL double rotations) or \textit{zig-zig} rotations. There are
+two symmetric cases for both, or four total:
+zig-zag to the left then right, zig-zag to the
+right then left, zig-zig to the left, zig-zig to the right.
+This gives an amortized worst-case running time of $O(\log{n})$.
+
+\end{description}
+
+%------------------------------------------------------------------------------
+\section{Pointers, predecessors, successors, \textsc{FindMin}, \textsc{FindMax}}
+
+Because of the BST order, you know that you can sort all the nodes using
+an in-order traversal:
+
+\begin{itemize}
+\item Output the left subtree recursively
+\item Output the parent
+\item Output the right-subtree recursively
+\end{itemize}
+
+When you remove an item from a search tree, you must replace it with
+either the previous item or the next item in the sorted order.
+The previous sorted item is also the rightmost child of the left subtree
+and is called the \textit{predecessor}.
+The next sorted item is also the leftmost child of the right subtree
+and is called the \textit{successor}.
+
+There are many operations which we could do in $O(1)$ time if we kept
+extra pointers with every BST. Two important examples are
+
+\begin{enumerate}
+\item finding the predecessor or successor of a node when we remove it
+\item finding the minimum or maximum element
+\end{enumerate}
+
+Updating these pointers takes $O(\log{n})$ time because the tree must
+be re-traversed to find the new pointer target if new items are added or
+old items removed.
+To find the minimum (maximum) element in a tree, we only have to keep
+traversing the left (right) child until we reach a null and then return
+the last non-null node.
+To find the predecessor (successor), we have to traverse the left child and
+then go right until we reach null (or traverse the right child and then go
+left until we reach null).
+These operations can be ``absorbed''
+into the running times of \textsc{Insert} and \textsc{Remove} which are already
+$\Omega(\log{n})$ for any BST.
+
+If we had doubly-linked lists, we could update the pointers in $O(1)$ also,
+but this would increase the storage needed at each node (one extra child
+pointer). For the minimum or maximum element, we could keep $O(1)$ new
+pointers with the tree, but for predecessors and successors, we would
+need to keep two extra pointers \textit{at each node}. This is a total
+$O(3n)$ of extra space. Keep this time-space tradeoff in mind if you need
+to optimize the above operations and have lots of memory to spare.
+ 
+\end{document}

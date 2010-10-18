@@ -1,0 +1,324 @@
+\documentclass[12pt]{article}
+\usepackage{scribe}
+
+\Scribe{Paul Pham}
+\Lecturer{Ryan O'Donnell}
+\LectureNumber{18}
+\LectureDate{30 November 2005}
+\LectureTitle{Unique Games Conjecture}
+
+\begin{document}
+\MakeScribeTop
+
+\def\Var{{\rm Var}\,}
+\def\qopnamewl@#1{\mathop{\fam\z@#1}\nlimits@}
+\def\Exp{\mathop{\rm {E}}}
+\def\Stab{\mathop{\rm {Stab}}}
+\def\Inf{\mathop{\rm {Inf}}}
+\def\maj{\mathop{\rm {maj}}}
+\def\sgn{\mathop{\rm {sgn}}}
+\def\dist{{\rm dist}\,}
+%------------------------------------------------------------------------------
+\section{Recap}
+
+Recall from the last class a 2-query ``$\ne$'' test for binary functions,
+specifically long codes.
+Using a noise parameter $-1 < \rho < 0$:
+
+\begin{itemize}
+\item Pick $x \in \{1,-1\}^m$ uniformly at random.
+\item Form each bit in $\mu \in \{1,-1\}^m$ with the following bias:
+\begin{equation}
+\mu_i = \left\{ \begin{array}{ll}
+1 & \textrm{ with probability } \frac{1 - \rho}{2}\\
+0 & \textrm{ with probability } \frac{1 + \rho}{2}\\
+\end{array} \right.
+\end{equation}
+\item Test $f(x) \ne f(x\cdot\mu)$.
+\end{itemize}
+We showed that the success probability of the test was related to the
+stability of the function as follows:
+\begin{equation}
+\Pr\left[f \textrm{ passes}\right] = \frac{1}{2} - \frac{1}{2}
+\sum_{S \in \left[n\right]}\hat{f}(S)^2\rho^{|S|} =
+\frac{1}{2} - \frac{1}{2}\textrm{Stab}_{\rho}(f)
+\end{equation}
+Intuitively, the stability of a function measures its resistance to change
+when a small number of bits are flipped. Therefore, the
+more stable a function is, the less likely it is to pass the $\ne$ test.
+
+%------------------------------------------------------------------------------
+\section{Testing Boolean Functions}
+
+The table below shows the success probability of our 2-query test on
+various Boolean functions. We can think of the $m$-bit inputs to the functions
+as points on a unit sphere and the Boolean function as a cut or threshold
+through this sphere, separating the pre-images of $-1$ from those of $1$.
+
+\begin{tabular}{|l|l|l|}
+\hline
+& \textbf{Function $f$} & \textbf{$\Pr\left[f \textrm{ passes }\right]$}\\
+\hline
+1 & $f(x) = x_i$ & $\frac{1}{2} - \frac{1}{2}\rho$\\
+\hline
+2 & $f(x) = 1,-1$ & $0$\\
+\hline
+3 & $f(x) = \maj(x) = \sgn\left(\sum_{i=0}^m{x_i}\right)$ &
+$\frac{\arccos{\rho}}{\pi}$ as $m \rightarrow \infty$\\
+\hline
+4 & $f(x) = \sgn\left(\sum_{i=0}^m{a_i x_i}\right)$ &
+$\frac{\arccos{\rho}}{\pi}$ with high probability over $a_i$'s\\
+\hline
+5 & $f(x) = \textrm{maj}_3(x) = \maj(x_1,x_2,x_3)$ & $\frac{1}{2} - \frac{3}{8}\rho - \frac{1}{8}\rho^3$\\
+\hline
+6 & $f(x) = \sgn(Ax_1 + x_2 + x_3 + \ldots x_m)$ & $A$ blends between dictator and majority. \\
+\hline
+\end{tabular}
+
+\vspace{\baselineskip}
+
+Function 1 is the dictator function which always returns the $i$th bit of
+its input. It has the highest probability of passing the $\ne$ test of
+all the Boolean functions we consider, thereby distinguishing long codes
+from functions that are not long codes.
+
+Function 2 is a constant function. Because its output is always -1 or 1,
+it never passes the $\ne$ test.
+
+Function 3 is the majority function over all $m$ bits in the input. We showed
+last time through a geometric argument that as $m$ approaches infinity,
+the success probability approaches $\arccos{\rho}/\pi$.
+
+Function 4 takes the sign, or parity, of the dot product between $x$ and $a$
+where each $a_i$ taken from a random Gaussian. At one extreme,
+$a_i$ is taken from a singleton distribution, which yields the dictator
+function. At the other extreme, $a_i$ is taken from a uniform distribution,
+which yields the majority function.
+
+Function 5 is the majority function over only the first three bits.
+This $f$ is $1/4$-far from all dictator functions, but it is similar to
+a dictator in that the output only depends on a small, constant number of
+bits. As a side remark, we can list-decode this $f$ to the set of indices
+$\{1,2,3\}$.
+
+Function 6 takes a parameter $1 \le A \le m+1$. If $A=1$, this is the
+majority function. If $A$ is very large, this approaches a dictator
+function. We cannot list-decode the output of $f$ because it depends
+on all input bits.
+
+%We can characterize any function that has greater stability than
+%the majority function as ``like'' a long code.
+Before we can formulate a theorem on which Boolean function is most
+stable, we will need to
+recall the definition of a bit $i$'s influence on a function $f$, where
+$x^{(i)}$ is the same as $x$ except that the $i$th bit is flipped.
+
+\begin{equation}
+\textrm{Inf}_i(f) = \Pr_x\left[f(x) \ne f(x^{(i)}) \right] = \sum_{S \subseteq [m], S \ni i}{\hat{f}(s)^2}
+\end{equation}
+
+Some examples of the influence of some functions above are given below:
+
+\begin{equation}
+\textrm{Inf}_i(x_j) = \left\{ \begin{array}{ll}
+1 & \textrm{ if } i = j\\
+0 & \textrm{ otherwise }
+\end{array} \right.\end{equation}
+
+\begin{equation}
+\textrm{Inf}_i(maj_3) = \left\{ \begin{array}{ll}
+\frac{1}{2} & \textrm{ if } i \in \{1,2,3\}\\
+0 & \textrm{ otherwise }
+\end{array} \right.\end{equation}
+
+\begin{equation}
+\textrm{Inf}_i(maj) = \binom{m-1}{\frac{m-1}{2}}2^{-m} \approx \theta(\frac{1}{\sqrt{m}}) \textrm{ by Stirling's approximation }
+\end{equation}
+
+%------------------------------------------------------------------------------
+\section{Majority is Stablest}
+
+We now state the theorem that no Boolean function can be more stable than
+the majority function, which is due to [Mossel, O'Donnell, Oleszkiewicz 2005].
+
+\begin{theorem}[Majority is Stablest (MIS)]
+Let $-1 < \rho < 0$ and $\epsilon > 0$. Then $\exists \tau > 0$, depending
+only on $\rho$ and $\epsilon$, such that if $f:\{1,-1\}^m \rightarrow \{1,-1\}$
+has $\Inf_i(f) < \tau$ for all $i \in [m]$, then $\Pr\left[ f \textrm{ passes }\right] < \frac{\arccos{\rho}}{\pi}$.
+\end{theorem}
+
+\begin{proof}
+In the following proof sketch, we represent an arbitrary balanced Boolean
+function as $f(x) = \sgn(\sum_{i=1}^m{a_i x_i})$. We assume all the $a_i$'s are
+normalized:
+
+\begin{equation}
+\sum_{i=1}^m{a_i} = 1
+\end{equation}
+
+Then we fix a random string $\overline{\mu} \in \{1,-1\}^m$ and
+define the following bit strings:
+
+\begin{eqnarray*}
+& \overline{x} = & (x_1, \ldots, x_m)\\
+& \overline{a} = & (a_1, \ldots, a_m)\\
+& \overline{b} = & \overline{\mu}\cdot\overline{a} = (\mu_1\cdot a_1, \ldots, \mu_m\cdot a_m)
+\end{eqnarray*}
+
+Now test whether
+$f(\overline{x}\cdot\overline{a}) \ne f(\overline{x}\cdot\overline{b})$.
+
+Suppose $a_1 = 1, a_2 = \ldots = a_m = 0$, that is, the dictator function for
+the first bit. Then $\overline{x}\cdot\overline{a}$ is evenly distributed
+between $-1$ and $1$. However, the theorem does not cover this case because
+the influences of each bit are assumed to be small.
+
+Now consider the case when all $a_i$'s are equal, that is, $a_i = 1/\sqrt{m}$.
+Then the distribution of both $\overline{x}\cdot\overline{a}$ and
+$\overline{x}\cdot\overline{b}$, and their joint distribution,
+are Gaussians by the Central Limit Theorem.
+
+Similar to the Goemans-Williamson analysis, the probability that the
+$\ne$ test passes is equal to the probability that a random hyperplane
+separates $\overline{a}$ and $\overline{b}$. We choose this
+hyperplane to separate all inputs into those which map to -1 and those which
+map to 1 by defining its normal vector $\overline{g}$.
+Take $\overline{g}$ to be a vector of $m$ random, independent Gaussians,
+that is, each $g_i$ is a standard Gaussian random variable and $\overline{g}$
+has a uniformly random direction. $\overline{a}$, $\overline{b}$, and
+$\overline{g}$ can be normalized to unit vectors on a hypersphere.
+
+Then we have the following:
+
+\begin{equation}
+\Pr\left[\textrm{test passes}\right] \approx
+\Pr\left[\sgn(\overline{g}\cdot\overline{a}) \ne
+\sgn(\overline{g}\cdot\overline{b})\right] =
+\frac{angle(\overline{a},\overline{b})}{\pi} =
+\frac{\arccos{\overline{a}\cdot\overline{b}}}{\pi} =
+\frac{\arccos{\rho}}{\pi}
+\end{equation}
+
+In the last equality, we used the fact that:
+
+\begin{equation}
+\Exp_\mu\left[\overline{a}\cdot\overline{b} \right] = 
+\Exp_\mu\left[\sum_{i=1}^m{\mu_i\cdot a_i^2}\right]
+ = \sum_{i=1}^m{a_i^2\Exp\left[\mu_i\right]}
+ = \rho
+\end{equation}
+
+Therefore, if all $a_i$ are small, then $\Pr[$test passes$]$ is close to
+$\frac{\arccos{\rho}}{\pi}$, and we can show that $\Pr[$maj passes$]$ is
+equal to this using the definition of stability.
+\end{proof}
+
+We can make the following two remarks about the MIS Theorem.
+
+\begin{remark}
+The MIS Theorem still holds if we relax our requirement of Boolean
+threshold functions to $f: \{1,-1\}^m \rightarrow [-1,1]$, which we can
+view as the averages of long codes.
+\end{remark}
+
+The second remark will first require a new definition.
+
+\begin{definition}[C-degree influence]
+Given a function $f$, the C-degree influence of input bit $i$ on $f$ is:
+\begin{displaymath}
+\textrm{Inf}_i^{\le C}(f) = \sum_{S \ni i, |S| \le C}{\hat{f}(S)^2}
+\end{displaymath}
+\end{definition}
+
+\begin{remark}
+The MIS Theorem still holds for low-degree influences. Let $-1 < \rho < 0$
+and $\epsilon > 0$. Then $\exists \tau > 0, C < \infty$ such that
+if $f$ has $\textrm{Inf}_i^{\le C} < \tau$ for all $i \in [m]$, then
+$\frac{1}{2} - \frac{1}{2}\sum{\rho^{|S|}\hat{f}(S)^2} < \frac{arccos{\rho}}{\pi} + \epsilon$.
+\end{remark}
+
+%------------------------------------------------------------------------------
+\section{Unique Games Conjecture}
+
+As we noted in the last lecture, \textsc{Max-Cut} is equivalent to
+the problem of 2-variable constraint satisfaction. However, it is
+difficult to construct a 2-query PCP using \textsc{Label-Cover} unless
+we add some additional structure to LC instances, thereby defining a
+new problem.
+
+\begin{definition}[Unique Label Cover]
+The definition of the \textsc{Unique-Label-Cover} problem, or ULC,
+is the same as
+for \textsc{Label-Cover} except for the projection property. Projections in
+ULC must be bijective, that is, they are permutations of $\Sigma$.
+\end{definition}
+
+A distinctive property of ULC($\Sigma$) is that the problem of determining
+whether all constraints can be satisfied is in $\P$. The algorithm is as
+follows. For each connected component, pick a vertex.
+Assign all possible labels to the vertex and label all other connected
+vertices consistently. This only takes $|\Sigma|$ tries, each running
+in polynomial time.
+
+\begin{corollary}
+\textsc{Gap-ULC}$_{1,\epsilon}$ is \emph{not} NP-hard.
+\end{corollary}
+
+We can now define the unique games conjecture, so named because the
+power of ULC is equivalent to the power of unique 2-prover 1-round games
+in which the answer of one prover uniquely determines the answer of the
+other prover. This allows us to use
+the hardness of ULC to prove many other hardness of approximation results.
+
+\begin{definition}[Unique Games Conjecture]
+[Khot 2002] $\forall_{\delta > 0}, \exists_{m < \infty}$ such that if
+$|\Sigma| \ge m$, then \textsc{Gap-ULC}$(\Sigma)_{1-\delta,\delta}$ is
+NP-hard.
+\end{definition}
+
+\begin{remark}
+The UGC is now notorious as the canonical assumption for proving
+hardness-of-approximation results.
+It has been used to show that approximating
+\textsc{Vertex-Cover}, \textsc{Max-Cut}, \textsc{Max-2Lin}$(q)$, and many other 
+problems is NP-hard.
+\end{remark}
+
+\begin{remark}
+The UGC could be false, that is, \textsc{Gap-ULC}$(\Sigma)_{1-\delta,\delta}$
+could be in P.  Some results along these lines can be found in
+[Charikar, Makarychev, Makarychev 2005]: given a ULC$(\Sigma)$ instance which
+is $(1-\delta)$-satisfiable in polytime, you can find a labelling satisfying
+$1/|\Sigma|^{\delta/2 + O(\delta^2)}$ fraction of constraints. This uses a
+more souped-up version of the Goemans-Williamson algorithm with
+semidefinite programming.
+\end{remark}
+
+\begin{remark}
+A particular subproblem of ULC is \textsc{Max-2Lin}$(q)$, for which the
+following is known: UGC $\Rightarrow$ \textsc{Gap-2Lin}$(q)$ with
+completeness $1-\delta$ and soundness $1 / q^{\delta/2 + \Omega(\delta^2)}$,
+for all $\delta > 0$, is NP-hard. It is easy to show the reverse direction,
+so the two are equivalent.
+\end{remark}
+
+Next time, we will show that UGC and the MIS Theorem imply that
+\textsc{Max-Cut}$_{\frac{1}{2}-\frac{1}{2}\rho - \epsilon, \frac{\arccos{\rho}}{\pi}}$ is NP-hard.
+
+\section{References}
+
+\begin{itemize}
+
+\item
+[[Khot 2002]] Subhash Khot. ``On the power of unique 2-prover 1-round games.''
+In \textit{Proceedings of the
+34th ACM Symposium on Theory of Computing}, pages 767775, 2002.
+
+\item
+[[MOO 2005]] E. Mossel, R. O'Donnell, K. Oleszkiewicz.
+``Noise stability of functions with low influences: invariance and optimality'',
+FOCS '05.
+
+\end{itemize}
+
+\end{document}

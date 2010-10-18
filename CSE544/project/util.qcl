@@ -1,0 +1,12 @@
+// Zero-controlled not
+
+qufunct ZCNot(qureg q, quconst c) {
+  qureg f[1];
+  Not(f); // change to |1>
+  CNOT(f, c);
+  CNOT(q, f);                            // generic CNOT
+  CNOT(f, c);
+  Not(f);
+};
+
+

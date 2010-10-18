@@ -1,0 +1,172 @@
+\documentclass[11pt]{article}
+ \setlength{\textwidth}{6.5 in}
+ \setlength{\textheight}{8.25in}
+ \setlength{\oddsidemargin}{0in}
+ \setlength{\topmargin}{0in}
+ \addtolength{\textheight}{.8in}
+ \addtolength{\voffset}{-.5in}
+
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{latexsym}
+\usepackage{epsfig}
+\usepackage{bm}
+
+\newcommand{\ignore}[1]{}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\C}{{\mathcal C}}
+\newcommand{\D}{{\mathcal D}}
+\renewcommand{\L}{{\mathcal L}}
+\newcommand{\la}{\langle}
+\newcommand{\ra}{\rangle}
+\newcommand{\eps}{\epsilon}
+\renewcommand{\P}{\mathrm{P}}
+\newcommand{\E}{\mathbf{E}}
+\newcommand{\NP}{\mathrm{NP}}
+\newcommand{\Maj}{\mathrm{Maj}}
+\renewcommand{\phi}{\varphi}
+\newcommand{\bits}{\{-1,1\}}
+\newcommand{\Inf}{\mathrm{Inf}}
+\newcommand{\Stab}{\mathrm{Stab}}
+\newcommand{\gap}{\mathrm{gap}}
+\newcommand{\F}{{\mathbb F}}
+
+\begin{document}
+\noindent {\large {\bf CSE 533: Error-Correcting Codes}}  {\hfill {\bf Autumn 2006}}
+\begin{center}
+{\sc Problem Set 1} \\
+{\bf Due on Monday, October 30} \\
+\end{center}
+
+\hline
+
+\bigskip
+
+\noindent {\bf Homework policy}: Students are encouraged to work on
+the problems in small groups (of up to 3 people); however, all
+writeups should be done individually and must clearly cite any
+collaborators. You are strongly urged to try and solve the problems
+without consulting any reference material besides what we cover in
+class (such as any textbooks or material on the web where the solution
+may appear either fully or in part). If for some reason you feel the
+need to consult some source, please acknowledge the source and try to
+explain what difficulty you couldn't overcome before consulting the
+source and how it helped you overcome that difficulty. \\
+
+\hline
+
+\bigskip
+
+\begin{enumerate}
+\item {\bf Operations on Codes.} Prove the following statements (the
+  notation $(n,k,d)_q$ code is used for general codes with $q^k$
+  codewords where $k$ need not be an integer, whereas the notation
+  $[n,k,d]_q$ code stands for a {\em linear code} of dimension $k$):
+\begin{enumerate}
+\item If there exists an $(n,k,d)_q$ code, then there also exists an $(n-1,k,d' \ge d-1)_q$ code. 
+\item If there exists an $(n,k,d)_2$ code with $d$ odd, then there also exists an $(n+1,k,d+1)_2$ code.
+\item If there exists an $(n,k,d)_{2^m}$ code, then there also exists an $(nm,km,d' \ge d)_2$ code.
+\item If there exists an $[n,k,d]_{2^m}$ code, then there also exists an $[nm,km,d' \ge d]_2$ code.  
+\item \label{item:part6} If there exists an $[n,k,d]_{q}$ code, then there also exists an $[n-d, k-1, d' \ge \lceil d/q \rceil]_q$ code.
+\item If there exists an $[n,k_1,d_1]_q$ code and an $[n,k_2,d_2]_q$ code, then there exists an $[2n,k_1+k_2,\min (2d_1,d_2)]_q$ code.
+
+\end{enumerate}
+
+
+\item Prove the following version of the Plotkin bound for general alphabets. If $C \subseteq \Sigma^n$ is a (not necessarily linear) code over an alphabet of size $|\Sigma| =q$ with minimum distance $d > (1-1/q) n$, then $|C| \le \frac{qd}{qd-(q-1) n}$. 
+
+\item 
+\begin{enumerate}
+\item Prove that for an $[n,k,d]_q$ linear code, we must have
+\begin{equation}
+\label{bd-1}
+n \ge \sum_{i=0}^{k-1} \lceil d/q^i \rceil \ . 
+\end{equation}
+\underline{Hint}: Try induction together with Problem (\ref{item:part6})
+above.
+\item Deduce the Singeton bound for linear codes from bound (\ref{bd-1}) above.
+\item Show that the simplex codes (dual of the Hamming codes) meet the bound (\ref{bd-1}). 
+\end{enumerate}
+
+\item \begin{enumerate}
+\item Briefly argue (full proof not required) why the proof of
+  Shannon's theorem for the binary symmetric channel 
+that we did in class holds even if the encoding
+  function $E$ is restricted to be linear.
+\item Prove that for communication on ${\rm BSC}_p$, if an encoding
+  function $E$ achieves a maximum decoding error probability (taken
+  over all messages) that is exponentially small, i.e., at most
+  $2^{-\gamma n}$ for some $\gamma > 0$, then there exists a $\delta =
+  \delta(\gamma,p) > 0$ such that the code defined by $E$ has relative
+  distance at least $\delta$.  In other words, good distance is {\em
+  necessary} for exponentially small maximum decoding error
+  probability.
+\item Prove that if the encoding function $E$ is restricted to be
+  linear, a similar conclusion holds even if only the {\em average}
+  decoding error probability (computed for a message chosen uniformly
+  at random) is exponentially small.
+\end{enumerate}
+
+
+
+\item 
+\begin{enumerate}
+\item For positive integers $k \le n$, show that less than a fraction
+  $q^{k-n}$ of the $n \times k$ matrices $G$ over $\F_q$
+  fail to generate a linear code of block length $n$ and dimension
+  $k$. (Or equivalently, except with probability less than $q^{k-n}$, the rank of
+  $G$ is $k$.)
+\item 
+Consider the $q$-ary erasure channel with erasure probaility
+  $\alpha$ ($q\mbox{EC}_\alpha$, for some $\alpha$, $0 \le \alpha \le 1$): the input to this channel is a field element $x \in \F_q$,
+  and the output is $x$ with probability $1-\alpha$, and an erasure
+  '?' with probability $\alpha$.  For a linear code $C$ generated by an
+  $n \times k$ matrix $G$ over
+  $\F_q$, let $D : (\F_q \cup \{?\})^n \rightarrow C \cup
+  \{\mathsf{fail}\}$ be the following decoder:
+\[ D(y) = \left\{ \begin{array}{ll}
+ c & \mbox{ if $y$ agrees with exactly one $c \in C$ on the unerased
+ entries in $\F_q$} \\
+\mathsf{fail} & \mbox{ otherwise} 
+\end{array}
+\right. \]
+For a set $J \subseteq \{1,2,\dots,n\}$, let $P_{\rm err}(G|J)$ be the
+probability (over the channel noise and choice of a random message) that $D$ outputs $\mathsf{fail}$ conditioned on the
+erasures being indexed by $J$. Prove that the average value of $P_{\rm
+  err}(G|J)$ taken over all $G \in \F_q^{n \times k}$ is less than
+$q^{k-n+|J|}$. 
+\item 
+Let $P_{\rm err}(G)$ be the decoding error probability of the
+  decoder $D$ for communication using the code generated by $G$ on the
+  $q\mbox{EC}_\alpha$. Show that when $k = Rn$ for $R < 1-\alpha$, the
+  average value of $P_{\rm err}(G)$ over all $n \times k$ matrices $G$
+  over $\F_q$ is exponentially small in $n$.
+\item Conclude that one can reliably communicate on the
+  $q\mbox{EC}_\alpha$ at any rate less than $1 - \alpha$ using a
+  linear code.
+\end{enumerate}
+
+
+\item We now define the tensor product operation that was used in
+  class to discuss Elias' construction of iterated product of Hamming
+  codes to achieve reliable communication at positive rate for ${\rm
+  BSC}_p$ for some positive $p$ with an explicit construction and
+  polynomial time decoding. We only focus on binary codes, but the
+  definition applies over any field. Let $C_1$ be an $[n_1,k_1,d_1]_2$
+  code with generator matrix $G_1 \in \{0,1\}^{n_1 \times k_1}$ and let $C_2$ be an $[n_2,k_2,d_2]_2$
+  code with generator matrix $G_2 \in \{0,1\}^{n_2 \times k_2}$. The
+  tensor product (or simply product) of $C_1$ and $C_2$, denoted $C_1
+  \otimes C_2$, is a code of block length $n_1 n_2$ defined as
+\[ C_1 \otimes C_2  = \{ G_1 M G_2^T \mid M \in \{0,1\}^{k_1 \times
+  k_2}  \} \ . \]
+\begin{enumerate}
+\item Prove that $C_1 \otimes C_2$ is an $[n_1 n_2, k_1 k_2, d_1 d_2]$
+  binary linear code.
+\item Prove that codewords of $C_1 \otimes C_2$ correspond to
+  $n_1 \times n_2$ matrices all of whose columns are codewords of
+  $C_1$ and all of whose rows are codewords of $C_2$.
+\end{enumerate}
+\end{enumerate}
+\end{document}

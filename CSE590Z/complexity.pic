@@ -1,0 +1,28 @@
+.PS 4.0
+
+# Make the TeX fonts smaller
+
+FNP: ellipse wid 2 ht 1.5
+TFNP: ellipse dotted wid 1.7 ht 1.25 with .c at FNP.c + (0.05,-0.05)
+PLS: ellipse wid 1.45 ht 1 with .c at TFNP.c + (0.05,-0.05)
+PPA: ellipse wid 1.2 ht 0.75 with .c at PLS.c + (0.05,-0.05)
+PPAD: ellipse wid 0.9 ht 0.55 with .c at PPA.c + (0.05,-0.05)
+FP: ellipse wid 0.5 ht 0.15 with .c at PPAD.c + (0.05,-0.05)
+
+line invis from FNP.c up 0.9 left 1.3 "\textbf{FNP}"
+line invis from TFNP.c up 0.70 left 0.9 "\textbf{TFNP}"
+line invis from PLS.c up 0.5 left 0.75 "\textbf{PLS}"
+line invis from PPA.c up 0.35 left 0.5 "\textbf{PPA}"
+line invis from PPAD.c up 0.15 left 0.25 "\textbf{PPAD}"
+line invis from FP.c up 0 left 0 "\textbf{FP}"
+
+\footnotesize
+line invis from TFNP.n - (0,0.05) down 0.05 "Factoring"
+circle filled rad 0.01
+line invis from PPA.n - (0,0.05) down 0.05 "SMITH"
+circle filled rad 0.01
+line invis from PPAD.n - (0,0.05) down 0.05 "kD-SPERNER"
+circle filled rad 0.01
+\normalsize
+
+.PE

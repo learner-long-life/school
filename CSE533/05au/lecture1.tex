@@ -1,0 +1,374 @@
+\documentclass[12pt]{article}
+\usepackage{scribe}
+
+\Scribe{Paul Pham}
+\Lecturer{Venkat Guruswami}
+\LectureNumber{8}
+\LectureDate{26 October 2005}
+\LectureTitle{Linearity and Assignment Testing}
+
+\begin{document}
+\MakeScribeTop
+
+\def\Var{{\rm Var}\,}
+\def\qopnamewl@#1{\mathop{\fam\z@#1}\nlimits@}
+\def\Exp{\mathop{\rm {E}}}
+\def\dist{{\rm dist}\,}
+%------------------------------------------------------------------------------
+\section{Recap}
+
+In the last class, we covered the Composition Theorem except for the
+$O(1)$-query assignment tester (AT). Today we will construct such an
+AT using some facts about linearity testing, which can otherwise be
+treated as a self-contained lecture.
+
+%------------------------------------------------------------------------------
+\section{Linearity Testing}
+
+We work in an $n$-dimensional binary vector space $\{0,1\}^n$ with
+inner product $\langle x,y \rangle = \sum_{i=1}^{n}{x_i y_i}$ defined as usual.
+The binary $\oplus$ operator will denote bitwise XOR on two vectors.
+The symbol $S$ will denote an arbitrary, but fixed, subset of indices in
+the vector space. $[n]$ denotes $\{1,2,\ldots,n\}$.
+
+\begin{displaymath}
+S \subseteq [n]
+\end{displaymath}
+
+The symbol $\chi_S$ is a characteristic vector for $S$, $|\chi_S| = n$.
+You can consider
+it as being composed of indicator random variables for membership in $S$.
+
+\begin{displaymath}
+\chi_{S,i} = \left\{ \begin{array}{ll}
+1 & \textrm{if } i \in S\\
+0 & \textrm{if } i \notin S\\
+\end{array} \right.
+\end{displaymath}
+
+Recall the following notation for the parity of subset $S$ on vectors in the
+subspace. This parity is the same as the overlap
+between a vector $x$ and the characteristic vector
+$\chi_S$.
+
+\begin{displaymath}
+L_S(x) = \sum_{i \in S} x_i = \langle x, \chi_S \rangle
+\end{displaymath}
+
+\begin{definition}[linear function]
+
+A function $f: \{0,1\}^n \rightarrow \{0,1\}$ is linear if
+\begin{displaymath}
+\forall_{x,y \in \{0,1\}^n}: f(x \oplus y) = f(x) \oplus f(y)
+\end{displaymath}
+
+Alternatively, a function $f$ is linear if it is equal to $L_S$ for some
+$S$ at all points in the space.
+\end{definition}
+
+The goal of \emph{linearity testing} is then:
+given $f: \{0,1\}^n \rightarrow \{0,1\}$ as a table of $2^n$ values,
+check whether $f$ is linear. A natural test is the
+Blum-Luby-Rubinfeld (BLR) test. Given an input vector $x$, it proceeds as
+follows:
+
+\begin{enumerate}
+\item Pick $y \in \{0,1\}^n$ uniformly as random.
+\item If $f(x \oplus y) = f(x) \oplus f(y)$ accept, otherwise reject.
+\end{enumerate}
+
+We can describe the difference between two functions
+as follows.
+
+\begin{definition}
+Two functions $f$ and $g$ are $\delta$-far if they differ in $\delta$ fraction
+of places, $0 \le \delta \le 1$.
+
+\begin{displaymath}
+\Pr_{x \in \{0,1\}^n}{\left[ f(x) \ne g(x) \right]} \ge \delta
+\end{displaymath}
+\end{definition}
+
+\begin{theorem}[BLR Correctness]
+If $f$ is linear, the BLR test accepts with probability 1.
+\end{theorem}
+
+\begin{theorem}[BLR Soundness]
+If $f$ is $\delta$-far from every linear function for some
+$\delta \le \frac{1}{2}$ then the BLR test rejects with probability
+$\ge \delta$.
+\end{theorem}
+
+If $f$ is linear, it is easy to show the completeness above.
+However, if $f$ is not a linear function, the probability of catching it
+at any point is low. In the rest of the lecture, we will make this
+soundness probability explicit.
+
+%------------------------------------------------------------------------------
+\section{Notation Change}
+
+We now introduce a change in notation from Boolean binary values in $\{0,1\}$
+to $\{1,-1\}$ which will make later math more convenient.
+The transformation for all $a \in \{0,1\}$ is:
+
+\begin{displaymath}
+a \rightarrow (-1)^a
+\end{displaymath}
+
+Bitwise XOR now becomes multiplication.
+
+\begin{displaymath}
+a \oplus b \rightarrow (-1)^{a\oplus b} = (-1)^a(-1)^b
+\end{displaymath}
+
+Then we now consider functions $f: \{-1,1\}^n \rightarrow \{-1,1\}$ and have
+a new form for the subset parity function for a subset $S$:
+
+\begin{displaymath}
+L_S(x) = \prod_{i \in S} x_i
+\end{displaymath}
+
+and a new linearity test:
+
+\begin{displaymath}
+f(x)\cdot f(y) = f(x \cdot y)
+\end{displaymath}
+
+Then the probability that the BLR test rejects using this new notation is:
+
+\begin{equation}
+\Pr{\left[ \textrm{test rejects} \right]} =
+\Exp_{x,y \in \{-1,1\}^n}\left[\frac{1 - f(x)f(y)f(xy)}{2} \right]
+\end{equation}
+
+In order to calculate the value of this expectation, we will need some
+background in discrete Fourier analysis.
+
+%------------------------------------------------------------------------------
+\section{Fourier Analysis on Discrete Binary Hypercube} 
+
+Consider the vector space consisting of all $n$-bit functions from
+$\{-1,1\}^n$ to the real numbers. It has dimension $2^n$.
+
+\begin{displaymath}
+\mathbb{G} = \{g \mid g: \{-1,1\}^n \rightarrow \mathbb{R}\}
+\end{displaymath}
+
+We define an inner product on this space as follows:
+
+\begin{displaymath}
+\langle f,g \rangle = \frac{1}{2^n} \sum_{x \in \{-1,1\}^n} f(x)g(x)
+\end{displaymath}
+
+We will now show an alternate, orthonormal basis for $\mathbb{G}$
+consisting of subset parity functions.
+We must first shown
+the linear independence of this set.
+
+\begin{displaymath}
+\{L_s \mid s \subseteq [n]\}
+\end{displaymath}
+
+\begin{lemma}[Different subsets have orthogonal parity functions.]
+\begin{displaymath}
+S \ne T \rightarrow \langle L_S,L_T \rangle = 0
+\end{displaymath}
+
+Proof:
+\begin{eqnarray*}
+& & \displaystyle \langle L_S, L_T \rangle\\
+& = & \frac{1}{2^n}\sum_{x \in \{-1,1\}^n}{L_s(x)L_T(x)}\\
+& = & \frac{1}{2^n}\sum_{x \in \{-1,1\}^n}{\left(\prod_{i \in S}{x_i}\right)\left(\prod_{i \in T}{x_i}\right)}\\
+& = & \frac{1}{2^n}\sum_{x \in \{-1,1\}^n}{\left(\prod_{i \in S \triangle T}{x_i}\right)}\\
+& = & 0
+\end{eqnarray*}
+
+$S \triangle T$ denotes the symmetric difference of $S$ and $T$. This is not
+empty because we have specified $S \ne T$. The last step follows because
+we can always pair any $x$ with an $\tilde{x}$ such that $x_j = -\tilde{x}_j$
+for a fixed $j \in S \triangle T$.
+
+Then we have shown that the $\{L_S\}$ form an orthonormal basis.
+\end{lemma}
+
+Now we can express the transform of any value $f(x)$ in the new basis, with
+Fourier coefficients $\hat{f}(s)$.
+
+\begin{displaymath}
+f(x) = \sum_{s \subseteq [n]}{\hat{f}(s)L_S(x)}
+\end{displaymath}
+
+\begin{fact}[Fourier Coefficient of a Linear Function]
+\begin{displaymath}
+f \textrm{ linear} \Leftrightarrow \left(
+\exists{s \subseteq [n]}: \hat{f}(s) = 1 \right) \land
+\left(\forall{T \subseteq [n], T \ne S}: \hat{f}(T) = 0 \right)
+\end{displaymath}
+\end{fact}
+
+%------------------------------------------------------------------------------
+\subsection{Plancherel Theorem}
+
+This generalization of Parseval's theorem tells us that all Fourier transforms
+are unitary.
+
+\begin{lemma}
+For any $f: \{-1,1\}^n \rightarrow \{-1,1\}$, $\sum_{s \subseteq [n]}{\hat{f}(s)^2 = 1}$
+
+Proof:
+\begin{eqnarray*}
+\displaystyle \langle f,f \rangle & = & \frac{1}{2^n} \sum_{x \in \{-1,1\}^n}{f(x)f(x)} = 1\\
+& = & \langle \sum_{s \subseteq [n]}{\hat{f}(s)L_S},
+                            \sum_{s \subseteq [n]}{\hat{f}(s)L_S} \rangle\\
+& = & \sum_{s \subseteq [n]}{\langle L_S, L_S \rangle} \\
+& = & \sum_{s \subseteq [n]}{\hat{f}(s)^2}
+\end{eqnarray*}
+
+\end{lemma}
+
+\subsection{Proof of BLR Soundness}
+
+\begin{eqnarray*}
+& &\displaystyle \Exp_{x,y}\left[ f(x)f(y)f(xy) \right]\\
+& = & \Exp_{x,y}\left[ \left(\sum_S{\hat{f}(S)L_S(x)}\right)
+                \left(\sum_T{\hat{f}(T)L_T(x)}\right)
+                \left(\sum_U{\hat{f}(U)L_U(xy)}\right) \right]\\
+& = & \Exp_{x,y}\left[ \sum_{S,T,U}{\left(\hat{f}(S)\hat{f}(T)\hat{f}(U)L_S(x) L_T(y) L_U(xy)\right)} \right]\\
+& = & \sum_{S,T,U}{\hat{f}(S)\hat{f}(T)\hat{f}(U)} \Exp_{x,y}\left[L_S(x)L_T(y)L_U(xy)\right]
+\end{eqnarray*}
+
+We claim that the expectation in the last line is 0 unless $S=T=U$.
+
+Proof:
+\begin{eqnarray*}
+& & \displaystyle \Exp_{x,y}\left[\left(\prod_{i \in S}x_i\right)
+               \left(\prod_{j \in T}y_j\right)
+               \left(\prod_{k \in U}x_k\right)
+               \left(\prod_{l \in U}y_l\right)\right] \\
+& = & \Exp_{x,y}\left[\left(\prod_{i \in S \triangle U}{x_i}\right)
+               \left(\prod_{j \in T \triangle U}{y_j}\right)\right]
+\end{eqnarray*}
+
+If $S=U$ or $T=U$, then one of the symmetric differences is empty, and the
+expectation is 0, as claimed.
+
+Now we have the following result:
+
+\begin{displaymath}
+\Pr{\left[ \textrm{test rejects} \right]} \ge \left\{ \begin{array}{ll}
+\frac{1 - \sum_S{\hat{f}(S)^2}}{2} &
+\textrm{ if } \forall_{S}: \hat{f}(S) \le 0\\
+\frac{1 - \max_S{\hat{f}(S)}}{2} = \min_S{\dist(f,L_S)} & \textrm{otherwise}
+\end{array} \right.
+\end{displaymath}
+
+Therefore, if $f$ is linear, the maximum Fourier coefficient $\hat{f}(S)$ is
+1 and the test will reject with probability 0. If $f$ is not linear,
+then the test will reject with probability equal to the minimum distance of
+$f$ and some linear function. We can upper bound this quantity using the
+density of linear functions.
+
+%------------------------------------------------------------------------------
+\subsection{Density of Linear Functions}
+
+\begin{lemma}[Any two linear functions differ in at most $\frac{1}{2}$ of their
+points.]
+
+We define the distance between two functions, or tables, as
+
+\begin{displaymath}
+\dist(f,g) = \Pr\left[f(x) \ne g(x)\right]
+\end{displaymath}
+
+\begin{eqnarray*}
+& & \displaystyle \hat{f}(s) = 1 - 2\dist(f,L_s)\\
+& = & \langle f, L_S \rangle = \frac{1}{2^n}\sum_x{f(x)L_S(x)}\\
+& = & \frac{1}{2^n} \left[ 2^n(1 - \dist(f,L_S)) + \dist(f,L_S)2^n(-1) \right]
+\end{eqnarray*}
+
+Then any two linear functions differ in at most $\frac{1}{2}$ of their points.
+\end{lemma}
+
+%------------------------------------------------------------------------------
+\section{Self-Correction}
+
+Another tool which will be useful in constructing an assignment tester is
+a self-correcting code. Assume we have $f$, a function or table of values,
+that is $\delta$-close to some linear function $L$.
+
+\begin{remark}
+If $\delta < \frac{1}{4}$ then $L$ is unique.
+\end{remark}
+
+Given an arbitrary $x$ and access to $f$, we want to compute $L(x)$ with
+high probability. We can express $x$ as $x_1 + x_2$, where the addends
+have been selected uniformly at random. Then we have the following:
+
+\begin{eqnarray*}
+&  L(x) = L(x_1) + L(x_2)\\
+&  \Pr{\left[ f(x_1) + f(x_2) = L(x) \right]} \ge \epsilon\\
+\end{eqnarray*}
+
+We can simply repeat this test several times to improve the chance of
+getting the correct $L(x)$. Alternatively, we can perform the following
+procedure:
+
+\begin{enumerate}
+\item Select $y$ uniformaly at random.
+\item Return $f(x+y) - f(y)$
+\end{enumerate}
+
+\begin{lemma}
+The previous procedure computes $L(x)$ with probability greater than
+$1 - 2\delta$.
+\begin{displaymath}
+\end{displaymath}
+
+Proof:
+
+\begin{eqnarray*}
+& \Pr{\left[ f(x+y) \ne L(x+y) \right]} = \lnot A \le \delta\\
+& \Pr{\left[ f(y) \ne L(y) \right]} = \lnot B \le \delta\\
+& \Pr{\left[\lnot A \lor \lnot B\right]} \le 2\delta\\
+& \Pr{\left[A \land B \right]} \ge 1 - 2\delta
+\end{eqnarray*}
+\end{lemma}
+
+%------------------------------------------------------------------------------
+\section{Constant Query Assignment Tester}
+
+We now have a way to test for linearity and a self-correcting code for
+approximating a function, but how can we use this for
+assignment testing? Let's review the assignment testing problem.
+
+Let $\Phi$ be a circuit on Boolean variables $X$ and $\Psi$ be a circuit
+on $X \cup Y$ where $Y$ are auxiliary Boolean variables.
+
+\begin{remark}
+\begin{enumerate}
+\item
+$\forall{a}\exists{b}: \Phi(a) = 1 \Rightarrow \Psi(a \cup b) = 1$
+\item
+If $a$ is $\delta$-far from every $a'$ such that $\Phi{a'} = 1$ then
+$\forall{b}: \Pr{\left[\Psi{a \cup b} = 0\right]} = \Omega(\delta)$
+\end{enumerate}
+\end{remark}
+
+We can reduce any given circuit over Boolean variables (\textsc{Circuit-Sat})
+to a set of quadratic equations over $\mathbb{F}_2$ (\textsc{QFSat}).
+ Then the
+existence of solutions for the system of equations implies that the
+original circuit is satisfiable. Since NAND is a universal logic gate,
+we only need to provide gadgets for AND and NOT.
+
+\begin{itemize}
+\item
+$\left( w_k = w_i \land w_j \right) \rightarrow \left(w_k - w_i w_j = 0\right)$
+\item
+$\left( w_l = \lnot w_i \right) \rightarrow \left(w_i + w_l - 1 = 0\right)$
+\end{itemize}
+
+In the next lecture, we'll say more about how to use linearity testing and
+self-correcting codes in deciding a \textsc{QFSat} problem.
+
+\end{document}

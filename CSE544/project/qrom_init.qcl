@@ -1,0 +1,29 @@
+// qdata is an array of qubits that make up the ROM
+// cdata is a data word to be written into the ROM
+// caddr is the address for cdata within qdata
+// a     is the address width
+// d     is the data width
+
+qufunct QromInit(qureg qdata, int cdata, int caddr,
+                 int a, int d) {
+  int q = #qdata;
+  int n = 2^a;
+  int m = n*d;
+  int i;
+  int scaddr = caddr mod n; // caddr masked to only bits within n
+  int begin = scaddr * d;
+  int end   = ((scaddr + 1) * d) - 1;
+
+  if (q != m) { 
+    print "n=",n," m=",m," d=",d;
+    exit "Data size mismatch.";
+  }
+
+  // Iterate over the bits in caddr
+  for i=0 to d-1 {
+    if (bit(cdata,i)) {
+      Not(qdata[i+begin]);
+    }
+  }
+
+}

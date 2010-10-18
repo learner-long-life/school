@@ -1,0 +1,37 @@
+include "qram_lookup";
+
+qufunct QuerySuperpose(quconst addr, qureg readout, quconst data,
+                       qureg scratch, int n) {
+  int i;
+  int r = #readout;
+  int a = #addr;
+
+//  QramLookup(addr, data, scratch);
+
+  // COMPUTE
+  // Compute the XOR of readout and scratch
+//  for i = 0 to r-1 {
+    // If readouts are same, scratch[i] -> |0>
+//    CNot(scratch[i], readout[i]);
+    // But we want it to be |1> if they are the same
+//    Not(scratch[i]);
+//  }
+
+  for i = 0 to r-1 {     // readout -> NOT (readout XOR n)
+    if (not bit(n,i)) {
+      Not(readout[i]);
+    }
+  }
+}
+
+qufunct Query(quconst addr, qureg readout, quconst data, quvoid f, int n) {
+
+  qureg scratch[#readout];
+
+  QuerySuperpose(addr, readout, data, scratch, n);
+
+  CNot(f, readout);            // flip f if readout=1111..
+
+  !QuerySuperpose(addr, readout, data, scratch, n);
+}
+

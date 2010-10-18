@@ -1,0 +1,31 @@
+Michael Franklin's paper "Concurrency Control and Recovery" provides a
+good overview of ACID properties and related best practices, but leaves
+several important questions unanswered.
+
+First of all, the justification for physical logging is not clear.
+On page 13, Franklin states that "action consistency" is a problem, but
+earlier stated that all REDO/UNDO actions are idempotent. Later in
+describing ARIES on page 25, it is apparent that index modifications
+are not time-symmetric, causing physical logging will fail. So it appears that
+the best practice is to use logical logging for UNDO to guarantee correctness,
+and that the use of physiological logging in REDO is purely for efficiency
+reasons. In contrast, Franklin implies that sometimes logical logging cannot
+always guarantee correctness (consistency), and that this is one motivation
+for using physiological logging instead.
+
+On a related note, I found it interesting that index locking for consistency
+was glossed over. It does complicate matters greatly, especially for the
+different levels of isolation and locking granularities. However, as the
+ARIES UNDO phase demonstrates, consistent indexes are vital for actual
+correctness in a DBMS implementation, not just for efficiency.
+
+A minor algorithmic note: during the REDO phase of ARIES recovery on page 28,
+the recoveryLSN of a dirty page should always be greater than the pageLSN of
+the corresponding page on disk. Therefore, it is sufficient to only compare
+pageLSN against the current LSN.
+
+Finally, it seems worth noting explicitly that some kind of write-ahead logging
+(WAL) is always assumed when discussing recovery with STEAL and/or NO-FORCE
+policies. Otherwise, it is impossible to ensure durability of committed
+transactions and atomicity of aborted transactions.
+

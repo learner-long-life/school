@@ -1,0 +1,344 @@
+\documentclass[12pt]{article}
+
+\usepackage{fullpage}
+\usepackage{fancyhdr}
+\usepackage{cse-scribe}
+\pagestyle{fancy}
+
+\rhead{Problem \thesection\\Page \thepage\\Winter 2006}
+\lhead{Paul Pham\\ppham@cs.washington.edu\\CSE 599B Problem Set 1}
+
+%\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\addtolength{\headheight}{42pt} % make space for the rule
+\addtolength{\headsep}{6pt} % make space for the rule
+
+\renewcommand{\labelenumi}{\textbf{\alph{enumi})}}
+\renewcommand{\labelenumii}{\textbf{\arabic{enumii}}}
+%\renewcommand{\thesection}{\small{Problem \arabic{section}.}}
+%  \makeatletter
+%   \renewcommand{\section}{\@startsection{section}{1}{0mm}
+%   {\baselineskip}%
+%   {\baselineskip}{\normalfont\normalsize}}%
+%   \makeatother
+%\renewcommand{\section}{\@startsection{section}{1}}
+\def\qopnamewl@#1{\mathop{\fam\z@#1}\nlimits@}
+\def\Exp{\mathop{\rm {E}}}
+\def\Forall{\mathop{\rm {\forall}}}
+\def\dist{{\rm dist}\,}
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem 1
+\section{Block cipher with counter}
+
+This block cipher with counter reduces to the case of the electronic code
+book (ECB) for message/counter pairs $(M\oplus c)$ which have the same
+bitwise XORs. Such messages will have the same ciphertexts and be
+distinguishable from other messages. Furthermore, if the adversary $A$ can
+watch all of Alice and Bob's communication since the counter initialization,
+then it knows the counter $c$ at any point. If $A$ sees two
+equal ciphertexts $E_K(M_1 \oplus c_1) = E_K(M_2 \oplus c_2)$ then it knows
+$M_1 \oplus M_2 = c_1 \oplus c_2$. For example, if $M_1$ and $M_2$ were
+English sentences, then knowing that their bitwise XOR was a certain value
+would vastly narrow down possible values for either $M_1$ or $M_2$.
+
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem 2
+\section{One-way collections and functions}
+
+\begin{enumerate}
+%------------------------------------------------------------------------------
+\item % Part A
+Given a one-way function $f:\{0,1\}^{*} \rightarrow \{0,1\}^{*}$,
+we construct the following collection of one-way functions.
+$n$ denotes the size of the collection index.
+
+\begin{itemize}
+\item Given the randomness for sampling algorithm $C_I$, take
+the first $n$ bits (call it $x$) and compute the index: $i \gets f(x)$,
+truncated to the first $n$ bits.
+\item
+Given the randomness for sampling algorithm $C_D$, take the first
+$n$ bits (call it $y$) and concatenate it with the index to
+randomly choose a domain $D_i$.
+Use this to compute a domain element: $d \gets f(iy)$.
+\item
+Concatenate the index and domain element to randomly choose
+a function $f_i$ from our collection. Compute the function value on this
+input and return it: $f_i(d) \gets f(di)$.
+\end{itemize}
+
+The algorithms runs in probabilistic polytime because it incorporates the
+randomness for $C_I$ and $C_D$ and $f$ is polytime computable.
+If the $f_i$ so computed is not a OWF, some adversary $A$ could
+recover $d$ (with non-negligible probability)
+which is the first $n$ bits of the input to $f$.
+But $d$ is just $f(yi)$, and $A$ could iteratively
+recover the first $n$ bits of the input which is $i$. After another
+iteration, $A$ can recover $x$, which is the entire input to $f$ on the
+first call to compute the index. Thus $A$ can invert $f$ with
+non-negligible probability, contradicting our assumption that $f$ is a OWF.
+$\Box$
+
+%------------------------------------------------------------------------------
+\item % Part B
+%Given a collection of one-way functions:
+%
+%\begin{itemize}
+%\item
+%Sampling algorithm $C_I$ which computes $i \in I \cap \{0,1\}^n$ in polytime.
+%% \item
+%% Sampling algorithm $C_D$ which computes $d \in D_i$ in polytime.
+%% \item
+%% A polytime algorithm $F$ that for a collection $\{f_i\}$
+%% where $f_i: D_i \rightarrow R_i$
+%% is hard to invert over the choices of $i$ and $d$, returns $f_i(d)$.
+%% \end{itemize}
+
+%% we will construct a one-way function $f: \{0,1\}^{*} \rightarrow \{0,1\}^{*}$.
+
+%% First, divide the input $x \in \{0,1\}^n$ into two halves, to be used as
+%% the random coin flips for $C_I$ and $C_D$.
+%% Use these random bits to compute $i \in I$ and
+%% $d \in D_i$ and then run $F$ to return $f(x) = f_i(d)$. Return the following
+%% output:
+
+%% \begin{displaymath}
+%% f(x) = \left\{ \begin{array}{ll}
+%% f_i(d) \textrm { truncated to $l(n)$ bits } & \textrm{if $|f_i(d)| > l(n)|$}\\
+%% f_i(d) \textrm { padded with $l(n) - |f_i(d)|$ zeros } & \textrm{if $|f_i(d)| < l(n)|$}\\
+%% f_i(d) \textrm { otherwise }
+%% \end{array} \right.
+%% \end{displaymath}
+
+%% We now argue that this function is one-way. First of all, it is deterministic
+%% in that given the same randomness, $C_I$ and $C_D$ will always choose the same
+%% $i \in I$ and $d \in D_I$ and it runs in polytime because $C_I$, $C_D$, and
+%% $F$ are all polytime. Second of all, it is still one-way under the output
+%% length truncation/padding. If $F$ outputs the right length, then it is
+%% one-way by the definition of $F$'s associated collection, $\{f_i\}$.
+
+%% $F$ with a truncated output is still one-way by contradiction.
+%% Suppose some
+%% PPT adversary $A$ can invert output with the last
+%% $|f_i(x)| - l(n)$ bits truncated.
+%% Then use $A$ to invert the original $f_i(x)$ by ignoring everything after
+%% the $l(n)$th bit. This contradicts the one-wayness of $f_i$.
+
+%% $F$ with a padded output is still one-way by contradiction.
+%% Suppose some
+%% PPT adversary $A$ can invert output with the last
+%% $l(n) - |f_i(x)|$ bits padded with zeros. Then use $A$ to invert the
+%% original $f_i(x)$ by ignoring everything after the $|f_i(x)|$th bit.
+%% This again contradicts the one-wayness of $f_i$.
+
+\end{enumerate}
+
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem 3
+\section{Random self-reduction}
+
+Given a collection of weakly one-way homomorphisms with
+domain and range groups,
+we prove the existence of collection of strongly OWFs
+indirectly.
+
+Assume there exists a PPT adversary $A_i$ hardcoded to invert a particular
+$f_i$ on a $1/n^c$ fraction of elements in $D_i$
+for some positive constant $c$.
+That is, assume that our collection is not strongly one-way.
+
+Then construct a new PPT adversary $A_i'$ as follows:
+
+$A_i'$: on input $(f_i(x))$
+\begin{itemize}
+\item Choose $y \gets D_I$ uniformly at random using $S_D$.
+\item Compute $z \gets f_i(x)\circ f_i(y) = f_i(x \bullet y)$.
+\item Try to invert: $w \gets A_i(z)\bullet y^{-1}$.
+\item Test $f_i(w) = f_i(x)$.
+\begin{itemize}
+\item If they are equal, $w=x$ and we have inverted.
+\item If not, repeat the test with a different $y$.
+\end{itemize}
+\end{itemize}
+
+Since $y$ is randomly chosen, the group operation $\bullet$ on a fixed $x$
+is a permutation. If it were not, then
+$(y_1\bullet x = y_2\bullet x) \Rightarrow y_1 = y_2$, a contradiction.
+Therefore, $x \bullet y$ is chosen uniformly at random over $D_i$ and
+$f_i(x \bullet y)$ produces the same distribution as $f_i(y)$.
+
+The probability of $A_i$ succeeding on uniformly chosen $(x \bullet y) \in D_i$
+is $1/n^c$. Therefore the probability of failing the equality test above
+is $(1 - 1/n^c)$. From the inequality $1+x \le e^x$ and over $n^{c+1}$
+independent trials, we have the probability of failing all trials as:
+
+\begin{displaymath}
+((1 - \frac{1}{n^c})^{n^{c}})^n \le (e^{n^c})^n
+\end{displaymath}
+
+This grows exponentially and arbitrarily small with increasing $n$.
+Therefore we can succeed on inverting random elements of $D_i$ and the
+above collection is not weakly one-way.
+$\Box$
+
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem 4
+\section{Weak prime number theorem}
+
+\begin{enumerate}
+%------------------------------------------------------------------------------
+\item % Part A
+Note that $\lfloor n/p^i \rfloor$ is the number of multiples of $p^i$ that
+are $\le n$. Call the largest power of $p$ that divides a number its
+\textit{highest $p$-divisor}. We can divide each number $q$, $1 \le q \le n$,
+into two factors:
+it's highest $p$-divisor $p^i$ and the product of all other prime factors
+$q/p^i$.
+
+We define the product of all numbers $q$
+for which $p^i$ is the highest $p$-divisor and $q \le n$ as:
+%
+\begin{displaymath}
+Q_i = \prod_{q \le n} q
+\end{displaymath}
+%
+Conversely, we define the product of all other prime factors
+$q/p^i$ for $q \in Q_i$ as:
+%
+\begin{displaymath}
+Q/p^i = \prod_{q \in Q_i} q/p^i
+\end{displaymath}
+
+Finally, we define $Z$ as the product of all numbers $\le n$ which are
+not divisible by $p$.
+We can then express $n!$ in the following way:
+
+\begin{eqnarray*}
+& n! & = (\prod_{i=1}^{r} Q_i)(\prod_{i=1}^{r} Q/p^i)\cdot Z\\
+&    & = p^{\lfloor \frac{n}{p} \rfloor}(\prod_{i=1}^{r-1} Q_i)(\prod_{i=1}^{r} Q/p^i)\cdot Z\\
+&    & = p^{\lfloor \frac{n}{p} \rfloor}p^{\lfloor \frac{n}{p^2} \rfloor}(\prod_{i=1}^{r-2} Q_i)(\prod_{i=1}^{r} Q/p^i)\cdot Z\\
+&    & = \ldots\\
+&    & = p^{\lfloor \frac{n}{p} \rfloor}p^{\lfloor \frac{n}{p^2} \rfloor}\cdots p^{\lfloor \frac{n}{p^r} \rfloor}(\prod_{i=1}^{r} Q/p^i)\cdot Z\\
+&    & = p^{(\lfloor \frac{n}{p} \rfloor +  \lfloor \frac{n}{p^2} \rfloor +\cdots + \lfloor \frac{n}{p^r} \rfloor)}(\prod_{i=1}^{r} Q/p^i)\cdot Z
+\end{eqnarray*}
+
+Therefore, we see that $\sum_{i=1}^r \lfloor \frac{n}{p^i} \rfloor$ is indeed
+the highest power of $p$ that divides $n!$
+since all other products left above are not
+divisible by $p$.
+\pagebreak
+%------------------------------------------------------------------------------
+\item % Part B
+By the division theorem we know the following:
+%
+\begin{eqnarray*}
+n = mq + r & \Rightarrow & \lfloor \frac{n}{m} \rfloor = q\\
+2n = mq' + r' & \Rightarrow & \lfloor \frac{2n}{m} \rfloor = q'\\
+2mq + 2r = mq' + r' & \Rightarrow & q' = 2q + \frac{2r - r'}{m}\\
+r < m & \Rightarrow & 2r < 2m \Rightarrow \frac{2r}{m} < 2\\
+r' = 2r \mod{m} & \Rightarrow & \frac{2r-r'}{m} \le 1\\
+%q' \ge 2q & \Rightarrow & r' \le 2r \Rightarrow \frac{2r-r'}{m} \le \frac{2r}{m}\\
+%0 \le \frac{2r - r'}{m} < \frac{2r}{m} < 2 & \Rightarrow & \lfloor \frac{2r - r'}{m} \rfloor \le 1\\
+\lfloor \frac{2n}{m} \rfloor = 2\lfloor \frac{n}{m} \rfloor + \frac{2r-r'}{m} & \Rightarrow & \lfloor \frac{2n}{m} \rfloor \le 2\lfloor \frac{n}{m} \rfloor + 1
+\end{eqnarray*}
+
+%------------------------------------------------------------------------------
+\item % Part C
+From part (a), we know the highest $p$-divisor of $2n!$, for any prime factor
+$p$, is
+$\sum_{i=1}^{r} \lfloor\frac{2n}{p^i}$ for $p^{r''} \le 2n < p^{{r''}+1}$.
+We also know $\binom{2n}{n} = \frac{(2n)!}{n!n!}$, so the power of the
+highest $p$-divisor
+of $\binom{2n}{n}$ is as follows,
+denoting $p^{r'}$ as the highest $p$-divisor of $n!$, $r' \le r''$.
+%
+\begin{eqnarray*}
+& \displaystyle  \sum_{i=1}^{r''} \lfloor\frac{2n}{p^i}\rfloor - 2(\sum_{i=1}^{r'} \lfloor\frac{n}{p^i}\rfloor) & \le (\sum_{i=1}^{r''} (2\lfloor\frac{n}{p^i}\rfloor + 1)) - 2(\sum_{i=1}^{r'} \lfloor\frac{n}{p^i}\rfloor)\\
+& & \le r''
+\end{eqnarray*}
+%
+In the first step, we use the inequality from part (b).
+Therefore we see that the highest $p$-divisor of $\binom{2n}{n}$ is
+some $p^r \le p^{r''} \le 2n$.
+$\Box$
+
+%------------------------------------------------------------------------------
+\item % Part D
+By induction. Note:
+
+\begin{displaymath}
+\binom{2n}{n} = \frac{(2n)!}{n!n!}= \frac{2n\cdot(2n-1)\cdots (n+1)}{n\cdot(n-1)\cdots 1} = \prod_{i=0}^{n-1} \frac{2n-i}{n-i}
+\end{displaymath}
+
+\textbf{Base Case:} $\prod_{i=0}^{0} \frac{2n}{n} \ge 2^0$.\\
+\textbf{Inductive Step:} Assume $\prod_{i=0}^k \frac{2n-i}{n-i} \ge 2^k$,
+for $0 \le k < n-1$.
+%
+\begin{displaymath}
+\prod_{i=0}^{k+1} \frac{2n-i}{n-i} = (\prod_{i=0}^{k} \frac{2n-i}{n-i})\cdot \frac{2n-(k+1)}{n-(k+1)} > (\prod_{i=0}^{k} \frac{2n-i}{n-i})\cdot \frac{2n}{n}
+ \ge 2^k \cdot 2 = 2^{k+1}
+\end{displaymath}
+%
+In the second step above we use this fact for
+three non-negative integers ($a,b,c$).
+%
+\begin{eqnarray*}
+& (c < a) & \Rightarrow (-bc > -ba)\\
+&         & \Rightarrow (ac - bc < ac - ba)\\
+&         & \Rightarrow (c(a-b) < a(c-b))\\
+&         & \Rightarrow \frac{c-b}{a-b}\\
+&         & > \frac{c}{a}
+\end{eqnarray*}
+
+Therefore, for any integer $n \ge 1$, $\binom{2n}{n} \ge 2^n$.
+$\Box$
+%------------------------------------------------------------------------------
+\item % Part E
+%------------------------------------------------------------------------------
+\item % Part F
+\end{enumerate}
+
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem 5
+\section{Hardcore bit}
+
+Using the alternate definition of a hardcore bit:
+
+\begin{displaymath}
+\Forall_{\begin{subarray}{l} PPT A\\
+c>0 \end{subarray}} \epsilon(n) = \Pr\left[A(f(x), B(x))=1 | x \gets U_n\right] -
+\Pr\left[A(f(x), b) = 1 | x \gets U_n, b \gets U_1\right] < 1/n^c
+\end{displaymath}
+
+Then suppose $G(x) = f(x)B(x)$ is not a PRNG, that is, some PPT adversary $A$
+can distinguish it from true randomness with some advantage
+$\epsilon(n) \ge 1/n^c$.
+Then use $A$ to construct a new adversary $A'$ which  distinguishes
+$B(x)$ from a random bit $b$ with non-negligible probability.
+
+$A'$: on input = $(f(x), B(x))$
+
+\begin{itemize}
+\item $y \gets A(f(x)B(x))$
+\item $b \gets \{0,1\}$ uniformly at random.
+\item $y' \gets A(f(x)b)$
+\item If $y=y'$ return 1, otherwise return 0.
+\end{itemize}
+
+$A'$ then also succeeds in distinguishing $B(x)$ from a random bit $b$ with
+non-negligible probability, and $B(x)$ is not a hardcore bit.
+$\Box$
+
+\end{document}

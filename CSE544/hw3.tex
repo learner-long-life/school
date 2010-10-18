@@ -1,0 +1,358 @@
+\documentclass[12pt]{article}
+
+\usepackage{fullpage}
+\usepackage{fancyhdr}
+\usepackage{cse-scribe}
+\pagestyle{fancy}
+
+\rhead{Problem \thesection\\Page \thepage\\Spring 2006}
+\lhead{Paul Pham [ppham@cs.washington.edu]\\CSE 544: Databases\\Homework 3}
+
+%\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\addtolength{\headheight}{42pt} % make space for the rule
+\addtolength{\headsep}{6pt} % make space for the rule
+
+\renewcommand{\labelenumi}{(\alph{enumi})}
+\renewcommand{\labelenumii}{\roman{enumii}.}
+%\renewcommand{\thesection}{\small{Problem \arabic{section}.}}
+%  \makeatletter
+%   \renewcommand{\section}{\@startsection{section}{1}{0mm}
+%   {\baselineskip}%
+%   {\baselineskip}{\normalfont\normalsize}}%
+%   \makeatother
+%\renewcommand{\section}{\@startsection{section}{1}}
+\def\qopnamewl@#1{\mathop{\fam\z@#1}\nlimits@}
+\def\Exp#1{\mathop{\rm {E}}[#1]}
+\def\argmax{{\rm arg} \mathop{\rm {max}}}
+\def\argmin{{\rm arg} \mathop{\rm {min}}}
+\def\dist{{\rm dist}\,}
+\def\PR#1{\mathop{\rm {Pr}}\left[#1\right]}
+
+\newenvironment{lscommand}%
+    {\nopagebreak\par\small\addvspace{3.2ex plus 0.8ex minus 0.2ex}%
+     \vskip -\parskip
+     \noindent%
+     \begin{tabular}{|l|}\hline\rule{0pt}{1em}\ignorespaces}%
+    {\\\hline\end{tabular}\par\nopagebreak\addvspace{3.2ex plus 0.8ex
+        minus 0.2ex}%
+     \vskip -\parskip}
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem 1
+\section{Beers-bars-drinkers problem}
+
+To ensure safety, we restrict the variables below to the active domain,
+where
+
+\begin{displaymath}
+adom(d) = \exists{r} F(d,r) \land \exists{b} L(d,b) \land \forall{r} \exists{b} S(r,b)
+\end{displaymath}
+
+\begin{enumerate}
+%------------------------------------------------------------------------------
+\item % Part A
+Find all drinkers that frequent only bars that serve only beer they
+like. (Optimists)
+
+\begin{displaymath}
+q(d)\textrm{ } :- \textrm{ } adom(d) \land \lnot [\exists{r} [F(d,r) \land \exists{b}[S(r,b)\land \lnot L(d,b) ]]]
+\end{displaymath}
+
+%------------------------------------------------------------------------------
+\item % Part B
+Find all drinkers that frequent only bars that serve some beer they
+like. (Realists)
+
+\begin{displaymath}
+q(d)\textrm{ } :- \textrm{ } adom(d) \land \lnot [\exists{r}.\exists{b}. F(d,r) \land L(d,b) \land \lnot S(r,b)]
+\end{displaymath}
+
+%------------------------------------------------------------------------------
+\item % Part C
+Find all drinkers that frequent some bar that serves only beers
+they like. (Prudents)
+
+\begin{displaymath}
+q(d)\textrm{ } :- \textrm{ } adom(d) \land \exists{r} [F(d,r) \land \lnot [\exists{b}. S(r,b) \land \lnot L(d,b)]]
+\end{displaymath}
+
+%------------------------------------------------------------------------------
+\item % Part D
+Find all drinkers that frequent only bars that serve none of the
+beers they like. (Flagellators)
+
+This includes drinkers who frequent no bars, and also drinkers who like
+all beers and frequent no bars except those that do not serve any beers.
+
+\begin{displaymath}
+q(d)\textrm{ } :- \textrm{ } adom(d) \land \lnot \exists{r} [F(d,r) \land \exists{b} [L(d,b) \land S(r,b)]]
+\end{displaymath}
+
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem 2
+\section{Range-restricted formulae}
+
+\begin{enumerate}
+%------------------------------------------------------------------------------
+\item % Part A
+False. Some range-restricted query may take the complement of a relation,
+for example, and this would return different answers conjoined to the
+active domain depending on the full domain.
+
+%------------------------------------------------------------------------------
+\item % Part B
+True. If all variables must appear in the active domain, which is finite,
+a range-restricted query can only return a finite answer.
+%------------------------------------------------------------------------------
+\item % Part C
+False. A safe formula could just guarantee membership in one particular
+relation rather than membership in some relation (only one term of the
+disjunction in $adom(u)$.
+
+%------------------------------------------------------------------------------
+\item % Part D
+True. Safe queries are domain-independent and only depend on the extent of
+the relations (the active domain). Therefore, restricting variable values to
+the active domain should not affect membership in the query answer.
+%------------------------------------------------------------------------------
+\item % Part E
+False. The set of range-restricted queries is recursively-enumerable.
+
+%------------------------------------------------------------------------------
+\item % Part F
+False. This was given in lecture.
+
+\end{enumerate}
+
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem 3
+\section{Finite relations}
+
+\begin{enumerate}
+%------------------------------------------------------------------------------
+\item % Part A
+\begin{displaymath}
+adom(x) = \exists(y) [R(x,y) \lor R(y,x) \lor U(x,y) \lor U(y,x)] \lor S(x)
+\end{displaymath}
+%------------------------------------------------------------------------------
+\item % Part B
+\begin{enumerate}
+\item % i
+Finite. Not safe.
+
+\begin{displaymath}
+\{x \mid adom(x) \land S(x) \land \forall{y} (adom(y) \Rightarrow \lnot R(x,y))\}
+\end{displaymath}
+
+\item % ii
+Finite. Not safe.
+
+\begin{displaymath}
+\{x \mid adom(x) \land S(x) \land \forall{y} (adom(y) \Rightarrow (R(x,y) \Rightarrow \exists{z}(adom(z) \land(S(z) \lor U(y,z)))))\}
+\end{displaymath}
+
+\item % iii
+Not finite. Not safe. No equivalent range-restricted formula because not finite.
+
+\item % iv
+Finite. Safe.
+
+\begin{displaymath}
+\{x \mid adom(x) \land S(x) \land \forall{y} (adom(y) \Rightarrow (S(y) \land R(x,y)))\}
+\end{displaymath}
+
+\item % v
+Finite. Not safe.
+
+\begin{displaymath}
+\{x \mid adom(x) \land S(x) \land \forall{y}(adom(y) \Rightarrow (U(x,y) \lor \forall{z}.(adom(z) \Rightarrow \lnot R(y,z))))\}
+\end{displaymath}
+
+\item % vi
+Finite. Safe.
+
+\begin{displaymath}
+\{(x,y) \mid adom(x) \land adom(y) \land \exists{z}.(adom(z) \land (R(x,z) \lor R(z,y)))\}
+\end{displaymath}
+
+\end{enumerate}
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem 4
+\section{Binary tree}
+
+\begin{enumerate}
+%------------------------------------------------------------------------------
+\item % Part A
+%
+\begin{eqnarray*}
+SameLevel(y,z) & :- & T(x,y,z)\\
+SameLevel(y,z) & :- & T(u,y,w),T(v,z,t),SameLevel(u,v)\\
+Answer(y,z) & :- & SameLevel(y,z)
+\end{eqnarray*}
+%
+%------------------------------------------------------------------------------
+\item % Part B
+%
+\begin{eqnarray*}
+AliceWins(x) & :- & L(x),A(x)\\
+AliceWins(x) & :- & T(x,y,z),AliceWins(y)\\
+AliceWins(x) & :- & T(x,y,z),AliceWins(z)\\
+Answer(x) & :- & AliceWins(x)
+\end{eqnarray*}
+%
+\end{enumerate}
+
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem 5
+\section{Query containment}
+
+\begin{enumerate}
+%------------------------------------------------------------------------------
+\item % Part A
+\begin{enumerate}
+\item % i
+Yes, $q \subseteq q'$ with the following variable mapping function
+$f: var(q') \rightarrow var(q)$:
+$x \rightarrow x, y \rightarrow y, z \rightarrow z,
+u \rightarrow x, v \rightarrow y$.
+
+$body(q')$ maps to $body(q)$ as follows:
+$R(x,y) \rightarrow R(x,y), R(y,z) \rightarrow R(y,z),
+R(z,u) \rightarrow R(z,x), R(u,v) \rightarrow R(x,y),
+R(v,z) \rightarrow R(y,z)$
+%
+\item % ii
+No, $q \nsubseteq q'$ with the following counterexample:
+%
+\begin{eqnarray*}
+R & = & \{(1,2,2), (2,3,4) (4,4,5)\}\\
+D & = & \{1,2,3,4,5\}\\
+I & = & (D, R)\\
+\end{eqnarray*}
+%
+$q(I) = \{(1,5)\}$ but $q'(I) = \emptyset$.
+%
+\item % iii
+Yes, $q \subseteq q'$. Note that both $q$ and $q'$ are boolean queries.
+If $q(R)$ is true, then for some tuples $R(u,u,x,y),R(x,y,w,v)$ either
+$(x=y)_q$ or $(x\ne y)_q$.
+
+If $(x = y)_q$, then we can map $var(q')$ as follows: $u \rightarrow x,
+x \rightarrow w, y \rightarrow v$.
+
+If $(x \ne y)_q$, then we can map $var(q')$ as follows: $u \rightarrow u,
+x \rightarrow x, y \rightarrow y$.
+
+Therefore, if $q(R)$ is true, then $q'(R)$ must also be true, and therefore
+the first is a subset of the latter.
+
+\item % iv
+%
+No, $q \nsubseteq q'$ with the following counterexample:
+%
+\begin{eqnarray*}
+R & = & \{(1,1)\}\\
+D & = & \{1\}\\
+I & = & (D, R)\\
+\end{eqnarray*}
+%
+$q(I) = \{(1)\}$ but $q'(I) = \emptyset$.
+%
+\end{enumerate}
+%------------------------------------------------------------------------------
+\item % Part B
+%
+\begin{displaymath}
+q(x) \textrm{ } := \textrm{ } R(x,y),R(y,z),R(v,w)
+\end{displaymath}
+%
+Then we can see that $q_1 \subseteq q$ and $q \subseteq q_2$.
+In fact, $q \equiv q_2$.
+
+\pagebreak
+%------------------------------------------------------------------------------
+\item % Part C
+
+\begin{displaymath}
+q(x) \textrm{ } := \textrm{ } R(x,a),R(a,b),R(b,u)
+\end{displaymath}
+
+Then we have the following variable mapping function
+$f: var(q_1) \rightarrow var(q)$:
+$x \rightarrow x, y \rightarrow  a, z \rightarrow b$.
+
+The corresponding body of the queries are mapped as follows:
+$R(x,y) \rightarrow R(x,a), R(y,z) \rightarrow R(a,b),
+R(a,z) \rightarrow R(a,b)$.
+
+$t_q = x$ and $x \in q_1(D_q)$, so we see that $q \subseteq q_1$.
+
+We also have the following variable mapping function
+$f: var(q_2) \rightarrow var(q)$:
+$x \rightarrow x, y \rightarrow a, z \rightarrow b, u \rightarrow b$.
+
+The corresponding body of the queries are mapped as follows:
+$R(x,y) \rightarrow R(x,a), R(y,z) \rightarrow R(a,b),
+R(z,u) \rightarrow R(b,u), R(y,b) \rightarrow R(a,b)$.
+
+$t_q = x$ and $x \in q_2(D_q)$, so we see that $q \subseteq q_2$.
+
+Let
+
+\begin{displaymath}
+q'(x) \textrm{ } := \textrm{ } R(x,y),R(y,z)
+\end{displaymath}
+
+Then the variable mapping function $f: var(q') \rightarrow var(q_1)$ is
+identity, and likewise for the predicates $R(x,y)$ and $R(y,z)$.
+
+$t_{q'} = x$ and $x \in q'(D_{q_1})$, so we see that $q_1 \subseteq q'$.
+
+We also have the variable mapping function $f: var(q') \rightarrow var(q_2)$
+as identity, and likewise for predicates $R(x,y)$ and $R(y,z)$.
+
+$t_{q'} = x$ and $x \in q'(D_{q_2})$, so we see that $q_2 \subseteq q'$.
+
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem 6
+\section{True-false}
+
+\begin{enumerate}
+%------------------------------------------------------------------------------
+\item % Part A
+True. P is exactly equivalent to FO with least fixed-point operators,
+so the descriptive complexity of FO is a subset of P.
+%------------------------------------------------------------------------------
+\item % Part B
+False, FO queries containing negation/complement are not monotone.
+%------------------------------------------------------------------------------
+\item % Part C
+False. The query complexity of CQs is exponential in the size of the
+query.
+%------------------------------------------------------------------------------
+\item % Part D
+False. Standard Datalog contains recursion but no negation,
+so any FO queries containing negation cannot be expressed in Datalog.
+%------------------------------------------------------------------------------
+\item % Part E
+True. If a query can be expressed in FO, it contains no recursion. If a
+query can be expressed in Datalog, it contains no negation. UCQ is exactly
+equivalent to Datalog with no recursion or negation.
+
+\end{enumerate}
+
+\end{document}

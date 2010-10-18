@@ -1,0 +1,286 @@
+\documentclass[10pt]{beamer}
+\mode<beamer>{%
+\usetheme[hideothersubsections,right,width=22mm]{Goettingen}
+}
+\title{How to Play Any Mental Game}
+\subtitle{A Completeness Theorem for Protocols With Honest Majority}
+\author[[GMR], P. Pham]{[Goldreich, Micali, Wigderson 1987]\\Paul Pham}
+\institute{UW CSE}
+%\titlegraphic{\includegraphics[width=20mm]{USTL}}
+\date{March 2006}
+
+\usepackage{eepic}
+\usepackage{color}
+\usepackage{rotating}
+\usepackage{latexsym} % For \Diamond
+
+\begin{document}
+\begin{frame}<handout:0>
+\titlepage
+\end{frame}
+
+%==============================================================================
+\section{Introduction}
+
+%------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Overview}
+
+\textbf{Keywords:}
+Secure multi-party computation
+
+\textbf{Main Result:}
+A meta-algorithm that can implement any multi-player game
+\textbf{correctly} and \textbf{privately} assuming only trapdoor functions.
+
+\begin{itemize}
+\item A game example: poker
+\item Definitions: TM-game, game network, TM-game solver, passive/malicious adversaries.
+\item How it works: bird's eye view of protocol
+\end{itemize}
+
+\end{frame}
+
+%==============================================================================
+\section{Poker Example}
+%------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Poker Example}
+
+\begin{itemize}
+\item Players are dealt a \textit{hand} of private cards.
+\item In each betting round, players must match/raise the current bet or fold.
+\begin{enumerate}
+\item Hands can develop in between betting rounds.
+\end{enumerate}
+\item At end of last betting round, player with best combination wins.
+\end{itemize}
+
+Poker is a game with \textit{incomplete} information because players only
+have partial knowledge of deck.
+It is \textit{playable} (self-enforceable) in a purely physical model.
+
+\begin{itemize}
+\item Cards are opaque and have the same back.
+\item Tables are not too reflective.
+\item Finite and unforgeable chips.
+\end{itemize}
+
+Are all games playable? If so, in what model?
+
+\end{frame}
+
+%------------------------------------------------------------------------------
+\frametitle{Secure Multiparty Games}
+
+\begin{frame}
+
+\subsection{More Specifically}
+
+\begin{description}
+\item[Playable]: an $n$ player game that can be carried out with only
+$n$ players (no separate poker dealer).
+\item[Honest]: following protocol (rules of the game).
+\end{description}
+
+\subsection{[GMR] says yes.}
+In fact, all games are playable in a \textit{computational complexity} model,
+as long as at least half the players are honest.
+
+\subsection{Encrypted Poker?}
+We are interested in special kinds of games which meet two constraints:
+
+\begin{description}
+\item[Correctness] following the protocol/rules.
+\item[Privacy] no player can learn anything more than output and individual inputs.
+\end{description}
+
+These can be called \textit{secure multi-party games}.
+
+%\begin{description}
+%\item[Game]:
+%\begin{itemize}
+%\item set of states $S$ (poker hands, money, pot, bet values, betting rounds)
+%\item a current state $\sigma \in S$ (snapshot of poker game)
+%\item set of moves to transform current state $M$ (rules for changing hands and placing bets)
+%\item partial information function $K_i(\sigma)$ (individual hands)
+%\item payoff function $p(\sigma_\omega)$ (which hand is better)
+%\end{itemize}
+
+\end{frame}
+
+%==============================================================================
+\section{Definitions}
+
+%------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{TM-games and game networks}
+
+A \textit{TM-game} is a pair of $(\langle M\rangle ,1^k)$ where $M$
+encodes the desired game and $k$ is the security parameter.
+\begin{itemize}
+\item Special case of general game with empty initial state and where all
+player moves once, simultaneously.
+\item $M$ takes inputs all of equal length $l$.
+\item Running time of $M$ is $T(l) < k$
+\end{itemize}
+
+A \textit{game network} is the theoretical ``hardware model''
+ (an $n$-player TM) for running \textit{solvers} for TM-games.
+
+\begin{itemize}
+\item $n$ Turing machines, labeled with a name $i$.
+\item $n(n-1)$ pairwise, private, ``directed'' tapes (write-only $\rightarrow$ read-only)
+\item A common read-only input tape.
+\item A common clock.
+\end{itemize}
+
+\end{frame}
+
+%------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Adversaries}
+
+\begin{description}
+\item[Passive adversary]:
+\begin{itemize}
+\item must follow protocol (correctness)
+\item but can also run extra computation ``on-the-side'' to try to break
+privacy
+\item allowed, because follow correctness and we can enforce privacy.
+\end{itemize}
+
+\item[Malicious adversary]:
+\begin{itemize}
+\item can deviate from protocol at any time to break privacy.
+\item e.g. can return random or manufactured values other than its input.
+\item allowed only in minority, because we can enforce both correctness and privacy.
+\end{itemize}
+
+\end{description}
+
+\end{frame}
+
+%------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{TM-Game Solvers}
+
+\begin{frame}
+
+\textbf{For passive adversaries only}
+
+A \textit{TM-game solver} is a distributed polytime algorithm which runs
+on a game network of size $n$ and on common inputs
+$(\langle M \rangle, 1^k)$ and private inputs $(x_1,\ldots,x_n)$:
+
+
+\end{frame}
+
+%------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Concepts Needed From Course}
+
+\begin{description}
+
+\item[Computational indistinguishability]
+If the probability of any PPT judge to tell two random variables apart is
+negligible in $k$.
+
+\item[
+\item[One-way function family]
+A family $\mathcal{F} = \{f_i\}$ such that each function $f_i$ on
+parameter $k$ is
+\begin{itemize}
+\item easy to index
+\item easy to sample from its domain
+\item hard-to-invert (prob. of any PPT adversary is negl.)
+\end{itemize}
+
+\item[Trapdoor function family]
+Same as previous but additionally each $f_i$ is easy-to-invert with
+the secret trapdoor $f_i^{-1}$.
+
+\item[Trapdoor permutation]
+Same as one-way permutation but with requirement that trapdoor
+(inverse permutation) exists.
+
+\item[Hardcore bits]
+A bit $B(x)$ is hardcore with respect to a one-way function $f$ if
+given only $f(x)$, it is comp. indist. from a random bit.
+
+\end{description}
+
+\end{frame}
+
+%------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{How Does It Work?}
+
+\begin{enumerate}
+\item Run \textit{engagement protocol} to force all players to \textit{commit}
+to their inputs.
+\item Run \textit{TM-game solver for passive adversaries} to execute the
+TM-game $M$.
+\end{enumerate}
+
+\end{frame}
+
+%==============================================================================
+\section{TM Game Solver}
+
+%------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{TM-Game Solver}
+
+Uses result in [Barrington], all straight-line programs can be encoded as
+permutations $\sigma$ in $S_5$.
+
+A \textit{straight-line} program consists only of evaluating
+Boolean functions of two inputs, with no conditional branches or loops.
+
+\begin{enumerate}
+\item Convert $M$ into an equivalent circuit $C$.
+\item Convert $C$ into a straight-line program $P$.
+\item Encode $P$ as follows:
+\begin{itemize}
+\item Denote 0,1 as two special $\sigma_0$ and $\sigma_1$
+\item Function outputs are in $S_5$
+\item For each of three kinds of instructions, we perform:
+\begin{itemize}
+\item multiplying a $\sigma$ by a constant $c$.
+\item multiplying the inverse $\sigma$ by a constant $c$.
+\item multiplying a $\sigma$ by variable $r$.
+\end{itemize}
+\item For each player $i$:
+\begin{enumerate}
+\item For each private bit $b$ of $x_i$:
+\begin{enumerate}
+\item Encode $b$ as $\sigma \in S_5$.
+\item Choose $n-1$ random $\sigma_i$'s.
+\item Compute $\sigma_n = (\sigma_1\cdots \sigma_{n-1})^{-1}\sigma$.
+\item Give $(j,\sigma_j)$ to player $j$.
+\end{enumerate}
+\end{enumerate}
+
+\end{frame}
+
+%==============================================================================
+\section{Honest Majorities}
+
+%------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Engagement Protocol}
+
+This is run at the beginning to force all malicious adversaries to be
+passive adversaries.
+
+\begin{enumerate}
+\item For each player $i$, a protocol is performed such that no minority
+can predict any bit of $x_i$ better than randomly.
+\item 
+\end{enumerate}
+
+
+\end{frame}
+
+\end{document}

@@ -1,0 +1,37 @@
+<html>
+<head>
+ <title>404: Not Found</title>
+<style type="text/css">
+ body {
+  background-color: white;
+  font-family: sans-serif;
+ }
+ h1 {
+  text-decoration: underline;
+ }
+</style>
+</head>
+
+<body>
+
+<h1>404  &mdash; <i>Not Found</i></h1>
+
+<p>The requested resource (<code>http://www.cs.washington.edu/education/courses/326/06au/lectures/lect13.pdf</code>) was not found.</p>
+
+<p>You may wish to <a href="http://www.cs.washington.edu/info/search/">
+search</a> our web.</p>
+
+<p><img hspace="10" align="center" src="http://www.cs.washington.edu/images/info.gif" /> Sorry, this server cannot complete your request.</p>
+
+<p>If you wish to send mail to <i><a
+href="/htbin-post/unrestricted/mailto2.pl?to=webmaster;sub=404+(Not+Found)+error+on+http://www.cs.washington.edu/education/courses/326/06au/lectures/lect13.pdf">
+webmaster</a></i> about this error, please include information about
+the URL you attempted to access
+(<code>http://www.cs.washington.edu/education/courses/326/06au/lectures/lect13.pdf</code>), the referring URL (<code>http://www.cs.washington.edu/education/courses/326/06au/lectures/calendar.htm</code>),  and the time of day when the error occurred (<code> 0:55</code> at our 
+site).</p>
+
+
+
+
+</body>
+</html>

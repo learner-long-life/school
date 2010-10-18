@@ -1,0 +1,26 @@
+include "qram_superpose";
+
+qufunct QramLookup(quconst addr, quconst data, qureg readout) {
+  int a = #addr;
+  int n = 2^a;
+  int r = #readout; // word width
+  int m = n * r;
+  int d = #data;
+  int j;
+  int begin;
+  int end;
+
+  if (d != m) {
+    print "n=",n," m=",m," d=",d;
+    exit "Data size mismatch";
+  }
+  
+  for j=0 to n-1 { // iterate over classical addresses
+    begin = j * r;
+    end   = ((j + 1) * r) - 1;
+    QramSuperpose(addr, j, data[begin:end], readout);
+  }
+}
+
+
+

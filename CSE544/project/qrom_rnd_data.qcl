@@ -1,0 +1,25 @@
+include "qrom_init";
+include "qprint";
+
+int a = 8;
+int d = 2;
+int D = 2^d;
+int n = 2^a;
+int m = n*d;
+
+qureg data[m];
+
+procedure fillData(qureg data, int a, int d) {
+  int n = 2^a;
+  int D = 2^d;
+  int i;
+  int item = 0;
+  for i=0 to n-2 {
+    item = (i+1) mod (D-1);
+    QromInit(data, item, i, a, d);
+  }
+  QromInit(data, D-1, n-1, a, d);
+}
+
+fillData(data, a, d);
+QarrayPrint(data, a, d);

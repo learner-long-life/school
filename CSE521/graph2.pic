@@ -1,0 +1,31 @@
+.PS 4.0
+
+# Make the TeX fonts smaller
+\footnotesize
+
+S3: circle rad 0.5 "$s_{i_3}$"
+S3_subgraph: circle rad 2.5 at S3
+U: circle rad 0.5 "$u$" at S3_subgraph.s+(0,0.75)
+
+move from S3 down 5*sqrt(2) right 5
+S1: circle rad 0.5 "$s_{i_1}$"
+S1_subgraph: circle rad 2.5 at S1
+W1: circle rad 0.5 "$w_1$" at S1_subgraph + (-1,sqrt(2))
+
+move from S1 left 10
+S2: circle rad 0.5 "$s_{i_2}$"
+S2_subgraph: circle rad 2.5 at S2
+W2: circle rad 0.5 "$w_2$" at S2_subgraph + (1,sqrt(2))
+
+S31: 1/2 of the way between S1 and S3
+S32: 1/2 of the way between S2 and S3
+
+V: circle rad 0.5 "$v$" at S3_subgraph.s - (0,2)
+
+line from U to V chop 0.5 " $c_3$" ljust
+line from V to W1 chop 0.5 "$c_1$" below
+line from V to W2 chop 0.5 "$c_2$" below
+
+\normalsize
+
+.PE

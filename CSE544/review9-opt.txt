@@ -1,0 +1,13 @@
+Chaudhuri's article summarizes query optimization techniques in terms of
+the common join operator and asymmetric variants (outer join and semijoin).
+It is a nice complement to the paper by Getoor, Taskar, and Koller in that
+it describes what to do with the gathered join statistics and how to traverse
+the search space. However, it glosses over the propagation of statistical
+information through join operations, and it would be nice to unify this
+with Getoor et al., e.g. incremental updating of PRMs.
+
+By casting optimization as a search problem, it is possible to leverage
+the well-developed technique of dynamic programming for query trees.
+I found it interesting that residual effects of an earlier join operation,
+such as sorting tuples, can have an effect on later oerations and must be
+accounted for in the estimating costs.

@@ -1,0 +1,22 @@
+In the paper by Rizvi et al., a practical scheme for fine-grained
+access control is presented. However, I take issue with their arbitrary
+assumption that most middleware duplicates user
+access policies in a brittle way that is prone to backdoors.
+in practice, enterprise database middleware is modular, open
+source, and can access central policy information over a network.
+In fact, at the end they propose a software
+implementation of access control on top of existing databases, which is
+essentially a middleware solution rather than a rewrite of the
+query optimizing engines.
+
+Moreover, their example of conditional validity is confusing. It would be
+clearer if they stated that conditionally valid queries should not be
+able to distinguish between PA-equivalent states.
+The example should be restated after the definition: two PA-equivalent
+states are (a) when a student is registered for CS101 but there are no grades
+entered for it and (b) when a student is not registered for CS101.
+These give the same results for the authorized view CoStudentGrades, but
+can be distinguished in different states when the user wants to query for
+all grades in CS101.
+
+

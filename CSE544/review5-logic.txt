@@ -1,0 +1,34 @@
+In the article "On the Unusual Effectiveness of Logic in Computer
+Science," the authors draw attention to a fact that is taken for
+granted within CS and little-known outside the field, and provide
+several key applications of logic, most notably database query
+languages.  The common theme in this paper is the connection between
+abstract descriptions and concrete implementations.
+
+In the case of descriptive complexity, it was shown that descriptive
+logics could provide many of the same class separations as the
+resource complexity of decision problems. In databases, first-order
+logic corresponds directly to efficient operations in relational
+algebra. In type systems and verification systems, temporal logics and
+models correspond to program or circuit executions. In knowledge
+representation, epistemic logic describes the possible kinds of
+distributed protocols or coordinated operations in a multi-agent
+system.
+
+While this link is fascinating, at its lowest level it appears to
+follow from the role of mathematics in physical law. Boolean algebra
+corresponds directly to the kinds of circuits we can construct from
+digital circuits.  It seems obvious to us now, since Boolean variables
+take on true-false values and transistors can be on or off. But this
+is an implicit assumption about classical physics, which has a
+mathematical description which underlies finite-state automata, Turing
+machines, and even probabilistic models.
+
+We now know that we can compute using the more general model of
+quantum physics, and again, there is a direct link between a
+mathematical formalism (linear algebra and complex unitary matrices)
+and a physical implementation (quantum circuits). Interestingly, the
+Byzantine generals problem in the article, which is provably
+unsolvable on a classical computer, has a known solution on quantum
+computers. Such results only make the mathematical nature of physics
+even more mysterious.

@@ -1,0 +1,260 @@
+\documentclass[12pt]{article}
+
+\usepackage{fullpage}
+\usepackage{fancyhdr}
+\usepackage{cse-scribe}
+\pagestyle{fancy}
+
+\rhead{Problem \thesection\\Page \thepage\\Winter 2006}
+\lhead{Paul Pham [ppham@cs.washington.edu]\\CSE 599D: Quantum Computing \\Problem Set 2}
+
+%\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\addtolength{\headheight}{42pt} % make space for the rule
+\addtolength{\headsep}{6pt} % make space for the rule
+
+\renewcommand{\labelenumi}{\textbf{\alph{enumi})}}
+\renewcommand{\labelenumii}{\textbf{\arabic{enumii}}}
+%\renewcommand{\thesection}{\small{Problem \arabic{section}.}}
+%  \makeatletter
+%   \renewcommand{\section}{\@startsection{section}{1}{0mm}
+%   {\baselineskip}%
+%   {\baselineskip}{\normalfont\normalsize}}%
+%   \makeatother
+%\renewcommand{\section}{\@startsection{section}{1}}
+\def\qopnamewl@#1{\mathop{\fam\z@#1}\nlimits@}
+\def\Exp{\mathop{\rm {E}}}
+\def\dist{{\rm dist}\,}
+
+\input{Qcircuit}
+
+\begin{document}
+%\newcommand{\ket}[1]{|#1 \rangle}
+%\newcommand{\bra}[1]{\langle #1 |}
+\newcommand{\braket}[2]{\langle #1|#2 \rangle}
+\newcommand{\normtwo}{\frac{1}{\sqrt{2}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\setcounter{section}{0}
+\section{Four-in-one Grover}
+
+\begin{enumerate}
+
+%------------------------------------------------------------------------------
+\item % a
+Each function is 1 on only one input and 0 on all others.
+If you query on inputs 00, 01, and 10 and get a 1,
+you can exactly determine whether you have $f_{00}$, $f_{01}$, or $f_{10}$.
+If you get all zeros, then you know you have $f_{11}$.
+
+%------------------------------------------------------------------------------
+\item % b
+Into the first two qubits, feed in the state:
+\begin{displaymath}
+\ket{\psi} = H^{\otimes 2}\ket{0} = \frac{1}{2}\sum_{x_3,x_4 \in \{0,1\}}\ket{x_3,x_4}
+\end{displaymath}
+Into the third qubit, feed the state $\ket{-}=\normtwo(\ket{0}-\ket{1})$.
+Then we have:
+\begin{eqnarray*}
+U_{\alpha}(\ket{\psi}\otimes\ket{-}) & = &
+\frac{1}{2}\sum_{x_1,x_2 \in \{0,1\}}\sum_{x_3,x_4 \in \{0,1\}}
+\ket{x_1,x_2}\braket{x_1,x_2}{x_3,x_4} \otimes\\
+& & \normtwo \sum_{y \in \{0,1\}}
+\ket{y \oplus f_{\alpha}(x_1,x_2)}\bra{y}(\ket{0}-\ket{1})\\
+& = & \frac{1}{2}\sum_{x_1,x_2 \in \{0,1\}}\ket{x_1,x_2} \otimes\\
+& & \normtwo (\ket{f_{\alpha}(x_1,x_2)}\braket{0}{0} - \ket{\overline{f_{\alpha}(x_1,x_2)}}{\braket{1}{1}})\\
+& = & \frac{1}{2}\sum_{x_1,x_2 \in \{0,1\}}(-1)^{f_\alpha(x_1,x_2)}\ket{x_1,x_2}
+\end{eqnarray*}
+
+%------------------------------------------------------------------------------
+\item % c
+In general, the inner product of any two states are:
+\begin{eqnarray*}
+& \braket{\alpha'}{\alpha} & = \frac{1}{4} \sum_{x_3,x_4 \in \{0,1\}}\sum_{x_1,x_2 \in \{0,1\}} (-1)^{f_{\alpha}(x_1,x_2)+f_{\alpha'}(x_3,x_4)}\braket{x_3,x_4}{x_1,x_2}\\
+&                          & = \frac{1}{4} \sum_{x_1,x_2 \in \{0,1\}}(-1)^{f_{\alpha}(x_1,x_2)+f_{\alpha'}(x_1,x_2)}\braket{x_1,x_2}{x_1,x_2}\\
+& & = \left\{ \begin{array}{lll}
+\frac{1}{4} \sum_{x_1,x_2 \in \{0,1\}}1 & = 1 & \textrm{ if } \alpha = \alpha'\\
+\frac{1}{4} (-1 + 1 + -1 + 1) & = 0 & \textrm{ if } \alpha \ne \alpha'
+\end{array} \right.
+\end{eqnarray*}
+
+In the last line, we used the fact that two different functions $f_\alpha$
+and $f_{\alpha'}$ will agree on two inputs, where they will be zero, and
+disagree on the other two inputs, where one will be 1 and the other will be
+0.
+
+Therefore the inner product of a state with itself is 1, satisfying
+normality, and with any other state is 0, satisfying orthogonality.
+
+%------------------------------------------------------------------------------
+\item % d
+The following matrix transforms states in the  $\{\alpha\}$ basis to the
+computational basis.
+\begin{displaymath}
+\frac{1}{2} \left[ \begin{array}{rrrr}
+-1  &  1 &  1 &  1\\
+ 1  & -1 &  1 &  1\\
+ 1  &  1 & -1 &  1\\
+ 1  &  1 &  1 & -1
+\end{array} \right]
+\end{displaymath}
+
+%------------------------------------------------------------------------------
+\item % e
+\begin{displaymath}
+\Qcircuit @C=1em @R=.7em {
+& \gate{H} & \ctrl{1} & \gate{H} \\
+& \qw & \targ & \qw
+}
+\end{displaymath}
+%In matrices:
+%\begin{displaymath}
+%H^{\otimes 2}(CNOT)H^{\otimes 2} = 
+%\frac{1}{4}
+%\left[ \begin{array}{rrrr}
+% 1  &  1 &  1 &  1\\
+% 1  & -1 &  1 &  -1\\
+% 1  &  1 & -1 &  -1\\
+% 1  &  -1 & -1 & 1
+%\end{array} \right]
+%\left[ \begin{array}{rrrr}
+% 1  &  0 &  0 &  0\\
+% 0  &  1 &  0 &  0\\
+% 0  &  0 &  0 &  1\\
+% 0  &  0 &  1 &  0 
+%\end{array} \right]
+%\left[ \begin{array}{rrrr}
+% 1  &  1 &  1 &  1\\
+% 1  & -1 &  1 & -1\\
+% 1  &  1 & -1 & -1\\
+% 1  & -1 &  -1 & 1
+%\end{array} \right] =
+%\left[ \begin{array}{rrrr}
+% 1  &  0 &  0 &  0\\
+% 0  &  0 &  0 &  1\\
+% 0  &  0 &  1 &  0\\
+% 0  &  1 &  0 &  0
+%\end{array} \right]
+%\end{displaymath}
+
+
+\end{enumerate}
+
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\setcounter{section}{1}
+\section{The Swap Test}
+
+We denote the gate $H\otimes I \otimes I$ as $H'$ below.
+
+\begin{enumerate}
+
+%------------------------------------------------------------------------------
+\item % a
+\begin{eqnarray*}
+\ket{x_1} & = H'\ket{0}\ket{\psi}\ket{\psi} & = \normtwo(\ket{0} + \ket{1})\ket{\psi}\ket{\psi}\\
+\ket{x_2} & = C_{SWAP}\ket{x_1} & = \normtwo(\ket{0} + \ket{1})\ket{\psi}\ket{\psi}\\
+\ket{x_3} & = H'\ket{x_2} & = \frac{1}{2}(\ket{0} + \ket{1} + \ket{0} - \ket{1})\ket{\psi}\ket{\psi} = \ket{0}\ket{\psi}\ket{\psi}
+\end{eqnarray*}
+
+The outcome of the measurement meter is $\ket{0}$ with 100\% probability.
+
+%------------------------------------------------------------------------------
+\item % b
+\begin{eqnarray*}
+\ket{x_1} = & H'\ket{0}\ket{\psi}\ket{\phi} & = \normtwo(\ket{0} + \ket{1})\ket{\psi}\ket{\phi}\\
+\ket{x_2} = & C_{SWAP}\ket{x_1} & = \normtwo(\ket{0}\ket{\psi}\ket{\phi} + \ket{1}\ket{\phi}\ket{\psi})\\
+\ket{x_3} = & H'\ket{x_2} & = \frac{1}{2}((\ket{0} + \ket{1})\ket{\psi}\ket{\phi} + (\ket{0} - \ket{1})\ket{\phi}\ket{\psi})\\
+& & =
+\frac{1}{2}(\ket{0}(\ket{\psi}\ket{\phi} + \ket{\phi}\ket{\psi}) + \ket{1}(\ket{\psi}\ket{\phi} - \ket{\phi}\ket{\psi}))\end{eqnarray*}
+%
+The outcome probability of the measurement meter is 50\% $\ket{0}$
+and 50\% $\ket{1}$.
+
+%------------------------------------------------------------------------------
+\item % c
+Create an entangled input state for the second and third qubits using
+two orthogonal qubits $\braket{\phi}{\psi}$. Note that reversing the
+roles of $\ket{\phi}$ and $\ket{\psi}$ introduces a $-1$ phase.
+%
+\begin{displaymath}
+\frac{1}{2}(\ket{\psi}\ket{\phi}-\ket{\phi}\ket{\psi}) =
+-\frac{1}{2}(\ket{\phi}\ket{\psi}-\ket{\psi}\ket{\phi})
+\end{displaymath}
+%
+\begin{eqnarray*}
+\ket{x_1} = \frac{1}{2}H'
+\ket{0}(\ket{\psi}\ket{\phi} - \ket{\phi}\ket{\psi}) & = & \frac{1}{2\sqrt{2}}
+(\ket{0}+\ket{1})(\ket{\psi}\ket{\phi}-\ket{\phi}\ket{\psi})\\
+\ket{x_2} = C_{SWAP}\ket{x_1} & = & \frac{1}{2\sqrt{2}}(\ket{0}(\ket{\psi}\ket{\phi}-\ket{\phi}\ket{\psi}) + \ket{1}(\ket{\phi}\ket{\psi}-\ket{\psi}\ket{\phi})
+)\\
+\ket{x_3} = H'\ket{x_2} & = &
+\frac{1}{4}\ket{0}(\ket{\psi}\ket{\phi} - \ket{\phi}\ket{\psi} +
+\ket{\phi}\ket{\psi} + \ket{\psi}\ket{\phi}) +\\
+& & \frac{1}{4}(\ket{1}(\ket{\psi}\ket{\phi} - \ket{\phi}\ket{\psi} - \ket{\phi}\ket{\psi} + \ket{\psi}\ket{\phi}))\\
+& = &
+\frac{1}{2}(\ket{1}(\ket{\psi}\ket{\phi} - \ket{\phi}\ket{\psi})
+\end{eqnarray*}
+%
+The outcome of the measurement meter is $\ket{1}$ with 100\% probability.
+This entangled state is orthogonal to every 2 qubit state of the
+form $\ket{\psi'}\ket{\psi'}$:
+%
+\begin{displaymath}
+\frac{1}{2}(\bra{\psi'}\bra{\psi'})(\ket{\psi}\ket{\phi} - \ket{\phi}\ket{\psi}) = \frac{1}{2}(\braket{\psi'}{\psi}\braket{\psi'}{\phi} - \braket{\psi'}{\phi}\braket{\psi'}{\psi}) = 0
+\end{displaymath}
+
+%------------------------------------------------------------------------------
+\item %d
+Given two $n$-qubit input states, perform the following operations:
+entangle the two states using a NOT ($X^{\otimes n}$) gate and a Hadamard
+($H^{\otimes n}$) gate. Feed this state into the SWAP test circuit of the
+problem, modified to perform a $C_{SWAP}^{\otimes n}$) operation controlled
+on the qubit $\ket{0}$.
+If the states were identical, the measurement outcome will be $\ket{0}$,
+and if the states were orthogonal, the measurement outcome will be
+$\ket{1}$, with at least 50\% probability.
+\end{enumerate}
+
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{A Continuous Time Search Problem}
+
+\begin{enumerate}
+%------------------------------------------------------------------------------
+\item %a
+We can form a state $\ket{\psi'}$ which consists of an equal superposition of
+all states which are not $\ket{s}$.
+\begin{eqnarray*}
+\displaystyle
+\ket{\psi'} & = & \frac{1}{\sqrt{2^n-1}}\sum_{x \in \{0,1\}^n, x \ne s}\ket{x}\\
+\braket{s}{\psi'} & = & 0\\
+\braket{\psi'}{\psi'} & = & 1\\
+\ket{\psi'} & = & \frac{\sqrt{2^n}}{\sqrt{2^n-1}}(\ket{\psi} + \frac{1}{\sqrt{2^n}}\ket{s})
+\end{eqnarray*}
+
+%------------------------------------------------------------------------------
+\item %b
+\begin{eqnarray*}
+& H & = \ket{s}\bra{s} + \ket{\psi}\bra{\psi}\\
+&   & = \ket{s}\bra{s} + (\frac{1}{\sqrt{2^n}}\ket{s} + \frac{\sqrt{2^n-1}}{\sqrt{2^n}}\ket{\psi'})(\frac{1}{\sqrt{2^n}}\bra{s} + \frac{\sqrt{2^n-1}}{\sqrt{2^n}}\bra{\psi'})\\
+&   & = \frac{2}{2^n}\ket{s}\bra{s} + \frac{\sqrt{2^n+1}}{2^n}(\ket{\psi'}\bra{s} + \ket{s}\bra{\psi'}) + \frac{2^n 2-1}{2^n}\ket{\psi'}\bra{\psi'}
+\end{eqnarray*}
+%------------------------------------------------------------------------------
+\item %c
+Because $H = I$ in the basis $\{\ket{s},\ket{\psi}$, $H^2 = I$, and
+we have:
+
+\begin{displaymath}
+U = exp(-iHt) = (\cos{t})I + (i\sin{t})H
+\end{displaymath}
+
+%------------------------------------------------------------------------------
+\item %d
+
+\end{enumerate}
+
+\end{document}

@@ -1,0 +1,33 @@
+The Microsoft paper on XML extends nicely from the Stonebraker-Hellerstein
+summary by discussing the tradeoffs of XML handling in a commercial DBMS.
+The S-H summary mentions that generating/shredding well-formed XML data with
+a schema is easy, but that there is not yet full support for XQuery in most
+relational DBMSs. In this paper, it is explained how the power of XQuery
+can be embedded into SQL statements as an "inner" language to be parsed on
+fields of a special type: BLOBs of XML data.
+However, naive shredding of the kind one would expect for well-formed XML
+data is still used in generating the indexes, with impressive benchmark
+results.
+
+The paper seems to imply that there are two advantages to storing XML
+BLOBs as their own type and one advantage to implementing XQuery.
+In the first case, it claims that
+regenerating an XML document from shredded data is expensive to do quickly,
+and that XML is not well-formed in the general case and cannot
+be shredded easily in the first place.
+This is again S-H's problem of lack of explicit applications;
+the book example given in the paper is pretty easy to map to
+an exact schema.
+
+In the second case, it claims XQuery
+contains some powerful recursive search features
+that can only be performed on XML data.
+The indexes which enable this are essentially relational tables tagged
+as "XML-related" or "XQuery-compatible," and are completely orthogonal to the
+previous case.
+
+In conclusion, the paper makes a good case for native XML support in the
+form of shredded indexes, but does not explain how XML BLOBs compensate
+for making data handling less uniform and more complicated.
+This is not a technical fault of the paper, but it could benefit from more
+motivation and application examples.

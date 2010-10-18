@@ -1,0 +1,32 @@
+set check 1;
+
+include "qram_lookup";
+//include "qram_superpose";
+//include "qrom_data";
+include "qrom_rnd_data";
+//include "qprint";
+
+QarrayPrint(data, a, d);
+
+qureg readout[d];
+qureg addr[a];
+int resultAddr;
+int resultData;
+
+Mix(addr);
+dump addr;
+
+QramLookup(addr, data, readout);
+dump addr & readout;
+
+QramLookup(addr, data, readout);
+//QramSuperpose(addr, 0, data[0:d-1], readout);
+!QramLookup(addr, data, readout);
+
+dump addr & readout;
+
+measure addr, resultAddr;
+measure readout, resultData;
+
+print resultAddr;
+print resultData;

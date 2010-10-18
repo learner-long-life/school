@@ -1,0 +1,42 @@
+The paper draws a boundary around its intended contributions which is
+clear (formal definitions but not a language implementation), but in
+doing so naturally raises some interesting, unanswered questions.
+
+On the theoretical side: what is a generation? More specifically, is
+the role of time-variance in the relational model only relevant for
+data consistency?  I liked the reduction of n-ary joins and
+compositions to the binary case, which is commonly used in other areas
+of CS to simplify the analysis. However, it is not clear that the set
+of given operations is "complete" in some sense, or why it even covers
+all operations of interest.  Also, what is the significance of cyclic joins and
+their corresponding compositions other than in determining
+uniqueness and redundancy?
+
+The distinction between a domain and its role in a relation is also
+vague, as well as whether the (active) domain is a set or a multi-set
+and whether this changes any of the analysis. However, it seems that
+in actual implementations the column names are uniquely identified
+with roles and domains are associated with storage data types. The formal
+definition of redundancy and derivability using the given relation operators
+was mostly clear, but it would be nice if the following were explicitly
+stated:
+(1) that the natural join implies that the natural composition is unique
+(2) that the "connection trap" is due to duplicates which is solved by using
+natural compositions only because we defined out projection operator to
+remove such duplicates, and
+(3) that weak redundancies do not have an equation because of the ambiguity
+of the joins involved.
+
+On the implementation side: The notion of redundancy would allow one
+to determine if one set of relations was equivalent to another set.
+Can this be used, or is this already being used, to self-tune existing
+databases by periodically restructuring relations according to query
+statistics? From the user's perspective, a named table and a view are
+the same, so data independence is preserved.  On a related note, if
+the DBMS could determine the largest non-redundant subset given a set
+of relations, it would dynamically derive and cache any additional
+redundant relation to simplify consistency-checking.
+
+Some graphics would have been nice to visualize the difference between
+the tree/network/relational models, but I understand this was probably
+expensive to do in 1970.

@@ -1,0 +1,492 @@
+\documentclass[12pt]{article}
+
+\usepackage{fullpage}
+\usepackage{fancyhdr}
+\usepackage{cse-scribe}
+\pagestyle{fancy}
+
+\rhead{Problem \thesection\\Page \thepage\\Winter 2006}
+\lhead{Paul Pham\\ppham@cs.washington.edu\\CSE 521 Problem Set 2}
+
+%\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\addtolength{\headheight}{42pt} % make space for the rule
+\addtolength{\headsep}{6pt} % make space for the rule
+
+\renewcommand{\labelenumi}{\textbf{\alph{enumi})}}
+\renewcommand{\labelenumii}{\textbf{\arabic{enumii}}}
+%\renewcommand{\thesection}{\small{Problem \arabic{section}.}}
+%  \makeatletter
+%   \renewcommand{\section}{\@startsection{section}{1}{0mm}
+%   {\baselineskip}%
+%   {\baselineskip}{\normalfont\normalsize}}%
+%   \makeatother
+%\renewcommand{\section}{\@startsection{section}{1}}
+\def\qopnamewl@#1{\mathop{\fam\z@#1}\nlimits@}
+\def\Exp{\mathop{\rm {E}}}
+\def\dist{{\rm dist}\,}
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem 1
+\setcounter{section}{0}
+\section{Modified Karatsuba's algorithm}
+
+To multiply two $n$-bit integers $a$ and $b$,
+round up to the nearest multiple of
+three ($3m = 3\lceil n/3 \rceil$) and pad the most significant bits with
+zero. We can then write each number as the shifted sum of three parts:
+\begin{eqnarray*}
+& a\cdot b = & (a_2\cdot 2^{2m} + a_1\cdot 2^{m} + a_0)
+               (b_2\cdot 2^{2m} + b_1\cdot 2^{m} + b_0)
+\end{eqnarray*}
+We can write each number as a degree-2 polynomial in $2^m$.
+To find the coefficients of the product polynomial, of degree-4,
+we use the FFT algorithm for multiplying polynomial coefficients,
+with $n=3$.
+We evaluate it at $2n=6$ points (the sixth complex roots of unity),
+multiply the polynomial values at those points, and interpolate back.
+\begin{displaymath}
+\omega_{j,6} = e^{\frac{2\pi i j \mod{6}}{6}}
+\end{displaymath}
+
+From the textbook, FFT takes $O(3\log{3}) = O(1)$, so the running time
+of the algorithm depends on how fast we can multiply
+coefficient. There is no need to recurse at this level for fixed degree.
+\begin{eqnarray*}
+& A(\omega_{j,6}) & = a_2\omega_{2j,6} + a_1\omega_{j,6} + a_0\\
+& B(\omega_{j,6}) & = b_2\omega_{2j,6} + b_1\omega_{j,6} + b_0\\
+& C(\omega_{j,6}) & = A(\omega_{j,6})B(\omega_{j,6})
+\end{eqnarray*}
+Using the fact that $\omega_{j+3,6} = -\omega_{j,6}$, we have:
+\begin{eqnarray*}
+A(\omega_{j,6})B(\omega_{j,6}) & = &
+(a_2\omega_{2j,6} + a_1\omega_{j,6} + a_0)
+(b_2\omega_{2j,6} + b_1\omega_{j,6} + b_0)\\
+                             &  = &
+((a_2b_2)\omega_{4j,6} + (a_2b_1 + a_1b_2)\omega_{3j,6} +
+(a_2b_0 + a_1b_1 + a_0b_2)\omega_{2j,6} +\\
+                             &  &
+(a_1b_0 + a_0b_1)\omega_{j,6} +
+a_0b_0\\
+                             & = &
+(-a_2b_2 + a_1b_0 + a_0b_1)\omega_{2j,6} +
+(a_2b_0 + a_1b_1 + a_0b_2)\omega_{j,6} +
+(-a_0b_0 + a_1b_2 + a_2b_1)\\
+                                & = & c_2\omega_{2j,6} + c_1\omega_{j,6} + c_0
+\end{eqnarray*}
+By computing the following five products, we can form the coefficients
+above:
+\begin{eqnarray*}
+p_1 = & (a_2 + a_1 + a_0)(b_2 + b_1 + b_0) 
+      = & a_2b_2 + a_1b_2 + a_0b_2 +\\
+     & & a_2b_1 + a_1b_1 + a_0b_1 +\\
+     & & a_2b_0 + a_1b_0 + a_0b_0 \\
+p_2 = & (a_2 + a_0)(b_2 + b_0)             & 
+    = a_2b_2 + a_0b_2 + a_2b_0 + a_0b_0\\
+p_3 = & (a_2 + a_1)(b_2 + b_1)             & 
+    = a_2b_2 + a_1b_2 + a_2b_1 + a_1b_1\\
+p_4 = & (a_1 + a_0)(b_1 + b_0)             & 
+    = a_1b_1 + a_1b_0 + a_0b_1 + a_0b_0\\
+p_5 = & a_1b_2
+\end{eqnarray*}
+We now form the intermediate values:
+\begin{eqnarray*}
+q_1 = & p_1 - p_2 - p_3 & = -a_2b_2 + a_1b_0 + a_0b_1\\
+q_2 = & p_1 - p_2 - p_4 & = -a_0b_0 + a_2b_1 + a_1b_2\\
+q_3 = & p_2 + q_1 + q_2 & = a_2b_0 + a_0b_2 + a_0b_1 + a_1b_0 + a_1b_2 + a_2b_1\\
+q_4 = & p_1 - q_3 - p_5 & = a_0b_0 + a_2b_2\\
+q_5 = & p_2 - q_4 + p_5 &= a_2b_0 + a_1b_1 + a_0b_2
+\end{eqnarray*}
+Then the coefficients of the product polynomial are:
+\begin{eqnarray*}
+& z_2 & = q_1 \\
+& z_1 & = q_5 \\
+& z_0 & = q_2
+\end{eqnarray*}
+
+We can recursively divide-and-conquer the coefficients at this point
+using our modified FFT algorithm, giving the following recurrence:
+\begin{displaymath}
+T(n) = 5T(\lceil \frac{n}{3} \rceil) + O(n)
+\end{displaymath}
+
+By the Master Theorem, this is $O(n^{\log_3{5}})= O(n^{1.47})$.
+
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem 2
+\setcounter{section}{1}
+\section{Reaching tree nodes in fewest rounds}
+
+We represent each ROTC person as a node in a tree where $w$ is a child
+of $v$ if $v$ is $w$'s ranking officer. Then we define the minimum rounds
+needed to broadcast to all subordinates reporting to node $v$ as $OPT(v)$,
+which we call the \textit{delay} of $v$.
+To find the
+delay for the entire ROTC on campus, we want
+$OPT(r)$ where $r$ is the root node, the ranking officer at Cornell.
+
+Each ROTC member $v$ has subordinates $N(v) = [w_i], 1 \le i \le k$ which
+are ranked in non-increasing order of their delay (not necessarily correlated
+to their military rank). Ties are broken arbitrarily.
+$w_1$ has the greatest delay and $w_k$ has the
+least. Leaves have an empty set of subordinates.
+
+The dynamic programming algorithm to determine the delay for the entire
+campus and the corresponding call sequence is shown below.
+
+\textsc{Delay}(root node $r$)
+\begin{itemize}
+\item
+Treating parent-child edges as directed, sort nodes in tree rooted at $r$
+in reverse topological order (leaves first, root last).
+\item
+Initialize all leaves $l$ to have $OPT(l) = 0$.
+\item
+Traverse nodes in order. At each node $v$ computing the following:
+\begin{itemize}
+\item Sort the children $w_j \in N(v)$ in decreasing order of delay ($OPT(w_j)$) to get a rank $j$.
+\item Store this call sequence $[w_j]$.
+\item
+$OPT(v) \gets \max_{w_j \in N(v)}\left[OPT(w_j) + j\right]$
+\end{itemize}
+\item
+Return total delay $OPT(r)$ and global call sequence $[N(r)]$.
+\end{itemize}
+
+The global call sequence is a nested list of call sequences since some
+calls happen in parallel.
+
+We argue by induction
+that this produces the minimum rounds needed to reach all nodes
+in a tree. For the base case, assume parent $v$ of $k$ leaves
+requires $|N(v)| = k$ rounds
+to reach each child, calling them in sequence. Each leaf $w_j$ has a delay of
+zero, so the maximum of all $OPT(w_j) + j$ is the last (arbitrarily ranked)
+child ($k$).
+
+For the inductive step, assume that an arbitrary parent $v'$
+has children with minimum delays. No child $w'_j$ can start notifying
+their subtree until the parent has called them, so their effective delay
+is $OPT(w'_j) + j$, since $j$ is the order in which they are called.
+The child with largest delay has $j=1$ and receives the first call after
+the parent itself is notified. First we show that calling in
+decreasing order of $OPT(w'_j)$ is minimum and then we argue that no
+other strategy can do better.
+
+Suppose the child with maximal delay $w'_i$ was given some rank $i\ne 1$.
+We know $OPT(w'_i) > OPT(w'_1)$ and $i > 1$.
+The maximum over all children is now at least $(OPT(w'_i) + i)$, which is
+strictly greater than $(OPT(w'_1) + 1)$. However, if their ranks were switched,
+the maximum would be $(OPT(w'_i)+1)$, a decrease of $i-1$ rounds, while
+$(OPT(w'_1)+i)$ is an increase of the same amount. However, the maximum is now
+$i-1$ less than before. Therefore non-increasing order is optimal.
+
+Suppose some other algorithm gives a smaller delay. Then at a parent $v'$,
+this optimal algorithm reaches the entire subtree is fewer than
+$(OPT(w'_1)+1)$ rounds, and therefore all children must reach their
+subsubtrees in that number of rounds minus one.
+This contradicts our inductive hypothesis that all
+$(OPT(w'_j)+j)$ was the minimum delay for child $w'_j$.
+Therefore, our algorithm is optimal, and we complete the inductive step.
+
+Our algorithm iterates the main loop once for every node, which is $O(n)$
+times. Each parent must sort its children in $O(n\log{n})$ time using some
+comparison-based sort, but the sum of all children is still $O(n)$ so the
+loop does not multiply the sort time. Taking the maximum of all child delays
+takes $O(\log{n})$ time using a binary search tree on a sorted list.
+Therefore the total running time is $O(n\log{n})$.
+The sequence of calls must be stored at each parent node, with one call
+per node in the graph. This gives $O(n)$ space.
+
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem 3
+\section{Gerrymandering}
+
+We use a dynamic programming algorithm to determine the most even balanced
+assignment of precincts to district. By our lemma below, if this is not
+susceptible to gerrymandering, then no other assignment is susceptible.
+
+Preliminary Definitions:
+
+\begin{description}
+\item[$f:D_j \rightarrow \{p_i\}$]:
+is an \textit{assignment} which maps a district to precincts.
+We abuse notation by speaking of algorithms which ``construct'' an
+assignment $f$ which has certain properties at any given point.
+\item[$p_i \in f(D_k)$] denotes that precinct $p_i$ is assigned to $D_k$.
+\item[balanced assignment]: assignment where $f(D_1)=f(D_2)=n/2$.
+\item[$m^{j}_i$]:
+the number of voters registered in party $P_j$ in precinct $p_i$,
+with $m^{P_1}_i + m^{P_2}_i = m$.
+\item[$M^{j}_{f(D_k)}$]$=\sum_{p_i \in f(D_k)}{m^{j}_i}$,
+the sum of voters for party $P_i$ in district $D_k$.
+\item[$\Delta^{j}_{f}$:]$=|M^{j}_{f(D_1)} - M^{j}_{f(D_2)}|$.
+The difference between voters for party $P_j$ in the two districts under
+assignment $f$.
+\item[most even balanced assignment]: balanced assignment $f$ where
+$\Delta^{j}_{f}$ is minimum for party $P_j$ over all balanced assignments.
+\end{description}
+
+Remarks:
+\begin{itemize}
+\item The total number of voters is $nm$.
+\item The majority of voters in a district is $\frac{1}{4}nm$.
+\end{itemize}
+
+\begin{lemma}
+A set of precincts is susceptible to gerrymandering iff the
+most even balanced assignment is susceptible.
+\end{lemma}
+
+\begin{proof}
+$[\Leftarrow]$: trivial.
+
+$[\Rightarrow]$: If a set of precincts is susceptible, for some balanced
+assignment $f$, $M^{j}_{f(D_k)} > \frac{1}{4}nm$ for some party $P_j$
+and for all districts $D_k$. Call the most even balanced assignment $f^{*}$.
+If $f \ne f^{*}$,
+then $\Delta^{j}_{f} > \Delta^{j}_{f^{*}}$. Any reassignment of precincts
+between districts to transform $f$ into $f^{*}$ must decrease the distance
+by moving the lower voter sum up and the higher voter sum down. It will
+never decrease either beneath majority, so $f^{*}$ is still susceptible.
+\end{proof}
+
+\begin{definition}[Evening method]:
+The strategy for pairwise adding the precincts to the districts in
+non-decreasing order of $m^{j}_i$ to ``even out'' the voter sums.
+ That is, after adding the $i$th pair
+of precincts $p_{2i}$ and $p_{2i-1}$, then for the $(i+1)$th pair,
+the precinct with the greater number of party voters will be assigned to
+the district with the smaller voter sum.
+In symbols:
+
+\begin{displaymath}
+(M^{j}_{D_1} < M^{j}_{D_2}) \land (m^{j}_{2i+1} > m^{j}_{2i+2}) \Rightarrow (p_{2i+1} \in f^{*}(D_1) \land p_{2i+2} \in f^{*}(D_2)
+\end{displaymath}
+\end{definition}
+
+\begin{lemma}
+The most even balanced assignment $f^{*}$ can be constructed by the
+\textit{evening method}.
+\end{lemma}
+
+\begin{proof}
+By contradiction. Suppose some way of assigning precincts
+can create an optimal $f'$ which is different from $f^{*}$ created by
+the evening method.
+Consider the first different choice, where
+$f^{*}$ chooses to place precinct $p_{i_1}$ in $D_1$ and $p_{i_2}$ in
+$D_2$. Let $m^{j}_{i_1} \le m^{j}_{i_2}$
+and $M^{j}_{f(D_1)} > M^{j}_{f{D_2}}$ without loss of generality.
+To create a balanced assignment, $f'$ must next assign a precinct to each
+of the districts, call them $p_{i_3}$ and $p_{i_4}$. Since the two assignments
+are the same up to this point and $f^{*}$ chooses precincts in
+sorted order,
+$m^{j}_{i_4} + m^{j}_{i_3} > m^{j}_{i_2} + m^{j}_{i_1}$. Their
+sum cannot be equal, because then $f'$ is the same as $f^{*}$. Then in the
+future $p_{i_1}$ and $p_{i_2}$ must be assigned to the districts.
+There are two cases:
+
+\begin{itemize}
+\item $p_{i_1}$ and $p_{i_2}$ are both assigned to the same district
+($D_1$ w.l.o.g).
+Then in order to remain balanced, two other precincts (with greater or equal
+party voter numbers) must be assigned to the other district ($D_2$).
+However, this will make the resulting assignment no more even than $f^{*}$.
+\item
+$p_{i_1}$ is assigned to $D_2$ and $p_{i_2}$ is assigned to $D_1$.
+Again, since $D_1$ is ahead, this non-evening assignment will,
+at best not make the assignment more even, and at worst make the
+assigment less even.
+\end{itemize}
+
+Both cases lead to a contradiction that $f'$ is more even than $f^{*}$.
+
+\end{proof}
+
+First, we define $MIN^{j}(i)$ to be the lower voter sum
+and $MAX^{j}(i)$ to be the higher voter sume for party $P_j$ in the
+two districts after the following conditions.
+The $i$th pair of
+precincts, $p_{2i}$ and $p_{2i-1}$ has been added
+to $f^{*}$  using the evening method.
+At the beginning, we start out even: $MAX^{j}(0) = MIN^{j}(0) = 0$.
+
+\begin{eqnarray}
+& M^\downarrow & = \min\left[M^{j}_{f^{*}(D_k)},M^{j}_{f^{*}(D_k')}\right]\\
+& M^\uparrow   & = \min\left[M^{j}_{f^{*}(D_k)},M^{j}_{f^{*}(D_k')}\right]\\
+& m^\downarrow &=  \min\left[m^{j}_{2i}, m^{j}_{2i-1}\right]\\
+& m^\uparrow   &=  \min\left[m^{j}_{2i}, m^{j}_{2i-1}\right]\\
+\label{min-gm:eqn}
+& MIN^{j}(i) & = \min\left[M^\downarrow + m^\uparrow,
+                           M^\uparrow   + m^\downarrow\right]\\
+& MAX^{j}(i) & = \max\left[M^\downarrow + m^\uparrow,
+                           M^\uparrow   + m^\downarrow\right]
+\label{max-gm:eqn}
+\end{eqnarray}
+
+\textsc{Gerrymander}(precincts $p_i$):
+
+\begin{itemize}
+\item
+Initialize $MAX^{j} = MIN^{j}(0) = 0$.
+\item
+Sort the $p_i$ by $m^{j}_i$.
+\item
+For $i = 1$ to $n/2$:
+\begin{itemize}
+\item Run recurrence in Equations \ref{min-gm:eqn} and \ref{max-gm:eqn}
+for party $P_1$.
+\end{itemize}
+\item If $MAX^{P_1}(n/2) < \frac{1}{4}nm$ then party $P_2$ can gerrymander.
+      Return \textsc{Susceptible}.
+\item If $MIN^{P_1}(n/2) > \frac{1}{4}nm$ then party $P_1$ can gerrymander.
+      Return \textsc{Susceptible}.
+\item Otherwise return \textsc{Not susceptible}.
+\end{itemize}
+
+\textbf{Running Time:} Sorting the precincts by party voter counts takes
+$O(n\log{n}$ time using a comparison sort. Each comparison depends on the
+encoding size of $m$ ($O(\log{m})$) which is often quite large for actual
+voting
+populations. Each execution of the recurrence
+take $O(1)$ time and the loop runs $O(n)$ times. Therefore the total
+running time is $O(n\log{n}\log{m})$.
+
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem 4
+\section{Insert-delete distance}
+
+\begin{enumerate}
+%------------------------------------------------------------------------------
+\item % Part A
+
+\begin{displaymath}
+OPT(i,j) = \left\{ \begin{array}{ll}
+OPT(i-1,j-1) & \textrm{if $x_i = y_j$}\\
+\min\left[OPT(i-1,j),OPT(i,j-1)\right] + 1 & \textrm{otherwise}
+\end{array} \right.
+\end{displaymath}
+
+\textsc{Insert-Delete}$(x,y \in \Sigma^*)$
+\begin{itemize}
+\item
+$i \gets 1$, $j \gets 1$
+\item
+Initialize a queue to be empty.
+\item
+Initialize $OPT(i,0) = 0$ to always delete letters at the start of $x$.
+\item
+Initialize $OPT(0,i) = 1$ to always insert letters at the end of $x$.
+\item
+For $i = 1 \textrm{ to } |x|$:
+\begin{itemize}
+\item
+For $j = 1 \textrm{ to } |y|$:
+\begin{itemize}
+\item
+if $x_i = y_j$ then
+\begin{itemize}
+\item $OPT(i,j) \gets OPT(i-1,j-1)$
+\end{itemize}
+\item
+else if $OPT(i-1,j)<OPT(i,j-1)$ then
+\begin{itemize}
+\item $OPT(i,j) \gets OPT(i-1,j) + 1$
+\item Add a $delete(i)$ operation to the queue.
+\end{itemize}
+\item
+else $OPT(i-1,j)\ge OPT(i,j-1)$ then
+\begin{itemize}
+\item $OPT(i,j) \gets OPT(i,j-1) + 1$
+\item Add an $insert(y_j,i,j)$ operation to the queue.
+\end{itemize}
+
+\end{itemize}
+
+\end{itemize}
+\item Return $OPT(|x|,|y|)$ and queue of operations.
+\end{itemize}
+
+Each calculation of the recurrence take $O(1)$ time.
+The nested loop iterates $O(|x||y|)$ times, which is the running time of
+the algorithm.
+
+%------------------------------------------------------------------------------
+\item % Part B
+
+\textsc{Find-LCS}$(x,y \in \Sigma^*)$
+\begin{itemize}
+\item
+$(ID(x,y), queue) \gets$ \textsc{Insert-Delete}$(x,y)$.
+\item
+Scan the operations in the queue. The operation indices $i$ separated by the
+longest sequence of letters in $x$ is the LCS.
+\end{itemize}
+
+Running \textsc{Insert-Delete} takes $O(|x||y|)$ time and the scan takes
+at most $O(|x|+|y|)$ time. In the worst case, the queue operations delete
+every character of $x$ and insert every character of $y$.
+Therefore the total running time is $O(|x||y|)$.
+
+\textsc{Find-SCS}$(x,y \in \Sigma^*)$
+\begin{itemize}
+\item
+Scan $x$ forwards and $y$ backwards finding the longest overlapping substring
+$x^1y^2$.
+\item
+Scan $x$ backwards and $y$ forwards finding the longest overlapping substring
+$y^1x^2$.
+\item
+If $|x^1y^2| > y^1x^2|$ then concatenate $y\circ x$ with $x^1y^2$ overlapping
+to get the SCS.
+\item
+else $|x^1y^2| < y^1x^2|$ then concatenate $x\circ y$ with $y^1x^2$ overlapping
+to get the SCS.
+\end{itemize}
+
+Scanning $x$ and $y$ forwards and backwards takes $O(|x|+|y|)$ time.
+Comparing the overlap length takes $O(1)$ time and concatenating the strings
+takes $O(\max\left[|x|,|y|\right])$ time. Therefore the total running time
+is $O(|x|+|y|)$.
+
+\end{enumerate}
+
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Minimum Steiner trees}
+
+Because of the triangle-inequality relationship of the weights,
+greedy MST algorithms such as Kruskal's or Prim's will not work.
+
+\begin{itemize}
+\item
+Run dynamic programming \textsc{Shortest-Path} algorithm from book
+at each of the $k$ sources to every other source, using the weights
+of each edge $w_{ij}$ as the cost function.
+\item
+In the previous step, at each edge store any shortest paths which
+intersect it.
+\item
+Scan all edges and remove any that are not on the shortest path from
+any source to any other source. This forms the edge set of the Steiner tree
+$T$. The node subset $Z \subseteq V$ is induced by this edge set.
+\item
+
+\end{itemize}
+
+The \textsc{Shortest-Path} algorithm runs in $O(n^3)$ time and is
+repeated $k!$ times. Scanning all edges takes time $O(m)$, which is
+$O(n^2)$ in the worst case. Therefore, the running time of this algorithm
+is $O(k!n^3)$.
+\end{document}

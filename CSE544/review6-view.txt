@@ -1,0 +1,22 @@
+Ullman's paper "Information Integration Using Logical Views" provides
+a nice theoretical formalism for integrating multiple
+sources in answering a query, where each source is imperfect:
+it may have constraints, incomplete information, or data that is inconsistent
+with other views. While this is a very practical problem in commercial
+databases, it is a good example where the right abstract model can capture
+the essential features of the system and be used to prove useful properties.
+
+It is interesting to note that although the general problem of testing
+containing of conjunctive queries is provably hard, in practice it is
+acceptable to use brute-force because the query lengths are short.
+In this sense, programmers need not waste time trying to think of an
+efficient solution or approximation heuristics.
+
+I also found it interesting that the imperfections at each source can
+be modeled as solutions which are a subset
+of the original query, but that there is a degree of freedom in the
+integration algorithm. IM is conceptually cleaner and simpler, but less
+flexible in optimizing for certain views and queries. Tsimmis is more
+complicated, but allows DBAs to fine-tune the system to their needs.
+
+

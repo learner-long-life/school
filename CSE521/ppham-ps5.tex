@@ -1,0 +1,390 @@
+\documentclass[12pt]{article}
+
+\usepackage{fullpage}
+\usepackage{fancyhdr}
+\usepackage{cse-scribe}
+\pagestyle{fancy}
+
+\rhead{Problem \thesection\\Page \thepage\\Winter 2006}
+\lhead{Paul Pham [ppham@cs.washington.edu]\\CSE 521: Algorithms\\Problem Set 5}
+
+%\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\addtolength{\headheight}{42pt} % make space for the rule
+\addtolength{\headsep}{6pt} % make space for the rule
+
+\renewcommand{\labelenumi}{(\alph{enumi})}
+\renewcommand{\labelenumii}{\roman{enumii}.}
+%\renewcommand{\thesection}{\small{Problem \arabic{section}.}}
+%  \makeatletter
+%   \renewcommand{\section}{\@startsection{section}{1}{0mm}
+%   {\baselineskip}%
+%   {\baselineskip}{\normalfont\normalsize}}%
+%   \makeatother
+%\renewcommand{\section}{\@startsection{section}{1}}
+\def\qopnamewl@#1{\mathop{\fam\z@#1}\nlimits@}
+\def\Exp#1{\mathop{\rm {E}}[#1]}
+\def\argmax{{\rm arg} \mathop{\rm {max}}}
+\def\argmin{{\rm arg} \mathop{\rm {min}}}
+\def\dist{{\rm dist}\,}
+\def\PR#1{\mathop{\rm {Pr}}\left[#1\right]}
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem 1
+\section{Unique Set Cover}
+
+\textit{Collaboration:} I discussed this problem with Justin.
+
+\begin{enumerate}
+%------------------------------------------------------------------------------
+\item % Part A
+Suppose that we know the size of the optimal subfamily size, $|G^*|$.
+Then we have the following randomized algorithm.
+
+\verb+ 1. +Initialize the subfamily: $\mathcal{G} \gets \emptyset$\\
+\verb+ 2. +For each set $S_i \in \mathcal{F}$:\\
+\verb+ 3.   +For each set $S_j \in \mathcal{G}$:\\
+\verb+ 4.     +If $S_i \cap S_j = \emptyset$ then $\mathcal{G} \gets \mathcal{G} \cup \{S_i\}$ with probability $|\mathcal{G}^*| / |\mathcal{F}|$.\\
+\verb+ 5. +Output $\mathcal{G}$
+
+We claim that this algorithm outputs a subfamily that uniquely covers
+a subset of the elements $U' \subseteq U$ such that
+$|U| \ge (1/e)|U^*|$ in expectation,
+where $U^*$ is the subset of elements covered by the
+optimal solution.
+
+Define the random variables
+%
+\begin{eqnarray*}
+Z & = & |U'| = \textrm{the number of elements covered by the returned subfamily}\\
+Z_u & = & \textrm{indicator random variable for element $u$ being covered}\\
+Z & = & \sum_{u \in U} Z_u
+\end{eqnarray*}
+%
+We wish to find the expected number of elements covered by our algorithm
+%
+\begin{displaymath}
+\Exp{Z} = \sum_{u \in U}\Exp{Z_u} = \sum_{u \in U}\PR{u \textrm{ is covered}}
+\end{displaymath}
+%
+\begin{eqnarray*}
+\Exp{Z_u} & = & \sum_{S_i \ni u}\frac{|\mathcal{G}^*|}{|\mathcal{F}|}\left(1 - \frac{|\mathcal{G}^*|}{|\mathcal{F}|}\right)^{k-1}\\
+          & = & k\frac{|\mathcal{G}^*|}{|\mathcal{F}|}\left(1 - \frac{|\mathcal{G}^*|}{|\mathcal{F}|}\right)^{k-1}\\
+          & = & |\mathcal{G}^*|\left(1 - \frac{|\mathcal{G}^*|}{|\mathcal{F}|}\right)^{k-1}\\
+          & \ge & |\mathcal{G}^*|\left(1 - \frac{|\mathcal{G}^*|}{\mathcal{F}}\right)^{k-1}\\
+          & = & k\frac{|\mathcal{G}^*|}{|\mathcal{F}|}\left(1 - \frac{|\mathcal{G}^*|}{|\mathcal{F}|}\right)^{k-1}\\
+          & = & 
+\end{eqnarray*}
+
+\pagebreak
+
+%------------------------------------------------------------------------------
+\item % Part B
+Call the number of sets to which each element belongs its \textit{degree}
+and call the maximum degree of any element $B$. Let
+$b = \lceil\log B \rceil$
+Assign an element $u$, with degree $k_u$, to a group $U_i$ such that
+$B/2^i \le k_u \le B/2^{i-1}$.
+There are $O(\log B)$ such groups, $\{U_0,\ldots,U_{b}\}$,
+since in each group the maximum degree is half of the previous.
+
+In increasing order from $U_0$ to $U_{b}$,
+select sets from $\mathcal{F}$ with same probabilities as in part (a).
+Define the following random variables:
+%
+\begin{eqnarray*}
+Z & = & |U'| = \textrm{the number of elements covered by the returned subfamily}\\
+Z_i & = & \textrm{number of elements covered in group $B_i$}\\
+Z & = & \sum_{i = 0}^b Z_i
+\end{eqnarray*}
+%
+By linearity of expectation, the expected number of elements covered by our
+algorithm is the sum of the expected number covered in any group, each of which
+is a $(1/e)$-approximation for the elements in that group.
+%
+\begin{displaymath}
+\Exp{Z} = \sum_{i = 0}^b \Exp{Z_i} \ge \sum_{i = 0}^b \frac{1}{e}|B_i| = \frac{1}{e}|U| \ge \frac{1}{e}|U_{\textsc{opt}}
+\end{displaymath}
+
+\end{enumerate}
+
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem 2
+\section{Approximate min-cuts}
+
+\textit{Collaboration:} I discussed this problem with Ben Lerner,
+Imran Rashid, and Roxanna Geambasu.
+
+\begin{enumerate}
+%------------------------------------------------------------------------------
+\item % Part A
+Call the vertex with minimum degree at any point in the algorithm
+$v_{min}$.
+We modify the contraction algorithm so that it halts whenever
+$\textsf{deg}(v_{min}) \le \ell k$ and returns the cut
+$(\{v_{min}\}, V \backslash \{v_{min}\})$, which is an $\ell$-approx min-cut.
+
+Then we now calculate the new probability that a min-cut survives the
+contraction algorithm until it halts. Define the event $E_i$ as the event
+that a min-cut survives $i$ contractions.
+At this $i$th step there $n-i+1$ nodes left,
+and the minimum degree of any node is $> \ell k$.
+%
+\begin{displaymath}
+\PR{E_i | E_1 \cap \ldots \cap E_{i-1}} \ge \left(1 - \frac{k}{(n-i+1)\ell k / 2}\right) = \left(1 - \frac{2}{(n-i+1)\ell}\right)
+\end{displaymath}
+%
+We want the probability that a min-cut survives until the $(n-2)$th
+contraction. Below, we use the inequality that $1-x \le \ln x$ for $x \ge 1$.
+%
+\begin{eqnarray*}
+\PR{E_1 \cap \ldots \cap E_{n-2}} & = &
+\PR{E_1}\PR{E_2 | E_1} \cdots\PR{E_{n-2} | E_1 \cap \ldots \cap E_{n-1}}\\
+& \ge & \prod_{i = 1}^{n-2} \left(1 - \frac{2}{(n-i+1)\ell}\right)\\
+& = & \exp\left(\ln\left(\prod_{i = 1}^{n-2} \left(1 - \frac{2}{(n-i+1)\ell}\right)\right)\right)\\
+& = & \exp\left(\left(\sum_{i = 1}^{n-2} \ln\left(1 - \frac{2}{(n-i+1)\ell}\right)\right)\right)\\
+& \ge & \exp\left(\left(\sum_{i = 1}^{n-2} - \frac{2}{(n-i+1)\ell}\right)\right)\\
+& \ge & \exp\left(-\frac{2}{\ell}H(n)\right)\\
+& \ge & \exp\left(-\frac{2}{\ell}(\ln n +1)\right)\\
+& = & \exp\left(\ln n^{-\frac{2}{l}} - \frac{2}{l}\right)\\
+& = & n^{-\frac{2}{l}}\exp(-\frac{2}{l})\\
+& = & \Omega(n^{-\frac{2}{l}})
+\end{eqnarray*}
+
+\pagebreak
+%------------------------------------------------------------------------------
+\item % Part B
+We make a different modification to the original contraction algorithm
+and first prove
+that there are at most $n^{2\ell}$ $\ell$-approx min-cuts in a graph of
+$n$ vertices.
+
+The probability that an $\ell$-approx min-cut survives the $i$th
+contraction is
+%
+\begin{displaymath}
+\PR{E_i} \ge \left(1 - \frac{\ell k}{(n-i+1)k / 2}\right) =
+\left(1 - \frac{2 \ell}{n-i+1}\right)
+\end{displaymath}
+%
+We want this probability to remain positive, therefore we stipulate that
+the algorithm must halt before the $(n-2)$th contraction.
+%
+\begin{displaymath}
+\frac{2\ell}{n-i+1} < 1 \Rightarrow i \ge n - 2\ell - 1
+\end{displaymath}
+%
+Then the total probability of a particular $\ell$-approx min-cut surviving
+$n - 2\ell$ contractions is
+%
+\begin{eqnarray*}
+\prod_{i = 1}^{n - 2\ell}\left(1 - \frac{2\ell}{n-i+1}\right) & = &
+\frac{(n-2\ell)(n-2\ell-1)\cdots2\cdot 1}{n(n-1)\cdots(2\ell+2)(2\ell+1)}\\
+& = & \frac{(n-2\ell)!(2\ell)!}{n!}\\
+& = & 1 / \binom{n}{2\ell}
+\end{eqnarray*}
+%
+Furthermore, after the end of $n - 2\ell$ contractions there are
+$2\ell + 1$ vertices remaining. Since we are looking for a particular
+$\ell$-approx min-cut, the chances of finding it are one in the
+total number of different cuts among these vertices. There are
+$2^{2\ell + 1}$ partitionings of these vertices into two sets. However,
+we double-count complementary partitionings, so the actual number of
+different cuts is $2^{2\ell}$. The final probability is
+$\le  1 / \binom{n}{2\ell}2^{2\ell}$.
+
+Similar to the reasoning for
+min-cuts in theorem (13.6) of the textbook, the maximum number of
+$\ell$-approx min-cuts, $r$,
+is at most the reciprocal of the final probability.
+Below, we use the fact that $\ell \ge 2$, since we already know the number
+of exact min-cuts.
+%
+\begin{eqnarray*}
+r & \le & \binom{n}{2\ell}2^{2\ell}\\
+  & = & 2^{2\ell}\frac{n(n-1)\cdots(n-2\ell+1)}{2\ell(2\ell-1)\cdots 2 \cdot 2}\\
+  & \le & 2^{2\ell}\frac{n^{2\ell}}{2^{2\ell}}\\
+  & = & n^{-2\ell}
+\end{eqnarray*}
+
+\end{enumerate}
+
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem 3
+\section{Approximate graph density}
+
+Let $\rho(S^*)$ be the optimal maximum density and
+and $\rho(S_i)$ be the maximum density returned by our
+greedy algorithm, from step $i$ in the algorithm,
+where $S^*$ and $S_i$ are the corresponding subsets
+respectively.
+
+Suppose (for contradiction) that $\rho(S_i) < \frac{1}{2}\rho(S^*)$.
+$\rho(S_i) = |E(S_i)| / |S_i|$, and $|E(S_i)|$ is the sum of all degrees in $S$
+divided by 2.
+ Then in the
+subgraph induced by $S_i$ at that point in the algorithm, some vertex
+had degree less than $\rho(S^*)$ by the pigeonhole principle.
+The last vertex removed before that,
+$v_{min}$ had the minimum degree of any vertex in the previous induced
+subgraph, and at most it decreased each remaining vertex degree by one.
+Therefore, $\textsf{deg}(v_{min}) < \rho(S^*) + 1$.
+
+Then in the preceding subgraph $S_{i-1}$, before removing $v_{min}$
+%
+\begin{displaymath}
+\rho(S_{i-1}) = \frac{|E(S_i)| + \textsf{deg}(v_{min})}{|S_i|+1}
+\end{displaymath}
+
+
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem 4
+\section{Randomized polynomial roots}
+
+\begin{enumerate}
+%------------------------------------------------------------------------------
+\item % Part A
+
+\begin{enumerate}
+
+%..............................................................................
+\item % Subpart i
+By contradiction: Suppose Bob can deterministically recover $n$
+\textit{logical} bits from Alice by receiving $k < n$ \textit{physical}
+bits. Assuming a uniform distribution, then by the pigeonhole principle
+some length-$2^k$ physically transmitted string must encode at least
+$2^{n-k}$ length-$2^n$ logical strings, for $k \ge 1$.
+Information-theoretically, it is impossible for Bob to tell which
+logical string was meant by Alice with perfect deterministic completeness.
+ 
+%..............................................................................
+\item % Subpart ii
+For the polynomials in the protocol below, $m = 1$, $d = n$, and $p$ is a
+prime such that $n^2 \le p \le 2n^2$. Alice has string $a = (a_1,\ldots,a_n)$
+and Bob has string $b = (b_1,\ldots,b_n)$.
+
+\verb+ 1. +Alice
+ constructs the polynomial $Q_A(x) = \sum_{i=1}^n a_ix^i \mod p$\\
+\verb+ 2. +Bob
+ constructs the polynomial $Q_B(x) = \sum_{i=1}^n b_ix^i \mod p$\\
+\verb+ 3. +Alice chooses $r \gets \mathbb{F}_p$ uniformly at random\\
+\verb+ 4. +Alice computes $y \gets Q_A(r)$, and sends $(r,y)$ to Bob.\\
+\verb+ 5. +Bob receives $(r,y)$ and computes $z \gets Q_B(r)$.\\
+\verb+ 6. +If $z = 0$ or $y \ne z$, Bob returns $(a \ne b)$, otherwise
+he returns $(a = b)$.
+
+First, the polynomials can be constructed and computed in polytime in $n$.
+Next, we see that $p = O(n^2)$ and so $r,y \in \mathbb{F}_p$ can be
+encoded and transmitted in $O(\log n)$ bits.
+
+To calculate completeness, suppose $a = b$. Then
+$y = Q_A(r) = Q_B(r) = z$. If this value is non-zero 0,
+Bob will correctly accept. However, with probability $ \le md/p = n/n^2 = 1/n$
+$Q_A(r) = Q_B(r) = 0$ and Bob will reject incorrectly
+with the same error probability.
+
+To calculate soundness, suppose $a \ne b$. If $Q_A(r) = Q_B(r) = 0$ or
+$Q_A(r) \ne Q_B(r)$ then Bob will correctly reject.
+There is also an error probability that a random $r$ will still
+cause $Q_A(r) = Q_B(r)$ because there are $2^n$ strings and only
+$p < 2n^2$ values for the polynomial. Thus, the above protocol will need
+to be repeated enough times to lower the error probability below $1/n$.
+
+\end{enumerate}
+
+\pagebreak
+%------------------------------------------------------------------------------
+\item % Part B
+
+\begin{enumerate}
+
+%..............................................................................
+\item % Subpart i
+
+\begin{itemize}
+\item
+\textbf{Fact:} No two terms in the Leibniz formula can cancel out.
+Each term in the Leibniz Formula for $\textsf{det}(A(H))$ is a product
+corresponding exactly to a permutation $\sigma$
+on $\{1,\ldots,n\}$, with even permutations appearing positively and odd
+permutations appearing negatively. Two distinct terms (corresponding to
+distinct permutations) cannot contain the same
+product of indeterminates but with
+opposite sign, because then they would be the same permutation.
+Moreover, a permutation can only be even or odd. $\Box$
+
+\item
+
+[$\textsf{det}(A(H)) \ne 0 \Rightarrow H$ has a perfect matching]:
+In the matrix $A(H)$, the rows represent vertices $v_i \in V$ and
+the columns represent vertices $w_j \in W$.
+By the Leibniz Formula, the determinant is a polynomial in the
+indeterminates $x_{i,j}$. If it is a non-zero, then at least one
+term is non-zero by the fact above.
+Pick any such term arbitrarily, which gives a function
+$\sigma$ for matching columns to rows.
+We can then recover
+a perfect matching by selecting the edges $(v_i,w_{\sigma(i)})$. This is
+a valid edge because an $x_{i,j}$ appeared in this term instead of a zero,
+and each vertex appears in exactly one such edge because $\sigma$ is a
+permutation.
+
+\item
+
+[$H$ has a perfect matching $\Rightarrow \textsf{det}(A(H)) \ne 0$]:
+If $H$ has a perfect matching, we can choose a set of edges such that
+each vertex $v_i \in V$ and $w_j \in W$ appears in any edge exactly once.
+Equivalently, we can select a set of indeterminates $x_{i,j}$'s such that every
+row and column has exactly one selected indeterminate. Therefore the
+columns of the selected $x_{i,j}$'s are a permutation of the rows and have
+an equivalent term in the Leibniz Formula, which we know cannot be cancelled
+out by any other term by the fact above. Therefore,
+$\textsf{det}(A(H)) \ne 0$.
+
+\end{itemize}
+
+%..............................................................................
+\item % Subpart ii
+On input $H = (V,W,E)$:
+
+\verb+ 1. +Construct the polynomial
+$Q(X_{1,1},\ldots,X_{n,n}) = \textsf{det}(A(H))$ with
+$m = n^2$, $d = 1$, $p$ a prime such that $n^3 \le p \le 2n^3$.\\
+\verb+ 2. +Choose $n^2$ values $r_{i,j}$'s uniformly and independently at
+random from $\mathbb{F}_p$.\\
+\verb+ 3. +Evaluate $Q(r_{1,1},\ldots,r_{n,n})$.\\
+\verb+ 4. +If the polynomial returns 0, reject.\\
+\verb+ 5. +Otherwise the polynomial returns a non-zero value. Accept.
+
+Note that the determinant can be computed (and constructed)
+in polytime using Gaussian elimination to convert $A(H)$ into triangular
+form, where the determinant only changes by a constant factor for each
+row operation. The resulting polynomial for a triangular $n\times n$
+matrix $B$ is:
+%
+\begin{displaymath}
+\textsf{det}(B) = \sum_{j=1}^n B_{1,1}\cdot B_{2,2}\cdot \ldots \cdot B_{n,n}
+\end{displaymath}
+%
+We know from the previous part that a bipartite graph $H$ without a perfect
+matching will have a zero $\textsf{det}(A(H)) = Q$, which will always be
+rejected (perfect soundness).
+We also know that even if $H$ has a perfect matching and $Q \ne 0$,
+it evaluates to zero on random inputs with probability
+$\le md/p = n^2/n^3 = 1/n$. This is the one-sided error, giving
+completeness $\ge 1 - 1/n$ as desired.
+
+\end{enumerate}
+
+\end{enumerate}
+
+\end{document}

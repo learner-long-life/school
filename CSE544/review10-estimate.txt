@@ -1,0 +1,14 @@
+This article by Getoor, Taskar, and Koller was useful to my
+understanding of RDBMSs in three ways.  First, it provides a concise
+overview of the assumptions underlying current size estimation
+techniques for query results.  Second, it shows how to exploit
+correlations between attributes in order to compactly represent joint
+probability distributions as Bayesian networks.  Since I haven't had
+exposure to this topic before, I learned how this representation was
+equivalent to the usual chain rule for conditional probabilities.
+Third, it extends the Bayesian network model to handle foreign-key
+relationships across multiple tables using join indicator variables.
+This last result allows estimation to be extended in a uniform manner.
+The last section on empirical tests was interesting to me primarily
+because it showed the practical difference between using CPD trees
+versus CPD tables.

@@ -1,0 +1,29 @@
+There is an old joke that a filesystem is just a database with poorly-defined
+semantics. The Hellerstein-Stonebraker paper brings up the tension between
+database and OS developers and the need for balance between performance
+optimization and flexibility/maintainability. Databases continue to drive
+OS design in several areas, especially in filesystems where generic
+applications can benefit from data independence, a high-level query
+language, and data consistency/recovery. Examples include the mostly forgotten
+BeFS and the anticipated WinFS.
+
+Another OS feature which would benefit database performance is real-time
+scheduling with guaranteed CPU quotas for the DBMS processes and threads.
+Since moderm DBMSs already possess sophisticated selectivity estimators
+and query optimizers, they would also be able to estimate their running
+time and to use the OS scheduler to implement admission control. A very
+general OS scheduler could use worker thread pools and disk read/write requests
+internally to schedule dataflow tasks or asynchronous I/O
+for all applications, not just databases. In this way, there would
+be less incentive for database developers to continue optimizing their
+software for a few special cases and more incentive to contribute to the larger
+systems community.
+
+I found it especially interesting to learn that hardware parallelization
+can move the database throughput bottleneck from disk I/O,
+which is individually slow, to RAM, which is comparatively fast.
+It would be possible to further optimize the caching or queries and
+sets of tuples using hardware acceleration (e.g. FPGAs which implement
+direct memory access copies from dedicated RAMs). Query execution and
+optimization could also be implemented in firmware to take on the
+current role of software iterators.

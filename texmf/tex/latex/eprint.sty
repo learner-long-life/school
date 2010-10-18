@@ -1,0 +1,344 @@
+%% eprint.sty   
+%% version 1.1.1   date: 03-13-2006
+
+%% Description
+%% -----------
+%% Defines macros for various archives
+%% These macros are called while typesetting bibliographies
+%% using the tocplain style.
+%%
+%% EPRINT_FORMAT -> ENTRY, ENTRY, ... ,ENTRY
+%% ENTRY -> ARCHIVE:IDENTIFIER | IDENTIFIER
+%% IDENTIFIER -> ARG | ARG/IDENTIFIER
+%% ARG -> string without "/:, "
+%% ARCHIVE -> string consisting of only alphabets
+%%
+%% Every ENTRY of the form IDENTIFIER is equivalent to
+%%  the entry arxiv:IDENTIFIER
+%%
+
+%% Acknowledgement
+%% ---------------
+%%   The code for \ep@slashparser and \ep@ledef have been
+%% possible due to comp.text.tex newgroup members.
+%%
+
+%% History
+%% March 13     2006: 1:00 CST (ACR)
+%%   Added support for Discrete Applied Math, IPCO, Linear algebra and its applications, LICS.
+%% February  04 2006: 1:00 CST (ACR)
+%%   Added support for Mathematical Programming & Discrete Math.
+%% October   03 2005: 12:00 CST (ACR)
+%%   Added support for Acta Informatica,Combinatorica,GAFA.
+%% September 19 2005: 1:00 CST (ACR)
+%%   Added support for Wiley journals and Acta Mathematica.
+%% September 13 2005: 4:00 CST (ACR)
+%%   Added support for Internet Mathematics.
+%% September 12 2005: 2:00 CST (ACR)
+%%   Added support for Journal of Scheduling and Information and Computation.
+%% July 26  2005: 10:00 CST (ACR)
+%%   Added support for Structure in complexity theory and the IEEE
+%%   transactions on information theory.
+%% July 7   2005: 12:00 CST (ACR)
+%%   Added support for new IEEE indexing scheme.
+%% March 28 2005: 15:30 CST
+%%   Added support for FundInf (Fundamenta Informaticae) 
+%%    >> Version 0.26
+%% March 03 2005: 15:30 CST
+%%   Officially started recording history >> Version 0.25
+
+\NeedsTeXFormat{LaTeX2e} %
+\ProvidesPackage{eprint}[2005/10/05 v1.004 eprint macros]
+\RequirePackage{hyperref}
+
+%% For each archive X we need some macros of the form
+%% ep@X@Y where Y is one,two,three,four,five,six,all
+%%
+%% if ep@X@all exists it is called. Otherwise the number of arguments
+%% is computed and ep@X@<n> is called where <n> is the number
+%% of arguments. ep@X@<n> should be a macro which takes <n> arguments.
+%%
+%% More often than not, a group of archives handle identifiers in a 
+%% similar way. In that case usually one has one generic macro which
+%% in addition to the <n> arguments takes the name of the archive
+%% (as it should be typeset) as its first argument. In such a case
+%% you can use \ep@makemacro@* macros to save you some work.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%% General definitions
+%%%%% The macros which do all the work.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% #1 = name of archive or just doi if not specified
+% #2 = full doi
+\newcommand{\epfmtdoi}[1]{\ep@fmtdoi{doi}{#1}}
+\newcommand{\ep@fmtdoi}[2]{\href{http://dx.doi.org/#2}{#1:#2}}
+
+% Check if given macro is defined or is relax
+\newcommand{\ep@ifundef}[1]{\expandafter\ifx\csname#1\endcsname\relax}
+
+% #1 = archive
+% #2 = identifier
+% if there is a \ep@<archive>@all just call it
+% otherwise call \ep@<archive>@<nargs> with the individual arguments
+
+\newcommand{\epfmt}[2]{%
+\ep@ifundef{ep@#1@all}%
+\ep@slashparser ep@#1/#2/\empty//////\relax%
+\else\csname ep@#1@all\endcsname{#2}%
+\fi}
+
+% #1 = prefix
+% rest parameters
+% parsed by /
+% Parameter Parsing happens here
+\def\ep@slashparser#1/#2/#3/#4/#5/#6/#7/#8/#9\relax{%
+\ifx\empty#3%
+\csname#1@one\endcsname{#2}%
+\else\ifx\empty#4%
+\csname#1@two\endcsname{#2}{#3}%
+\else\ifx\empty#5%
+\csname#1@three\endcsname{#2}{#3}{#4}%
+\else\ifx\empty#6%
+\csname#1@four\endcsname{#2}{#3}{#4}{#5}%
+\else\ifx\empty#7%
+\csname#1@five\endcsname{#2}{#3}{#4}{#5}{#6}%
+\else\ifx\empty#8%
+\csname#1@six\endcsname{#2}{#3}{#4}{#5}{#6}{#7}%
+\fi\fi\fi\fi\fi\fi}
+
+% Given a list of archive names, and name of a macro M
+% define commands for all given archives which call M with first argument
+% as archivename
+% The name of the macro = ep@lower(ARCHIVE)@one
+%
+% \ep@makemacro@one{ABC,PqR,xyz}{mname} -->
+%   \newcommand{\ep@abc@one}[1]{\mname{ABC}{#1}}
+%   \newcommand{\ep@pqr@one}[1]{\mname{PqR}{#1}}
+%   \newcommand{\ep@xyz@one}[1]{\mname{xyz}{#1}}
+% Assumed that \mname exists and is a two argument macro
+%
+% \ep@makemacro@<k>{list}{macroname} works similarly
+% for <k> = two,three. In each case \macroname is assumed to
+% exist and take one more argument than specified by <k>.
+%
+% \ep@makemacro@all{list}{macroname} also works similarly. Here
+% \macroname takes two arguments:archivename and full identifier
+
+% \ep@ledef{AbC} -> \edef\abc
+\def\ep@ledef#1{%
+\expandafter\lowercase\expandafter{\expandafter\expandafter\expandafter%
+\edef\expandafter\csname#1}\endcsname}
+
+% #1 = list of archive names, #2 = realmacroname
+\newcommand{\ep@makemacro@all}[2]{%
+\@for\ep@tempa:=#1\do{\edef\ep@tempb{ep@\ep@tempa @all}%
+\ep@ledef{\ep@tempb}##1{%
+\expandafter\noexpand\csname#2\endcsname{\ep@tempa}{##1}}}}
+
+% #1 = list of archive names, #2 = macroname
+\newcommand{\ep@makemacro@one}[2]{%
+\@for\ep@tempa:=#1\do{\edef\ep@tempb{ep@\ep@tempa @one}%
+\ep@ledef{\ep@tempb}##1{%
+\expandafter\noexpand\csname#2\endcsname{\ep@tempa}{##1}}}}
+
+% #1 = list of archive names, #2 = macroname
+\newcommand{\ep@makemacro@two}[2]{%
+\@for\ep@tempa:=#1\do{\edef\ep@tempb{ep@\ep@tempa @two}%
+\ep@ledef{\ep@tempb}##1##2{%
+\expandafter\noexpand\csname#2\endcsname{\ep@tempa}{##1}{##2}}}}
+
+% #1 = list of archive names, #2 = macroname
+\newcommand{\ep@makemacro@three}[2]{%
+\@for\ep@tempa:=#1\do{\edef\ep@tempb{ep@\ep@tempa @three}%
+\ep@ledef{\ep@tempb}##1##2##3{%
+\expandafter\noexpand\csname#2\endcsname{\ep@tempa}{##1}{##2}{##3}}}}
+
+% #1 = list of archive names, #2 = macroname
+\newcommand{\ep@makemacro@four}[2]{%
+\@for\ep@tempa:=#1\do{\edef\ep@tempb{ep@\ep@tempa @four}%
+\ep@ledef{\ep@tempb}##1##2##3##4{%
+\expandafter\noexpand\csname#2\endcsname{\ep@tempa}{##1}{##2}{##3}{##4}}}}
+
+% #1 = list of archive names, #2 = macroname
+\newcommand{\ep@makemacro@five}[2]{%
+\@for\ep@tempa:=#1\do{\edef\ep@tempb{ep@\ep@tempa @five}%
+\ep@ledef{\ep@tempb}##1##2##3##4##5{%
+\expandafter\noexpand\csname#2\endcsname{\ep@tempa}{##1}{##2}{##3}{##4}{##5}}}}
+
+% #1 = list of archive names, #2 = macroname
+\newcommand{\ep@makemacro@six}[2]{%
+\@for\ep@tempa:=#1\do{\edef\ep@tempb{ep@\ep@tempa @six}%
+\ep@ledef{\ep@tempb}##1##2##3##4##5##6{%
+\expandafter\noexpand\csname#2\endcsname{\ep@tempa}{##1}{##2}{##3}{##4}{##5}{##6}}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%% [arxiv]
+%%%%%%     one piece identifier
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\ep@arxiv@all}[1]{\href{http://arxiv.org/abs/#1}{arXiv:#1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%% ACM publications: 1 or 2 argument: id or doi number
+%%%%%%  e.g. .../id=432432   or doi.acm.org.../10.12321/321.321
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\ep@acmone}[2]{%
+  \href{http://portal.acm.org/citation.cfm?id=#2}{#1:#2}}
+\newcommand{\ep@acmtwo}[3]{%
+  \href{http://doi.acm.org/#2/#3}{#1:#2/#3}}
+
+\def\ep@acmlist{JACM,STOC,SODA,SIGACT,SPAA,TALG}
+\ep@makemacro@one{\ep@acmlist}{ep@acmone}
+\ep@makemacro@two{\ep@acmlist}{ep@acmtwo}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%% elsevier available via Science Direct
+%%%%%%     Linked through DOI of specific article
+%%%%%%     each journal has its own DOI prefix
+%%%%%%   Each journal needs to tell its DOI prefix
+%%%%%%     the text prefix (text of URL) and
+%%%%%%     DOI suffix of the article
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\def\ep@sdlist{IandC,IPL,JCSS,TCS,JCombThA,JAlg,DiscMath,DAMath,LAAppl}
+\ep@makemacro@all{\ep@sdlist}{ep@fmtdoi}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%% ieee: Use DOI
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%%% For IEEE old system; deprecated.
+% Proceedings URL:
+%\newcommand{\ep@ieeeprocurl}{http://csdl.computer.org/comp/proceedings}
+%
+% Given 8 digit number followed by \relax returns ONE/00/ONETWOabs.htm
+%\def\ep@ieeesuffix#1#2#3#4#5\relax{#1#2#3#4/00/#1#2#3#4#5abs.htm}
+%
+% #1 = text (CCC), #2= in url (ccc), #3 = year, #4 = 8 digit number
+%\newcommand{\ep@ieeetwo}[4]{%
+%\href{\ep@ieeeprocurl/#2/#3/\ep@ieeesuffix#4\relax}{#1:#3/#4}}
+%
+%\newcommand{\ep@ccc@two}[2]{\ep@ieeetwo{CCC}{ccc}{#1}{#2}}
+%\newcommand{\ep@sct@two}[2]{\ep@ieeetwo{SCT}{sct}{#1}{#2}}
+%\newcommand{\ep@focs@two}[2]{\ep@ieeetwo{FOCS}{focs}{#1}{#2}}
+
+%%% For IEEE new system.
+% IEEE DOI Service URL:
+\newcommand{\ep@ieeedoiurl}{http://doi.ieeecomputersociety.org/}
+\newcommand{\ep@ieeetwo}[3]{%
+  \href{\ep@ieeedoiurl/#2/#3}{#1:#2/#3}}
+%\newcommand{\ep@ieeeone}[2]{%
+%  \href{\ep@ieeedoiurl/10.1109/#2}{#1:#2}}
+\def\ep@ieeelist{CCC,SCT,FOCS,TIT,LICS}
+\ep@makemacro@two{\ep@ieeelist}{ep@ieeetwo}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%% [toc]: identifier of the form vNNN/aMMM
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\ep@toc@baseurl}{http://theoryofcomputing.org/articles/main}
+
+\newcommand{\ep@toc@all}[1]{%
+  \href{\ep@toc@baseurl/#1}{ToC:#1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%% [eccc] 1 argument of the form TR<YY>-<NNN>
+%%%%%%     TR04-032
+%%%%%%   ../2004/TR04-032
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\def\ep@eccc@helper(TR#1#2-#3){%
+\ifnum #1=9 19\else 20\fi%
+#1#2/TR#1#2-#3}
+
+\newcommand{\ep@eccc@baseurl}{http://www.eccc.uni-trier.de/eccc-reports}
+\newcommand{\ep@eccc@one}[1]{\href{\ep@eccc@baseurl/\ep@eccc@helper(#1)}{ECCC:#1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%% [sicomp,sina,siap,...] 1 argument or 2 arguments
+%%%%%%    1 argument available on epubs.siam.org
+%%%%%%    2 arguments avilable through locus (old issues)
+%%%%%%   ../321321 or .../volume-10/art_0210008.html
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% one = SICOMP,SINA,... two = number
+\newcommand{\ep@siamone}[2]{\href{http://epubs.siam.org/sam-bin/dbq/article/#2}{\MakeUppercase{#1}:#2}}
+% if #2 has a "." then it is a DOI else a locus identifier
+
+% #1 = archive, #2 = volume or one half of first part of doi,
+% #3 = \empty or second half of first part of doi followed by .\empty
+% #4 = article number or part two of doi
+% #5 = volume or part one of doi
+\def\ep@siamtwohelper(#1)(#2.#3\relax)(#4)(#5){\ifx\empty#3%
+\href{http://locus.siam.org/#1/volume-#5/art_#4.html}{\MakeUppercase{#1}:#5/#4}%
+\else\ep@fmtdoi{#1}{#5/#4}\fi}
+
+\newcommand{\ep@siamtwo}[3]{\ep@siamtwohelper(#1)(#2.\empty\relax)(#3)(#2)}
+
+\def\ep@siamlist{SIADS,SINUM,SICOMP,SIAP,SICON,SIDMA,SIMA,SIMAX,SIOPT,SISC,SIREV,TVP,MMS}
+\ep@makemacro@one{\ep@siamlist}{ep@siamone}
+\ep@makemacro@two{\ep@siamlist}{ep@siamtwo}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%% [prl,pra,prb,prc,prd,pre]:
+%%%%%%     Specify the DOI
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\def\ep@apslist{PRA,PRB,PRC,PRD,PRE,PRL}
+\ep@makemacro@all{\ep@apslist}{ep@fmtdoi}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% Springer 
+%%%%   1 argument MetaPress ID
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\ep@springer}{http://springerlink.metapress.com/link.asp?id=}
+\newcommand{\ep@springerone}[2]{\href{\ep@springer#2}{#1:#2}}
+
+\def\ep@springerlist{STACS,ICALP,CC,ActaInf,FAC,ThCS,MFCS,ESA,ISAAC,SWAT,WADS,LATIN,Algorithmica,JSched,Combinatorica,GAFA,MathProg,IPCO}
+\ep@makemacro@one{\ep@springerlist}{ep@springerone}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% IOSPress
+%%%%   1 argument MetaPress ID
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\ep@iospress}{http://iospress.metapress.com/link.asp?id=}
+\newcommand{\ep@iospressone}[2]{\href{\ep@iospress#2}{#1:#2}}
+
+\def\ep@iospresslist{FundInf}
+\ep@makemacro@one{\ep@iospresslist}{ep@iospresslist}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%  Internet Mathematics; (AK Peters)
+%%%%   4 arguments: volume, number, start page, end page.
+%%%%   These form the last three, slash-delineated portions
+%%%%   of the url with page number treated specially, 
+%%%%   e.g.:   .../1/2/129/150
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\ep@internetmathbase}{http://www.internetmathematics.org/volumes/}
+\newcommand{\ep@internetmath@four}[4]{\href{\ep@internetmathbase/#1/#2/pp#3_#4.pdf}{InternetMath:#1(#2):#3--#4}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%  Acta Mathematica
+%%%%   1 argument: the acta-math paper identified.
+%%%%   This, with ``.pdf'' forms the last portion of the url:
+%%%%   .../XXXXXXXXXXXXXX.pdf
+%%%%   (The argument is the XX.XX portion).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\ep@actamathbase}{http://www.actamathematica.org/Secure/}
+\newcommand{\ep@actamath@one}[1]{\href{\ep@actamathbase#1.pdf}{ActaMath:#1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%  Wiley: Random Structures and Algorithms, Journal of Graph Theory
+%%%%  Specify the DOI.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\def\ep@Wileylist{RSA,JGraphTh}
+\ep@makemacro@all{\ep@Wileylist}{ep@fmtdoi}

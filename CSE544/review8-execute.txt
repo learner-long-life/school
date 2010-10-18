@@ -1,0 +1,19 @@
+Graefe's survey article "Query Evaluation Techniques for Large Databases"
+provides a comprehensive summary of query execution algorithms building
+on the simple techniques of nested loops, sorting, and hashing.
+
+It is interesting to note that ideas such as iterators appear later on
+in programming languages and software engineering, but to abstract
+sequence orders rather than to effect concurrency.
+However, I wish the paper would go into more detail about how concurrent
+operations work with the buffer manager, since the given I/O analysis
+assumes that each operation has the entire memory to itself.
+Also, it is not explained why the page size is different from the cluster size.
+Is this because the page size is chosen by filesystem, and the cluster size
+chosen by the database to optimize DB-specific operations?
+
+Finally, I liked the section near the end about bit-vector filters which
+recast many previous operations, including the sorting and hashing
+paradigms, in terms of bitwise operations on vectors. It seems as though
+using bit-vectors would always be more efficient than not using them,
+but the paper does not touch upon this issue.

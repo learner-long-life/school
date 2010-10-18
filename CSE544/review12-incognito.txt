@@ -1,0 +1,16 @@
+The Incognito paper by LeFevre et al. describes an interesting
+lattice-based model and graph-based algorithm for finding the
+minimum full-domain generalization to k-anonymize a database.
+It also defines several parameters to classify previous and future
+k-anonymization algorithms.
+
+The main advantages to this approach is that a minimum generalization
+can be found by traversing all possibilities and that arbitrary cost
+functions can be used. However, there may be cases where more resources
+are expended finding the optimal solution than would have been
+saved over using a less optimal, but easier to find, solution as in
+Samarati's binary search.
+
+Moreover, this paper does not address the case where all k-tuples in a
+group have identical values outside of the quasi-identifiers.
+In this case, all such tuples can be re-identified.

@@ -1,0 +1,482 @@
+\documentclass[12pt]{article}
+
+\usepackage{fullpage}
+\usepackage{fancyhdr}
+\usepackage{cse-scribe}
+\pagestyle{fancy}
+
+\rhead{Problem \thesection\\Page \thepage\\Winter 2006}
+\lhead{Paul Pham [ppham@cs.washington.edu]\\CSE 521: Algorithms \\Mid-term Exam}
+
+%\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\addtolength{\headheight}{42pt} % make space for the rule
+\addtolength{\headsep}{6pt} % make space for the rule
+
+\renewcommand{\labelenumi}{\textbf{(\alph{enumi})}}
+\renewcommand{\labelenumii}{\textbf{\roman{enumii}.}}
+%\renewcommand{\thesection}{\small{Problem \arabic{section}.}}
+%  \makeatletter
+%   \renewcommand{\section}{\@startsection{section}{1}{0mm}
+%   {\baselineskip}%
+%   {\baselineskip}{\normalfont\normalsize}}%
+%   \makeatother
+%\renewcommand{\section}{\@startsection{section}{1}}
+\def\qopnamewl@#1{\mathop{\fam\z@#1}\nlimits@}
+\def\Exp{\mathop{\rm {E}}}
+\def\dist{{\rm dist}\,}
+
+\input{Qcircuit}
+
+\begin{document}
+%\newcommand{\ket}[1]{|#1 \rangle}
+%\newcommand{\bra}[1]{\langle #1 |}
+\newcommand{\braket}[2]{\langle #1|#2 \rangle}
+\newcommand{\normtwo}{\frac{1}{\sqrt{2}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{True-false}
+
+\begin{enumerate}
+
+%------------------------------------------------------------------------------
+\item % a
+True, by direct construction. If there are $k$ edge-disjoint $a\leadsto b$
+paths and $k$ edge-disjoint $b \leadsto c$ paths, then construct $k$
+edge-disjoint $a\leadsto c$ paths by pairing exactly one $a \leadsto b$
+path with exactly one $b \leadsto c$ path. Suppose some $b \leadsto c$ path
+shares an edge $(u,v) $ with an $a \leadsto b$ path. Then construct the
+following path: $a \leadsto u \leadsto v \leadsto c$. This is by definition
+edge disjoint with all other $a \leadsto b$ and $b \leadsto c$ paths,
+and therefore all other $a \leadsto c$ paths.
+
+%------------------------------------------------------------------------------
+\item % b
+False, by counterexample. A single bad choice of augmenting path can
+return an arbitrarily bad approximation of the maximum flow.
+
+Simply construct a graph with $k$ edge-disjoint $s-t$ paths with
+at least two nodes on each path that are not $s$ or $t$. Then
+add an edge that zig-zags, or threads, its way across all paths from
+$s$ to $t$. Make all edge capacities 1. Then the maximum flow is
+$k$ by ignoring the zig-zag path. However, by taking the zig-zag path,
+the ``Forward Edge Only'' heuristic returns a flow of $1$,
+which is a $1/k$-approximation.
+
+\begin{figure}[hbt]
+  \input{graph}
+  \centerline{\box\graph}
+\end{figure}
+
+In particular, this graph has a max flow of $5$ and the zig-zag path
+shown is the only augmenting path for a $1/5 (< 1/4)$ flow approximation.
+
+\end{enumerate}
+
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Max monotonic subsequence}
+
+We find a monotonic subsequence of maximum length using a dynamic programming
+algorithm. Given $(x_1,\ldots,x_n)$ as input, we keep the table entries
+below.
+We abbreviate \textit{longest increasing subsequence} as LIS and
+\textit{longest decreasing subsequence} as LDS.
+\\
+\begin{tabular}{|l|l|}
+\hline
+$INC(i)$ & index of the previous number in the LIS containing $x_i$.\\
+$INCLEN(i)$ & length of the LIS containing $x_i$.\\
+$DEC(i)$ & index of the previous number in the LDS containing $x_i$.\\
+$DECLEN(i)$ & length of the LDS containing $x_i$.\\
+\hline
+\end{tabular}
+
+\begin{itemize}
+\item Create an empty binary search tree.
+\item For $i=1$ to $n$:
+\begin{itemize}
+\item Insert $i$ into the BST, keyed by $x_i$, rotating as necessary to
+maintaining balanced. (May overwrite $x_i$ if it already exists).
+\item Find the predecessor of $x_i$ in the BST.
+\item If there is no predecessor, then:
+\begin{itemize}
+\item $INC(i) \gets 0$
+\item $INCLEN(i) \gets 1$
+\end{itemize}
+\item otherwise, there is a predecessor key $x_j$ with value $j$:
+\begin{itemize}
+\item $INC(i) \gets j$
+\item $INCLEN(i) \gets INCLEN(j)+1$
+\end{itemize}
+\item Find the successor key of $x_i$ in the BST.
+
+\item If there is no successor, then:
+\begin{itemize}
+\item $DEC(i) \gets 0$
+\item $DECLEN(i) \gets 1$
+\end{itemize}
+\item otherwise, there is a successor key $x_k$ with value $k$:
+\begin{itemize}
+\item $DEC(i) \gets k$
+\item $DECLEN(i) \gets DECLEN(k)+1$
+\end{itemize}
+
+\end{itemize}
+
+\item Find the maximum $INCLEN(l)$.
+\item Find the maximum $DECLEN(m)$.
+\item If $INCLEN(l) > 1 DECLEN(m)$, then:
+\begin{itemize}
+\item Traverse $INC(l)$ backwards, constructing LIS until $0$ is reached.
+\item Return the LIS.
+\end{itemize}
+\item Otherwise:
+\begin{itemize}
+\item Traverse $DEC(m)$ backwards, constructing LDS until $0$ is reached.
+\item Return the LDS.
+\end{itemize}
+\end{itemize}
+
+Inserting into a balanced binary tree of $n$ elements takes $O(\log{n})$ time,
+and maintaining the balance (through AVL trees or red-black trees) also
+takes $O(\log{n})$ time.
+
+The predecessor of a node is either the rightmost descendant in its
+left subtree  or the rightmost descendant of its closest ancestor with
+a left subtree.
+The successor of a node can be found similarly.
+Both operations take $O(\log{n})$ because in the worst case they traverse
+the height of the tree twice.
+
+Updating the table entries takes $O(1)$ time. The main loop runs
+$O(n)$ times, once for every number in the input sequence, and the
+entire loop takes $O(n\log{n})$ time.
+Scanning the list to find the maximum length of increasing and
+decreasing subsequences takes $O(n)$ time, which is dominated by the
+main loop.
+
+The correctness of this algorithm hinges on the fact that choosing
+the predecessor $x_j$ of a node $x_i$ always puts it in the correct LIS and
+that choosing a successor puts it in the correct LDS.
+For the LIS, if
+some other node $x_{j'}$ was chosen,
+then a longer increasing subsequence could be formed by
+interposing $x_j$ in between $x_{j'}$ and $x_i$, contradicting our assumption
+of an LIS.
+Furthermore, we note that predecessor $x_j$
+of $x_i$ at the point it is
+requested in algorithm always has lower index because later indices
+have not been added yet. $x_j$ is always less than $x_i$ but greater than
+any other node with lower index by the BST property, so it is a correct
+LIS and no increasing subsequence can do better.
+A similar argument can be made for the successor $x_k$ and decreasing
+subsequences.
+
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Majority is monotone}
+
+\begin{enumerate}
+
+%------------------------------------------------------------------------------
+\item % a
+Our approach is to recursively add the number of 1s in the inputs
+by encoding them into binary numbers and using binary adders.
+On the top level, we can simply compare the 1-counter with $n/2$
+to determine the majority.
+
+The circuits for counting $1$s in one and two boolean inputs are given below:
+
+The algorithm \textsc{One-Count} computes the counting circuit for one input
+as shown below.\\
+\begin{tabular}{|lll|l|}
+\hline
+$x_1$ & $\rightarrow$ & $c_1$ & Outputs\\
+\hline
+0 & $\rightarrow$ & 0 & $c_1 \gets x_1$ \\
+1 & $\rightarrow$ & 1 &\\
+\hline
+\end{tabular}
+
+The algorithm \textsc{Two-Count} computes the counting circuit for two inputs
+as shown below. It uses 3 ANDs, 1 OR, and 2 NOTs.\\
+\begin{tabular}{|lllll|l|}
+\hline
+$x_1$ & $x_2$ & $\rightarrow$ & $c_1$ & $c_2$ & Outputs\\
+\hline
+0 & 0 & $\rightarrow$ & 0 & 0 & $c_1 \gets x_1\cdot x_2$ \\
+0 & 1 & $\rightarrow$ & 0 & 1 & $c_2 \gets (\overline{x_1} \cdot x_2) + (x_1 \cdot \overline{x_2})$\\
+1 & 0 & $\rightarrow$ & 0 & 1 &\\
+1 & 1 & $\rightarrow$ & 1 & 0 &\\
+\hline
+\end{tabular}
+
+This gives rise to the following helper
+algorithm which takes in boolean inputs and constructs a
+circuit whose outputs are binary-encoded numbers.
+
+$(c_1,\ldots, c_{\lceil\log_2{n}\rceil + 1}) \gets$
+\textsc{Counter-Circuit}$(x_1,\ldots x_n)$:
+\begin{itemize}
+\item If $n \le 2$, then return either \textsc{One-Count} or \textsc{Two-Count}.
+\item If $n > 2$ then make the following recursive calls:
+\begin{itemize}
+\item $a \gets \lfloor n/2 \rfloor$
+\item $y = (y_1, \ldots, y_{\lceil\log_2{a}\rceil}) \gets$
+\textsc{Counter-Circuit}$(x_1, \ldots, x_a)$
+\item $z = (z_1, \ldots, z_{\lceil\log_2{a}\rceil}) \gets$
+\textsc{Counter-Circuit}$(x_{a+1}, \ldots, x_n)$
+\item $c = (c_1,\ldots,c_{\lceil\log_2{n}\rceil + 1}) \gets$
+\textsc{Full-Adder-Circuit}$(y,z)$
+\end{itemize}
+\end{itemize}
+
+The main algorithm is:
+
+\textsc{Majority}$(x_1,x_n)$:
+\begin{itemize}
+\item $c = (c_1,\ldots,c_{\log_2{n}+1}) \gets$
+\textsc{Counter-Circuit}$(x_1,\ldots,x_n)$
+\item Encode $n$ as a ($\log_2{n}+2$)-bit number.
+\item Encode $2c$ as a ($\log_2{n}+2$)-bit number.
+\item Construct a circuit which returns 1 if $2c > n$ and otherwise 0.
+\end{itemize}
+
+\textbf{Algorithm Running Time and Circuit Size:}
+The \textsc{Counter-Circuit} algorithm obeys the recurrence:
+$T(n) = 2T(\lceil n/2 \rceil) + O(\log{n})$ for both running time and
+circuit size.
+In each level of the recursion, the helper algorithm divides the problem
+of counting $n$ 1s into two halves of $n/2$ bits each.
+To combine the outputs, which are $\lceil\log{n/2}\rceil$ numbers,
+it constructs a full-adder circuit. We do not specify
+\textsc{Full-Adder-Circuit} here, but it suffices to use a plain
+ripple-adder with $\lceil\log{n/2}\rceil+1$ half-adder
+circuits for the same number of input bits (plus a carry bit).
+ Each half-adder contains a constant
+number of gates, so constructing the full-adder takes $O(\log{n})$ time and
+the same number of gates.
+
+The recursion bottoms out for two or one inputs, which take a constant
+number of gates and time to construct as described in the tables above.
+By the Master Theorem, this recurrence has the solution $T(n) = O(n)$.
+To see this for the circuit size, note that the depth of the circuit
+is $O(\log_2{n})$ where $n$ is the number of inputs/leaves. At worst, this
+is a complete binary tree which has $2^{O(\log_2{n})}-1$ nodes (full adder
+circuits), or $O(n)$.
+
+The \textsc{Majority} algorithm can construct a comparison circuit for
+two numbers with $O(\log_2{n})$ bits in the same time and number of gates.
+Simply compare bit-by-bit from the most significant one until a difference
+is found. This running time and circuit size is dominated by the
+$O(n)$ above.
+
+\pagebreak
+
+%------------------------------------------------------------------------------
+\item % b
+
+Our approach is to sort recursively the inputs into a canonical order where all
+$0$s appear before $1$s. We can then determine majority by examining
+the sorted input around the midpoint $n/2$.
+The circuits for sorting boolean inputs into canonical order are given below.
+They contain a constant number of gates, none of which are NOT gates.
+
+We will refer to the algorithm which computes this circuit as:\\
+$s_1 \gets$\textsc{One-Sort}$(x_1)$.
+\begin{tabular}{|lll|l|}
+\hline
+$x_1$ & $\rightarrow$ & $s_1$ & Outputs\\
+\hline
+0 & $\rightarrow$ & 0 & $s_1 \gets x_1$ \\
+1 & $\rightarrow$ & 1 &\\
+\hline
+\end{tabular}
+
+We will refer to the algorithm which computes this circuit as:\\
+$(s_1,s_2) \gets$\textsc{Two-Sort}$(x_1,x_2)$.
+\begin{tabular}{|lllll|l|}
+\hline
+$x_1$ & $x_2$ & $\rightarrow$ & $s_1$ & $s_2$ & Outputs\\
+\hline
+0 & 0 & $\rightarrow$ & 0 & 0 & $s_1 \gets x_1\cdot x_2$ \\
+0 & 1 & $\rightarrow$ & 0 & 1 & $s_2 \gets x_1 + x_2$\\
+1 & 0 & $\rightarrow$ & 0 & 1 &\\
+1 & 1 & $\rightarrow$ & 1 & 1 &\\
+\hline
+\end{tabular}
+
+This gives rise to the following helper
+algorithm which takes in boolean inputs and constructs a
+circuit whose outputs are the inputs in sorted order.
+
+$(s_1,\ldots, s_n)$
+\textsc{Sort-Circuit}$(x_1,\ldots x_n)$:
+\begin{itemize}
+\item If $n \le 2$, then call either \textsc{One-Sort} or \textsc{Two-Sort}.
+\item If $n > 2$ then make the following recursive calls:
+\begin{itemize}
+\item $a \gets \lfloor n/2 \rfloor$
+\item $y = (y_1, \ldots, y_{a}) \gets$
+\textsc{Sort-Circuit}$(x_1, \ldots, x_a)$
+\item $y = (y_{a+1}, \ldots, y_{n}) \gets$
+\textsc{Sort-Circuit}$(x_{a+1}, \ldots, x_n)$
+\item $(s_1,w_1) \gets$\textsc{Two-Sort}$(y_1,y_{a+1})$
+\item For $i=1$ to $\lceil n/2 \rceil$:
+\begin{itemize}
+\item $(z_{i}, z_{a+i} \gets$\textsc{Two-Sort}$(y_{i},y_{a+1})$
+\item $(s_{2i}, w_{2i}) \gets $\textsc{Two-Sort}$(w_{i},z_{i})$
+\item $(s_{2i+1}, w_{2i+1}) \gets $\textsc{Two-Sort}$(w_{i+1},z_{a+i})$
+\end{itemize}
+\end{itemize}
+\end{itemize}
+
+The following figure will help you visualize the way that this
+\textsc{Sort-Circuit} block ``mergesorts'' its two sublists of bits.
+
+\begin{figure}[hbt]
+  \input{circuit}
+  \centerline{\box\graph}
+\end{figure}
+
+The main algorithm is:
+
+\textsc{Majority}$(x_1,x_n)$:
+\begin{itemize}
+\item $s = (s_1,\ldots,s_n) \gets$
+\textsc{Sort-Circuit}$(x_1,\ldots,x_n)$
+\item If $n$ is even, then:
+\begin{itemize}
+\item If $x_{n/2} = 1$ and $x_{n/2 + 1}=1$ then return 1.
+\item Otherwise return 0.
+\end{itemize}
+\item If $n$ is odd, then:
+\begin{itemize}
+\item If $x_{\lceil n/2 \rceil} = 1$ then return 1.
+\item Otherwise return 0.
+\end{itemize}
+\end{itemize}
+
+\textbf{Algorithm Running Time and Circuit Size:}
+The \textsc{Sort-Circuit} algorithm obeys the following
+recurrence $T(n) = 2T(\lceil n/2 \rceil) + O(n)$ for both running time
+and circuit size.
+In each level of the recursion, the helper algorithm behaves like
+mergesort in dividing the problem
+of sorting $n$ inputs into two halves of $n/2$ bits each and then
+combining them with $O(n)$ gates in the same time.
+
+The recursion bottoms out for two or one inputs, which take a constant
+number of gates and time to construct as described in the tables above.
+By the Master Theorem, this recurrence has the solution $T(n) = O(n^2)$.
+To see this for the circuit size, note that the depth of the circuit
+is $O(\log_2{n})$ where $n$ is the number of inputs/leaves. At each level,
+the total number of gates is $O(n)$, so in the entire tree there are
+$O(n\log{n}) = O(n^2)$ gates.
+
+The \textsc{Majority} algorithm above runs in constant time, since
+multiplication by two is simply a bit shift.
+This running time and circuit size is dominated by the
+$O(n^2)$ above.
+
+\end{enumerate}
+
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Unique min cut}
+
+At the end of the Ford-Fulkerson algorithm, based on the residual graph $G_f$
+, define $V_s$ as the subset of
+all vertices that are reachable from $s$ and $V_t$ as the
+subset of all vertices that can reach $t$.
+Call $c_s^*$ the cut which separates $V_s$ from $(V - V_s)$
+and $c_t^*$ the cut which separates $V_t$ from $(V - V_t)$.
+We know these must be min cuts, otherwise there would be at least one edge
+connecting $V_s$ to $(V - V_s)$ or $V_t$ to $(V - V_t)$, contradicting our
+definition. We know that these subsets must be disjoint, otherwise an
+$s-t$ augmenting path would still exist and Ford-Fulkerson would not have
+terminated.
+
+There is a unique min cut iff $c_s^* = c_t^*$. We can run
+Ford-Fulkerson in strongly polynomial time $O(|V||E|)$ as shown in
+Problem Set 3, and we can compare cuts using BFS in $O(|V|+|E|)$.
+Therefore, a unique min cut can be determined in polytime.
+We prove this in two directions.
+
+$c_s^* = c_t^* \Rightarrow $ unique min cut.
+If the two cuts are equal, then all nodes are either
+reachable from $s$ or able to reach $t$. Since the two subsets of vertices
+are fixed, there is a unique set of edges between them in the original
+graph that represents a unique min cut.
+
+Unique min cut $\Rightarrow c_s^* = c_t^*$.
+Suppose that the two cuts are not equal. Then there are some vertices that
+are neither reachable from $s$ nor able to reach $t$. In other words,
+they are only connected by back edges to $V_s$ or $V_t$ and can be
+arbitrarily put in either subset without changing the capacity of the cut.
+In that case, there are multiple min cuts.
+
+Therefore, $c_s^* = c_t^* \Leftrightarrow $ there exists a unique min cut.
+
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{3-way cut}
+
+\begin{enumerate}
+
+%------------------------------------------------------------------------------
+\item % a
+
+To find an isolating cut for $s_i$, connect $s_{i+1 \mod 3}$ and $s_{i+2 \mod 3}$ to $t$ with edges whose capacity are defined as infinity. In other words,
+these edges will never be included in any min cut, and all min cuts will
+separate $s_i$ from the other two terminals.
+Then run Ford-Fulkerson in $O(|V||E|)$ time using BFS augmentation as
+discussed in Problem Set 3.
+This returns a min isolating cut by direct construction.
+
+%------------------------------------------------------------------------------
+\item % b
+
+\begin{enumerate}
+\item % i
+Removing all the edges in $C_{i_1}$ disconnects some terminal
+$s_{i_1}$ from $s_{i_2}$ and $s_{i_3}$. Removing any other edges will
+never reconnect this terminal to the other two. Removing all edges in
+$C_{i_2}$ likewise disconnects $s_{i_2}$ from the other two terminals,
+and being disconnected is a symmetric property. Therefore all three terminals
+are disconnected and $C_{i_1} \cup C_{i_2}$ is a 3-way cut.
+
+\item % ii
+False, by counterexample. Suppose each terminal is in its own subgraph,
+and each subgraph is connected to each other through the edges $(u,v)$,
+$(v,w_1)$, and $(v,w_2)$ as shown in the figure below. If the edge
+capacities are $c_1 = c_2 > 0$, then it is possible for $C_{i_1}$ to choose
+$(v,w_1)$ but for $C_{i_2}$ to choose
+$(v,w_2)$. Both would choose $(u,v)$ to isolate
+$s_{i_3}$, but the union $C_{i_1} \cup C_{i_2}$ would have capacity
+$c_1 + c_2 + c_3$ which is greater than the min cut capacity
+$c_3 + \min\left[c_1,c_2\right]$.
+
+\begin{figure}[hbt]
+  \input{graph2}
+  \centerline{\box\graph}
+\end{figure}
+
+\item % iii
+$\alpha = 2$. In an extreme case of the example in part (ii),
+$c = c_1 = c_2 > 0$. Then the returned cut capacity is $c_3 + 2c$
+when the actual min cut capacity is $c_3 + c$. The ratio
+$(c_3 + 2c) / (c_3 + c)$ is maximized at 2 when $c_3 = 0$. A bound on
+the approximation factor must describe all cases, including this one.
+
+\end{enumerate}
+
+\end{enumerate}
+
+\end{document}

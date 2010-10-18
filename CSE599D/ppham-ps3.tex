@@ -1,0 +1,323 @@
+\documentclass[12pt]{article}
+
+\usepackage{fullpage}
+\usepackage{fancyhdr}
+\usepackage{cse-scribe}
+\pagestyle{fancy}
+
+\rhead{Problem \thesection\\Page \thepage\\Winter 2006}
+\lhead{Paul Pham [ppham@cs.washington.edu]\\CSE 599D: Quantum Computing \\Problem Set 3}
+
+%\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\addtolength{\headheight}{42pt} % make space for the rule
+\addtolength{\headsep}{6pt} % make space for the rule
+
+\renewcommand{\labelenumi}{\textbf{\alph{enumi})}}
+\renewcommand{\labelenumii}{\textbf{\arabic{enumii}}}
+%\renewcommand{\thesection}{\small{Problem \arabic{section}.}}
+%  \makeatletter
+%   \renewcommand{\section}{\@startsection{section}{1}{0mm}
+%   {\baselineskip}%
+%   {\baselineskip}{\normalfont\normalsize}}%
+%   \makeatother
+%\renewcommand{\section}{\@startsection{section}{1}}
+\def\qopnamewl@#1{\mathop{\fam\z@#1}\nlimits@}
+\def\Exp{\mathop{\rm {E}}}
+\def\dist{{\rm dist}\,}
+
+\input{Qcircuit}
+
+\begin{document}
+%\newcommand{\ket}[1]{|#1 \rangle}
+%\newcommand{\bra}[1]{\langle #1 |}
+\newcommand{\braket}[2]{\langle #1|#2 \rangle}
+\newcommand{\normtwo}{\frac{1}{\sqrt{2}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Tsirel'son's Inequality}
+
+\begin{enumerate}
+
+%------------------------------------------------------------------------------
+\item % a
+%
+\begin{eqnarray*}
+C^2 & = & (AB + AB' + A'B - A'B')^2 =\\
+    & = & A^2B^2 + A'^2BB' + AA'B^2 - AA'BB' +\\
+    &   & A^2B'B + A^2B'^2 + AA'B'B - AA'B'^2 +\\
+    &   & A'AB^2 + A'ABB' + A'^2B^2 - A'^2BB' +\\
+    &   & -A'AB'B - A'AB'^2 - A'^2B'B + A'^2B'^2\\
+    & = & I + BB' + AA' - AA'BB' +\\
+    &   & B'B + I + AA'B'B - AA' +\\
+    &   & A'A + A'ABB' + I - BB' +\\
+    &   & -A'AB'B - A'A - B'B + I\\
+    & = & 4I - AA'BB' + AA'B'B + A'ABB' - A'AB'B\\
+    & = & 4I + AA'(B'B-BB') - (A'A(B'B-BB')\\
+    & = & 4I - (AA'-A'A)(BB'-B'B)\\
+    & = & 4I - [A,A'][B,B']
+\end{eqnarray*}
+
+%------------------------------------------------------------------------------
+\item % b
+The inequality is saturated below when $MN = 0$.
+%
+\begin{eqnarray*}
+\displaystyle ||M+N||_{\textrm{sup}}
+& = & \sup_{\ket{\psi}\ne 0} \frac{||(M+N)\ket{\psi}||}{||\ket{\psi}||}\\
+& = & \sup_{\ket{\psi}\ne 0} \frac{\sqrt{\bra{\psi}(M^\dagger+N^\dagger)(M+N)\ket{\psi}}}{||\ket{\psi}||}\\
+& \le & \sup_{\ket{\psi}\ne 0} \frac{\sqrt{\bra{\psi}(M^\dagger+N^\dagger+2N^\dagger M^\dagger)(M+N+2MN)\ket{\psi}}}{||\ket{\psi}||}\\
+& = & \sup_{\ket{\psi}\ne 0} \frac{\sqrt{\bra{\psi}M^\dagger M\ket{\psi}} + \sqrt{\bra{\psi}N^\dagger N\ket{\psi}}}{||\ket{\psi}||}\\
+& = & \sup_{\ket{\psi}\ne 0} \frac{||M\ket{\psi}||+||N\ket{\psi}||}{||\ket{\psi}||}\\
+& \le & \sup_{\ket{\psi}\ne 0} \frac{||M\ket{\psi}||}{||\ket{\psi}||} +
+    \sup_{\ket{\psi'}\ne 0} \frac{||N\ket{\psi'}||}{||\ket{\psi'}||}\\
+& = & ||M||_{\textrm{sup}} + ||N||_{\textrm{sup}}
+\end{eqnarray*}
+%
+Below we use the Cauchy-Schwarz inequality for norms on
+inner product spaces.
+%
+\begin{eqnarray*}
+\displaystyle ||MN||_{\textrm{sup}}
+& = & \sup_{\ket{\psi}\ne 0} \frac{||(MN)\ket{\psi}||}{||\ket{\psi}||}\\
+& = & \sup_{\ket{\psi}\ne 0} \frac{\sqrt{\bra{\psi}(N^\dagger M^\dagger MN)\ket{\psi}}}{||\ket{\psi}||}\\
+& \le & \sup_{\ket{\psi}\ne 0} \frac{\sqrt{\bra{\psi}M^\dagger M\ket{\psi}}\cdot\sqrt{\bra{\psi}N^\dagger N\ket{\psi}}}{||\ket{\psi}||}\\
+& = & \left(\sup_{\ket{\psi}\ne 0} \frac{||M\ket{\psi}||}{||\ket{\psi}||}\right)\cdot
+      \left(\sup_{\ket{\psi'}\ne 0} \frac{||N\ket{\psi'}||}{||\ket{\psi'}||}\right)\\
+& = & ||M||_{\textrm{sup}}||N||_{\textrm{sup}}
+\end{eqnarray*}
+
+%------------------------------------------------------------------------------
+\item % c
+Below we use the fact that $A$, $A'$, $B$, and $B'$ are self-adjoint and the
+following:
+%
+\begin{displaymath}
+||AA'BB'||_{\textrm{sup}} = \sup_{\ket{\psi}\ne 0} \frac{||AA'BB'\ket{\psi}||}{||\ket{\psi}||} = \frac{\sqrt{\bra{\psi}B'^\dagger B^\dagger A'^\dagger A^\dagger AA'BB'\ket{\psi}}}{||\ket{\psi}||} = 1
+\end{displaymath}
+%
+\begin{eqnarray*}
+||C||_{\textrm{sup}} & = & \sqrt{||C^2||_{\textrm{sup}}}\\
+& = & \sqrt{||4I - [A,A'][B,B']||_{\textrm{sup}}}\\
+& \le & \sqrt{||4I||_{\textrm{sup}} + ||(AA'-A'A)(BB'-B'B)||_{\textrm{sup}}}\\
+& \le & \sqrt{||4I||_{\textrm{sup}} + ||(AA'BB')||_{\textrm{sup}} + ||(A'ABB')||_{\textrm{sup}} + ||(AA'B'B)||_{\textrm{sup}} + ||(A'AB'B)||_{\textrm{sup}}}\\
+& = & \sqrt{||4I||_{\textrm{sup}} + 4}\\
+& = & \sqrt{8} = 2\sqrt{2}
+\end{eqnarray*}
+
+\end{enumerate}
+
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{A Quantum Error Detecting Code}
+
+\begin{enumerate}
+
+%------------------------------------------------------------------------------
+\item % a
+Note that $XZ= - ZX$. Then we have the following:
+%
+\begin{eqnarray*}
+S_1S_2 & = & XI \otimes XI \otimes IX \otimes IX\\
+       & = & IX \otimes IX \otimes XI \otimes XI = S_2S_1 \\
+S_1S_3 & = & XZ \otimes XZ \otimes IZ \otimes IZ\\
+       & = & (-ZX) \otimes (-ZX) \otimes ZI \otimes ZI\\
+       & = & ZX \otimes ZX \otimes ZI \otimes ZI S_3S_1\\
+S_2S_3 & = & IZ \otimes IZ \otimes XZ \otimes XZ\\
+       & = & ZI \otimes ZI \otimes (-ZX) \otimes (-ZX)\\
+       & = & ZI \otimes ZI \otimes ZX \otimes ZX = S_3S_1\\
+\end{eqnarray*}
+%------------------------------------------------------------------------------
+\item % b
+A projector which annihilates all states outside of the subspace defined by
+$S_i\ket{\psi} = \ket{psi}$ is as follows:
+%
+\begin{displaymath}
+P = I + (Z \otimes Z \otimes Z \otimes Z) + (XZX\otimes XZX \otimes XZX \otimes XZX) = S_3S_3 + S_3 + S_1S_2S_3S_1S_2
+\end{displaymath}
+%
+%------------------------------------------------------------------------------
+\item % c
+One basis for the subspace is
+%
+\begin{eqnarray*}
+\ket{\psi_1} & = \normtwo(\ket{0000}+\ket{1111})\\
+\ket{\psi_2} & = \normtwo(\ket{0011}+\ket{1100})
+\end{eqnarray*}
+%
+%------------------------------------------------------------------------------
+\item % d
+Note that $XZX= -Z$ and $ZXZ = -X$. Then we can construct the following
+Pauli group operator, which is not a product of $S_i$s and not identity,
+which commutes with each $S_i$.
+%
+\begin{displaymath}
+S_p = XZ \otimes Z \otimes Z \otimes XZ
+\end{displaymath}
+%
+\begin{eqnarray*}
+S_1S_p & = & XXZ \otimes XZ \otimes Z \otimes XZ\\
+       & = & (-XZX)\otimes (-ZX) \otimes Z \otimes XZ\\
+       & = & XZX \otimes ZX \otimes Z \otimes XZ = S_pS_1 \\
+S_2S_p & = & XZ \otimes Z \otimes XZ \otimes XXZ\\
+       & = & XZ \otimes Z \otimes (-ZX) \otimes (-XZX)\\
+       & = & XZ \otimes Z \otimes ZX \otimes XZX = S_pS_2\\
+S_3S_p & = & ZXZ \otimes ZZ \otimes ZZ \otimes ZXZ\\
+       & = & (-XZZ) \otimes ZZ \otimes ZZ \otimes (-XZZ)\\
+       & = & XZZ \otimes ZZ \otimes ZZ \otimes XZZ = S_pS_3\\
+\end{eqnarray*}
+%------------------------------------------------------------------------------
+\item % e
+If $P=X$, it will anti-commute with any $S_i$ with $Z$ in the same qubit
+(e.g. always with $S_3$).
+If $P=Y$, it will anti-commute with any $S_i$ with $X$ or $Y$ in the same qubit
+(e.g. always with $S_3$ and either $S_1$ or $S_2$).
+If $P=Z$, it will anti-commute with any $S_i$ with $X$ in the same qubit
+(e.g. either with $S_1$ or $S_2$).
+Therefore, an operator with one Pauli matrix $P$ in any qubit will always
+anti-commute with at least one $S_i$.
+%------------------------------------------------------------------------------
+\item % f
+$S_i(Q\ket{\psi}) = S_iQ\ket{\psi} = -QS_i\ket{\psi} = -Q\ket{\psi}$
+%------------------------------------------------------------------------------
+\item % g
+If a nontrivial Pauli operator was applied to $\ket{\psi}$ then
+$S_i$ will introduce a negative phase and move the state into an
+orthogonal subspace (-1 eigenvalue subspace): $S_i\ket{\psi'} = -\ket{\psi'}$.
+Otherwise applying $S_i$ will leave the state in the +1 eigenvalue subspace.
+\end{enumerate}
+
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Decoherence-Free Subspaces}
+
+\begin{enumerate}
+%------------------------------------------------------------------------------
+\item %a
+The state $\normtwo(\ket{01}-\ket{10})$ is annihilated by the operators
+$X_2$, $Y_2$, and $Z_2$.
+
+%------------------------------------------------------------------------------
+\item %b
+%------------------------------------------------------------------------------
+\item %c
+%------------------------------------------------------------------------------
+\item %d
+An example calculation for $X_4$ shows that an amplitude in every term is
+cancelled out by an amplitude of the opposite sign in a matching term, due
+to the action of the bit flip $X$ gate:
+
+\begin{eqnarray*}
+\ket{\psi}_{12}\otimes\ket{\psi}_{34} & =
+\normtwo(\ket{01}_{12}-\ket{10}_{12}) \otimes \normtwo(\ket{01}_{34}-\ket{10}_{34})\\
+(X\otimes I \otimes I \otimes I)\ket{\psi}_{12}\otimes\ket{\psi}_{34} & =
+\normtwo(\ket{11}_{12}-\ket{00}_{12}) \otimes \normtwo(\ket{01}_{34}-\ket{10}_{34})\\
+(I\otimes X \otimes I \otimes I)\ket{\psi}_{12}\otimes\ket{\psi}_{34} & =
+\normtwo(\ket{00}_{12}-\ket{11}_{12}) \otimes \normtwo(\ket{01}_{34}-\ket{10}_{34})\\
+(I\otimes I \otimes X \otimes I)\ket{\psi}_{12}\otimes\ket{\psi}_{34} & =
+\normtwo(\ket{01}_{12}-\ket{10}_{12}) \otimes \normtwo(\ket{11}_{34}-\ket{00}_{34})\\
+(I\otimes I \otimes I \otimes X)\ket{\psi}_{12}\otimes\ket{\psi}_{34} & =
+\normtwo(\ket{01}_{12}-\ket{10}_{12}) \otimes \normtwo(\ket{00}_{34}-\ket{11}_{34})
+\end{eqnarray*}
+
+\begin{eqnarray*}
+X_4(\ket{\psi}_{12}\otimes\ket{\psi}_{34}) & = & (\normtwo(\ket{11}_{12}-\ket{00}_{12}+\ket{00}_{12}-\ket{11}_{12})\otimes\normtwo(\ket{01}_{34}-\ket{10}_{45})+\\
+& & (\normtwo(\ket{01}_{12}-\ket{10}_{12}) \otimes \normtwo(\ket{11}_{34}-\ket{00}_{34}+\ket{00}_{34}-\ket{11}_{34})\\
+& = & 0
+\end{eqnarray*}
+
+By similar calculations, $X_4$ also annihilates the states
+$\ket{\psi}_{13}\otimes\ket{\psi}_{24}$ and
+$\ket{\psi}_{14}\otimes\ket{\psi}_{23}$, and by yet other calculations which
+are less similar but still pretty close,
+$Y_4$ and $Z_4$ also annihilate these three states.
+
+%An example calculation for $Y_4$:
+
+%\begin{eqnarray*}
+%(Y\otimes I \otimes I \otimes I)\ket{\psi}_{12}\otimes\ket{\psi}_{34} & =
+%\normtwo(-i\ket{11}_{12}-i\ket{00}_{12}) \otimes \normtwo(\ket{01}_{34}-\ket{10}_{34})\\
+%(I\otimes Y \otimes I \otimes I)\ket{\psi}_{12}\otimes\ket{\psi}_{34} & =
+%\normtwo(i\ket{00}_{12}+i\ket{11}_{12}) \otimes \normtwo(\ket{01}_{34}-\ket{10}_{34})\\
+%(I\otimes I \otimes Y \otimes I)\ket{\psi}_{12}\otimes\ket{\psi}_{34} & =
+%\normtwo(\ket{01}_{12}-\ket{10}_{12}) \otimes \normtwo(-i\ket{11}_{34}-i\ket{00}_{34})\\
+%(I\otimes I \otimes I \otimes Y)\ket{\psi}_{12}\otimes\ket{\psi}_{34} & =
+%\normtwo(\ket{01}_{12}-\ket{10}_{12}) \otimes \normtwo(i\ket{00}_{34}+i\ket{11}_{34})
+%\end{eqnarray*}
+
+%\begin{eqnarray*}
+%Y_4(\ket{\psi}_{12}\otimes\ket{\psi}_{34}) & = & (\normtwo(-i\ket{11}_{12}-i\ket{00}_{12}+i\ket{00}_{12}+i\ket{11}_{12})\otimes\normtwo(\ket{01}_{34}-\ket{10}_{45})+\\
+%& & (\normtwo(\ket{01}_{12}-\ket{10}_{12}) \otimes \normtwo(-i\ket{11}_{34}-i\ket{00}_{34}+i\ket{00}_{34}+i\ket{11}_{34})\\
+%& = & 0
+%\end{eqnarray*}
+
+%By similar calculations, $Y_4$ also annihilates the states
+%$\ket{\psi}_{13}\otimes\ket{\psi}_{24}$ and
+%$\ket{\psi}_{14}\otimes\ket{\psi}_{23}$.
+
+%An example calculation for $Z_4$:
+
+%\begin{eqnarray*}
+%(Z\otimes I \otimes I \otimes I)\ket{\psi}_{12}\otimes\ket{\psi}_{34} & =
+%\normtwo(-\ket{11}_{12}-\ket{00}_{12}) \otimes \normtwo(\ket{01}_{34}-\ket{10}_{34})\\
+%(I\otimes Z \otimes I \otimes I)\ket{\psi}_{12}\otimes\ket{\psi}_{34} & =
+%\normtwo(\ket{00}_{12}+\ket{11}_{12}) \otimes \normtwo(\ket{01}_{34}-\ket{10}_{34})\\
+%(I\otimes I \otimes Z \otimes I)\ket{\psi}_{12}\otimes\ket{\psi}_{34} & =
+%\normtwo(\ket{01}_{12}-\ket{10}_{12}) \otimes \normtwo(-\ket{11}_{34}-\ket{00}_{34})\\
+%(I\otimes I \otimes I \otimes Z)\ket{\psi}_{12}\otimes\ket{\psi}_{34} & =
+%\normtwo(\ket{01}_{12}-\ket{10}_{12}) \otimes \normtwo(\ket{00}_{34}+\ket{11}_{34})
+%\end{eqnarray*}
+
+%\begin{eqnarray*}
+%Z_4(\ket{\psi}_{12}\otimes\ket{\psi}_{34}) & = & (\normtwo(-\ket{11}_{12}-\ket{00}_{12}+\ket{00}_{12}+\ket{11}_{12})\otimes\normtwo(\ket{01}_{34}-\ket{10}_{45})+\\
+%& & (\normtwo(\ket{01}_{12}-\ket{10}_{12}) \otimes \normtwo(-\ket{11}_{34}-\ket{00}_{34}+\ket{00}_{34}+\ket{11}_{34})\\
+%& = & 0
+%\end{eqnarray*}
+
+%By similar calculations, $Z_4$ also annihilates the states
+%$\ket{\psi}_{13}\otimes\ket{\psi}_{24}$ and
+%$\ket{\psi}_{14}\otimes\ket{\psi}_{23}$.
+
+%------------------------------------------------------------------------------
+\item %e
+We can expand each of the three states into the following forms:
+
+\begin{eqnarray*}
+\ket{\psi}_{12}\otimes\ket{\psi}_{34} & = & \normtwo(\ket{01}_{12}-\ket{10}_{12}) \otimes \normtwo(\ket{01}_{34}-\ket{10}_{34})\\
+ & = & \frac{1}{2}(\ket{0101} - \ket{1001} - \ket{0110} + \ket{1010})\\
+\ket{\psi}_{13}\otimes\ket{\psi}_{24} & = & \normtwo(\ket{01}_{13}-\ket{10}_{13}) \otimes \normtwo(\ket{01}_{24}-\ket{10}_{24})\\
+ & = & \frac{1}{2}(\ket{0011} - \ket{1001} - \ket{0110} + \ket{1100})\\
+\ket{\psi}_{14}\otimes\ket{\psi}_{23} & = & \normtwo(\ket{01}_{14}-\ket{10}_{14}) \otimes \normtwo(\ket{01}_{23}-\ket{10}_{23})\\
+ & = & \frac{1}{2}(\ket{0011} - \ket{1010} - \ket{0101} + \ket{1100})
+\end{eqnarray*}
+
+We can then write the following linear combination, with
+$\alpha_1 = 1$, $\alpha_2 = -1$, $\alpha_3 = 1$,  which sums to 0.
+
+\begin{displaymath}
+\alpha_1(\ket{\psi}_{12}\otimes\ket{\psi}_{34}) +
+\alpha_2(\ket{\psi}_{13}\otimes\ket{\psi}_{24}) +
+\alpha_3(\ket{\psi}_{14}\otimes\ket{\psi}_{23}) = 0
+\end{displaymath}
+
+Therefore these states are not linearly independent.
+
+%------------------------------------------------------------------------------
+\item %f
+The following two states are a basis for the subspace, using Gram-Schmidt
+on the three states in the previous part.
+
+\begin{displaymath}
+\{\ket{\phi_1}, \ket{\phi_2}\} = \{\ket{\psi}_{12}\otimes\ket{\psi}_{34},
+\ket{\psi}_{14}\otimes\ket{\psi}_{23}\}
+\end{displaymath}
+
+%------------------------------------------------------------------------------
+\item %g
+
+\end{enumerate}
+
+\end{document}

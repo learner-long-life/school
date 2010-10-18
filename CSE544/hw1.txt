@@ -1,0 +1,188 @@
+Paul Pham [ppham@cs.washington.edu]
+CSE 544: Principles of Database Systems
+Spring 2006
+Homework 1
+
+------------------------------------------------------------------------------
+1a) All actors who appeared in at least one film in the last half of the 19th
+    century and at least one film in the first half of the 20th century.
+
+SELECT DISTINCT a.fname, a.lname
+  FROM actor AS a, movie AS m1, movie AS m2, casts AS c1, casts AS c2
+  WHERE (c1.pid = a.id) AND (c1.mid = m1.id) AND
+        (m1.year BETWEEN 1850 AND 1900) AND
+        (c2.pid = a.id) AND (c2.mid = m2.id) AND
+        (m2.year BETWEEN 1901 AND 1950);
+
+------------------------------------------------------------------------------
+1b) All directors who directed a film during a leap year.
+
+SELECT DISTINCT d.fname, d.lname
+  FROM director AS d, movie AS m, movie_director AS md
+  WHERE (md.did = d.id) AND (md.mid = m.id) AND (m.year % 4 = 0);
+
+------------------------------------------------------------------------------
+2) All movies released the same year as Shrek (2001).
+
+SELECT m2.name
+  FROM movie AS m1, Movie AS m2
+  WHERE (m1.name = 'Shrek') AND (m2.year = m1.year) AND
+        (m2.rank > m1.rank);
+
+------------------------------------------------------------------------------
+3) First and last name of all actors who appeared in the film "Officer 444".
+
+SELECT DISTINCT a.fname, a.lname
+  FROM actor AS a, movie AS m, casts AS c
+     WHERE (m.name = 'Officer 444') AND (c.pid = a.id) AND (c.mid = m.id);
+
+------------------------------------------------------------------------------
+4) Directors in descending order of number of films directed.
+
+SELECT DISTINCT d.fname, d.lname, count(*) AS movie_count
+  FROM movie AS m, movie_director AS md, director AS d
+  WHERE (md.did = d.id) AND (md.mid = m.id)
+  GROUP BY d.id, d.fname, d.lname
+  ORDER BY movie_count DESC;
+
+------------------------------------------------------------------------------
+5a) Find the film(s) with the maximum number of actors.
+
+SELECT id, name, cast_count
+  FROM (SELECT DISTINCT m.id, m.name, count(*) AS cast_count
+          FROM movie AS m, casts AS c
+          WHERE c.mid = m.id
+          GROUP BY m.id, m.name) as countview
+  WHERE cast_count =
+       (SELECT max(cast_count) AS max_count
+          FROM (SELECT m.id, count(*) AS cast_count
+                FROM movie AS m, casts AS c
+                WHERE c.mid = m.id GROUP BY m.id) AS countview);    
+
+  id   |               name               | cast_count 
+-------+----------------------------------+------------
+ 20625 | Around the World in Eighty Days  |       1274
+(1 row)
+
+------------------------------------------------------------------------------
+5b) Find the film(s) with the minimum number of actors.
+
+SELECT id, name, cast_count
+  FROM (SELECT DISTINCT m.id, m.name, count(*) AS cast_count
+          FROM movie AS m, casts AS c
+          WHERE c.mid = m.id
+          GROUP BY m.id, m.name) AS countview
+  WHERE cast_count =
+       (SELECT min(cast_count) AS min_count
+          FROM (SELECT m.id, count(*) AS cast_count
+                FROM movie AS m, casts AS c
+                WHERE c.mid = m.id GROUP BY m.id) AS countview);    
+
+------------------------------------------------------------------------------
+6) Actors who have acted in films directed by at least 10 distinct directors.
+
+SELECT actor_id, actor_lname, actor_fname, film_count
+  FROM (SELECT a.id as actor_id,
+               a.lname as actor_lname,
+               a.fname AS actor_fname,
+               count(*) AS film_count
+          FROM actor AS a,
+               director AS d,
+               movie_director AS md,
+               casts AS c
+          WHERE (c.pid = a.id) AND (c.mid = md.mid) AND
+                (md.did = d.id)
+          GROUP BY a.id, a.lname, a.fname) as countview
+  WHERE film_count >= 10;
+
+------------------------------------------------------------------------------
+7) Actors who have only acted in films before 1960.
+
+SELECT a.fname, a.lname
+  FROM actor AS a
+  WHERE (SELECT max(m.year) AS max_year
+           FROM movie AS m, casts AS c
+           WHERE (c.mid = m.id) AND (c.pid = a.id) GROUP BY a.id)
+        < 1960;
+
+------------------------------------------------------------------------------
+8) Movies with more female actors than male actors.
+
+SELECT m.id, m.name, male_count, female_count
+  FROM movie as m,
+       (SELECT DISTINCT m.id, count(*) AS male_count
+          FROM movie AS m, casts AS c, actor AS a
+          WHERE (c.mid = m.id) AND (c.pid = a.id) AND (a.gender = 'M')
+          GROUP BY m.id) as maleview,
+       (SELECT DISTINCT m.id, count(*) AS female_count
+          FROM movie AS m, casts AS c, actor AS a
+          WHERE (c.mid = m.id) AND (c.pid = a.id) AND (a.gender = 'F')
+          GROUP BY m.id) as femaleview
+  WHERE (m.id = maleview.id) AND (m.id = femaleview.id) AND
+        (female_count > male_count);
+
+------------------------------------------------------------------------------
+9) Male/female costar pairs in descending order of number of costarred films.
+
+SELECT male.id, male.lname, male.fname, female.id, female.lname, female.fname,
+       costar_count
+  FROM actor AS male, actor AS female,
+       casts AS male_cast, casts as female_cast,
+       (SELECT DISTINCT a1.id AS male_id, a2.id AS female_id,
+                        count(*) as costar_count
+          FROM actor AS a1, actor AS a2, movie AS m, casts AS c1, casts AS c2
+          WHERE (c1.mid = c2.mid) AND (c1.pid = a1.id) AND (c2.pid = a2.id) AND
+                (a1.gender = 'M') AND (a2.gender = 'F')
+          GROUP BY a1.id, a2.id) AS costars
+  WHERE (male_cast.pid = male.id) AND (female_cast.pid = female.id) AND
+        (male_cast.pid = costars.male_id) AND
+        (female_cast.pid = costars.female_id) AND
+        (male_cast.mid = female_cast.mid)
+  ORDER BY costar_count DESC;
+
+------------------------------------------------------------------------------
+10) Debut films for each actor sorted by actor last name.
+
+SELECT a.id, a.lname, a.fname, m.id, m.name, debut_year
+  FROM actor AS a, movie AS m, casts AS c,
+       (SELECT DISTINCT a.id AS actor_id, m.id AS movie_id,
+                        min(m.year) AS debut_year
+          FROM actor AS a, movie AS m, casts AS c
+          WHERE (c.mid = m.id) AND (c.pid = a.id)
+          GROUP BY a.id) AS debutview
+  WHERE (a.id = debutview.actor_id) AND (c.pid = a.id) AND (c.mid = m.id) AND
+        (m.year = debutview.debut_year)
+  ORDER BY a.lname;
+
+------------------------------------------------------------------------------
+11) Actors with Bacon number 2.
+
+SELECT DISTINCT a1.id, a1.lname, a1.fname
+  FROM actor AS a1, actor AS a2, movie AS m1, movie as m2,
+       casts AS c1, casts AS c2, casts AS c3, casts AS bc,
+       (SELECT id FROM actor
+          WHERE lname = 'Bacon' AND fname = 'Kevin') AS ba
+  WHERE (a1.id <> a2.id) AND (a1.id <> ba.id) AND (a2.id <> ba.id) AND
+        (c1.pid = a1.id) AND (c1.mid = c2.mid) AND (c2.pid = a2.id) AND
+        (c3.pid = a2.id) AND (c2.mid <> c3.mid) AND (c3.mid = bc.mid) AND
+        (bc.pid = ba.id)
+        AND NOT a1.id IN (SELECT DISTINCT a.id
+                            FROM actor AS a, movie AS m, casts AS c4,
+                                 casts AS c5
+                            WHERE (c4.pid = a.id) AND (c4.mid = c5.mid) AND
+                                  (c5.pid = ba.id) AND (a.id <> ba.id));
+
+Bonus:
+We assume that actors not connected to Kevin Bacon by any path of costars
+have an infinite Bacon number.
+To find all actors with a finite Bacon number, we use a similar query to
+the one above for i from 1 to the number of actors in the database (call
+it N), the maximum possible Bacon number, except there is no need to remove
+actors with Bacon numbers smaller than i. For Bacon number i, we need O(i)
+WHERE clauses ANDed together to specify that the actors and movies are unique
+and are connected to Kevin Bacon in a simple line. Then we need N of these
+conjunctions ORed together. \Sum_{i=1}^N O(i) = O(N^2),
+plus a constant number of clauses to make sure Bacon himself is counted.
+
+------------------------------------------------------------------------------
+12) The decade with the largest number of films.

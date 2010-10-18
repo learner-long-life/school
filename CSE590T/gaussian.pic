@@ -1,0 +1,57 @@
+.PS 3.0
+
+# Gaussian pulse
+
+# Make the TeX fonts smaller
+\footnotesize
+
+tol = 0.01;
+
+###############################################################################
+# Gaussian
+# $1 = amplitude
+# $2 = mean (mu)
+# $3 = stdev (sigma)
+# $4 = step size
+# $5 = end 
+define gaussian {
+  GStart: Here;
+  for i = GStart.x to $5 by $4 do {
+    "." at (i, GStart.y+$1*exp((-(i - $2)^2)/(2*$3^2))/($3*sqrt(2*pi)));
+  }
+}
+
+pi = 3.141592653956
+ampl = 2;
+sigma = 0.5;
+step = 0.01;
+fudge = 0.05;
+Start: Here;
+Mean: Here+(2.5,0);
+Stop: Mean+(2.5,0);
+
+gaussian(ampl, Mean.x, sigma, step, Stop.x, 1.5);
+
+blah = 2.2
+line from  (Start.x+blah, Start.y+ampl*exp((-(blah - Mean.x)^2)/(2*sigma^2))/(sigma*sqrt(2*pi))) to Start + (blah,0);
+blah = 2.8
+line from  (Start.x+blah, Start.y+ampl*exp((-(blah - Mean.x)^2)/(2*sigma^2))/(sigma*sqrt(2*pi))) to Start + (blah,0);
+
+move to Stop;
+
+Mean: Stop+(2.5,0);
+Stop: Mean+(2.5,0);
+ampl = 2;
+sigma = 1.5;
+
+gaussian(ampl, Mean.x, sigma, step, Stop.x);
+
+blah = 7.2
+line from  (Start.x+blah, Start.y+ampl*exp((-(blah - Mean.x)^2)/(2*sigma^2))/(sigma*sqrt(2*pi))) to Start + (blah,0);
+blah = 7.9
+line from  (Start.x+blah, Start.y+ampl*exp((-(blah - Mean.x)^2)/(2*sigma^2))/(sigma*sqrt(2*pi))) to Start + (blah,0);
+
+# Restore the TeX font size
+\normalsize
+
+.PE
