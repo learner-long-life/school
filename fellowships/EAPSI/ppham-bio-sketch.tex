@@ -1,0 +1,265 @@
+% Paul Pham's Bio Sketch for EAPSI Fellowship
+
+\documentclass[letter]{article}
+\usepackage{fancyhdr}
+\usepackage[pdftex]{graphicx,color,hyperref}
+
+\pagestyle{fancyplain}
+\lhead[\fancyplain{}{\bfseries\thepage}]
+    {\fancyplain{}{\bfseries\rightmark}}
+\rhead[\fancyplain{}{\bfseries\leftmark}]
+    {\fancyplain{}{Paul T. Pham \hfill\bfseries\thepage}}
+\cfoot[]{}
+\addtolength{\headheight}{1.6pt}
+
+\addtolength{\topmargin}{-0.75in}	% repairing LaTeX's huge margins...
+\addtolength{\textwidth}{.5in}	% same here....
+\addtolength{\marginparwidth}{.1in}	% The word ``Memberships'' is really long below
+\setlength{\headwidth}{\textwidth}
+\setlength{\parindent}{0mm}	% indented paragraphs just don't make it
+			   	% on a resume.  (My opinion; if you
+			   	% disagree, give this whatever value you
+			   	% want.) 
+\setlength{\textheight}{9.5in}	% more margin hacking.  I have a large
+			    	% resume to fit on one page.
+
+\begin{document}
+
+\thispagestyle{empty}           % no headers on the first page
+
+\reversemarginpar		% this puts the margin notes on the
+				% left-hand side of the resume.
+
+{\LARGE {2010 NSF EAPSI Biographical Sketch}}
+\par
+{\Large {\bf Paul T. Pham}}
+\par
+\vspace{.25in}
+E-mail: ppham@cs.washington.edu
+\hspace*{\fill}
+205 13th Ave E, \#5
+\linebreak
+Phone: (206) 859-0322
+\hspace*{\fill}
+Seattle, WA 98102
+
+				% address stuff.  The \hspace*{\fill} is
+				% necessary to get things laid out
+				% correctly.  The sizes fed to \vspace are
+				% variable, depending on how much
+				% whitespace you want, and how much
+				% stuff you're trying to fit on a page....
+\par
+\vspace{.25in}
+				% if the \marginpar is at the beginning
+				% of the line, it loses.  *sigh*.  This
+				% is a typical entry in a resume.   (I'm
+				% defining an entry as something
+				% important enough to have a marginal note
+				% setting it off.)  Give it some space
+				% with \vspace, use \par to break
+				% between paragraphs, enter your text,
+				% and place the \marginpar at the end.
+				
+%Yes\marginpar{{\bf U.S. Citizenship}}
+
+{\bf Pulse Programmer} \hspace*{\fill}January 2005---Present
+\marginpar{{\bf Open Source}}
+\par
+\url{http://pulse-programmer.org}
+\marginpar{{\bf Projects}}
+\par
+Project Founder, Lead Developer
+\par
+An open platform for general-purpose, programmable radiofrequency systems.
+\vspace{\baselineskip}
+\par
+
+{\bf Quantum Compiler} \hspace*{\fill}July 2005---Present
+\par
+\url{http://quantum-compiler.org}
+\par
+Project Founder
+\par
+An open implementation of compiling algorithms to approximate arbitrary quantum
+logic gates.
+\par
+\vspace{\baselineskip}
+\par
+
+{\bf University of Washington} \hspace*{\fill}September 2005---Present
+\marginpar{{\bf Education}}
+\par
+Degree in progress: Doctor of Philosophy in Computer Science.
+Advisor: Dave Bacon
+\vspace{\baselineskip}
+\par
+
+{\bf Massachusetts Institute of Technology}
+\par
+Master of Engineering in Electrical Engineering \& Computer Science, February 2005.\\
+Graduate GPA: 4.7/5.0\\
+Thesis: \href{http://sourceforge.net/project/showfiles.php?group_id=129764&package_id=144780&release_id=307201}{A general-purpose pulse sequencer for quantum computing}.\\
+Advisor: Isaac Chuang\\
+\par
+Bachelor of Science in Electrical Engineering and Computer Science, June 2004.\\
+Undergraduate GPA: 4.2/5.0
+\vspace{\baselineskip}
+\par
+				% This is a slightly more complicated
+				% example.  \vspace gets a `doublespace'
+				% (1.5\baselineskip) between entries, and
+				% a  `singlespace' between paragraphs of
+				% an entry.
+				% (1.5\baselineskip means twice the value
+				% of \baselineskip).  
+
+\vspace{\baselineskip}
+\par
+{\bf {University of Washington Dept. of Physics and Astronomy}} \hfill Seattle, WA
+\marginpar{{\bf Research}}
+\par
+{\em Lab Technician} \hfill January---July 2007
+\marginpar{{\bf Experience}}
+\par
+\href{http://depts.washington.edu/qcomp/}{Trapped Ion Quantum Computing Group}
+\par
+Supervisor: Prof. Boris Blinov
+\par
+Built a programmable radio-frequency system for ion trap laser control. Designed and
+assembled high-speed printed circuit boards. Developed FPGA firmware and
+software for Ethernet control
+and an instruction set architecture for generating fast pulses.\\
+\url{http://pulse-sequencer.sf.net}
+
+\par
+
+\vspace{\baselineskip}
+\par
+{\bf Max Planck Institute for Quantum Optics} \hfill Garching, Germany
+\par
+{\em Visiting Ph.D. Student} \hfill July 2005---August 2005
+\par
+\href{http://www.mpq.mpg.de/qsim/}{Quantum Analog Simulation Group}
+\par
+Advisor: Dr. Tobias Sch\"atz
+\par
+Built a programmable radio-frequency system for ion trap laser control.
+\par
+
+\vspace{\baselineskip}
+\par
+{\bf University of Innsbruck} \hfill Innsbruck, Austria
+\par
+{\em Visiting Ph.D. Student} \hfill February 2005---June 2005
+\par
+\href{http://heart-c704.uibk.ac.at/index.html}{Quantum Optics and Spectroscopy Group}
+\par
+Advisor: Univ. Prof. Rainer Blatt
+\par
+Built a programmable radio-frequency system for ion trap laser control.
+\par
+
+\vspace{\baselineskip}
+\par
+{\bf MIT Center for Bits and Atoms} \hfill Cambridge, Massachusetts
+\par
+\href{http://web.mit.edu/~cua/www/quanta/}{quanta Research Group}
+\par
+{\em Graduate Research Assistant} \hfill September 2003---January 2005
+\par
+Advisor: Prof. Isaac Chuang
+\par
+Designed and built instrumentation for quantum computing experiments.
+\par
+
+\vspace{\baselineskip}
+\par
+``Component-based Invisible Computing.''
+\marginpar{{\bf Publications}}\\
+A. Forin, J. Helander, \textbf{P. Pham}, J. Rajendiran.\\
+IEEE Realtime Embedded Systems Workshop Paper, December 2001.
+
+\newpage
+
+``Method and system for managing the execution of threads and data processing.''
+\marginpar{{\bf Patents}}\\
+A. Forin, J. Helander, \textbf{P. Pham}.\\
+U.S. Patent Application No. 20030233392.\\
+Filed on June 12, 2002.
+
+\vspace{\baselineskip}
+University of Washington Max E. Gellert Fellowship (2005)\marginpar{{\bf Awards}}\\
+MIT Jerome B. Wiesner Scholarship (1999-2000)\\
+Robert C. Byrd Scholar (1999-2001)\\
+National Merit Scholar (1999)\\
+Oklahoma All-State Scholar (1999)\\
+Microsoft Computer Science Scholarship (1999)
+\par
+
+\vspace{\baselineskip}
+
+{\bf University of Washington} \hfill Seattle, Washington
+\marginpar{{\bf Teaching}}
+
+\par
+{\em Teaching Assistant, Computer Science \& Engineering Department}
+\marginpar{{\bf Experience}}
+
+\vspace{0.5\baselineskip}
+\par
+The Hardware/Software Interface (\href{http://www.cs.washington.edu/education/courses/351/10sp/}{CSE 351})\hfill Spring 2010
+\par
+Professor Gaetano Borriello
+
+\vspace{0.5\baselineskip}
+\par
+Data Structures (\href{http://www.cs.washington.edu/education/courses/326/06au/}{CSE 326})\hfill Autumn 2006
+\par
+Professor Larry Snyder
+
+\vspace{0.5\baselineskip}
+\par
+Software Development Tools (\href{http://www.cs.washington.edu/education/courses/303/06sp/}{CSE 303})\hfill Spring 2006
+\par
+Professor Magda Balazinska
+
+\vspace{0.5\baselineskip}
+\par
+Algorithms (\href{http://www.cs.washington.edu/education/courses/417/06wi/}{CSE 417})\hfill Winter 2006
+\par
+Professor Larry Ruzzo
+
+\vspace{0.5\baselineskip}
+\par
+Discrete Structures Class (\href{http://www.cs.washington.edu/education/courses/321/05au/}{CSE 321})\hfill Autumn 2005
+\par
+Professors Dieter Fox \& Anna Karlin
+\par
+
+\vspace{\baselineskip}
+\par
+{\bf MIT Elec. Eng. \& Computer Science Dept.} \hfill Cambridge, Massachusetts
+
+\vspace{0.5\baselineskip}
+\par
+{\em Teaching Assistant}
+\par
+Software Engineering Laboratory Class (\href{http://courses.csail.mit.edu/6.170/old-www/2004-Spring/admin-info/generalinfo.html#Staff}{6.170}) \hfill January 2004---May 2004
+\par
+Professor Rob Miller
+
+\vspace{0.5\baselineskip}
+\par
+{\em Lab Assistant}
+\par
+Software Engineering Laboratory Class (6.170) \hfill September 2002---May 2003
+\par
+Professors Michael Ernst \& Daniel Jackson
+\par
+
+\end{document}
+
+
+
+

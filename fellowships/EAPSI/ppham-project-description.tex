@@ -1,0 +1,190 @@
+\documentclass{article}
+
+\usepackage{eprint}
+
+\begin{document}
+
+\begin{center}
+\LARGE{2010 NSF EAPSI Project Description}\\
+\Large{Paul Pham}
+\end{center}
+
+
+\section{Host Researcher and Institution}
+
+The EAPSI program would give me the valuable opportunity to understand the
+international
+nature of scientific collaboration by allowing me to form new research
+and personal connections. If awarded this
+fellowship, I would travel to Australia for the first time, which is one of
+the world's centers for my chosen field of quantum computing. Australia is home
+to Engineered Quantum Systems (EQuS), a multi-institution, international
+collaboration for engineering quantum systems and technology.
+In addition, one of the EQuS nodes is especially well-suited to my
+collaboration, the University of Sydney.
+The Quantum Science Research Group there contains strong researchers 
+including Drs. Stephen Bartlett and Andrew Doherty on the
+side of theory as well as Drs. Michael Biercuk and David Reilly on the side of
+experiment, using trapped ions.
+Ion traps have an advantage over
+other qubit candidates in possessing relatively long coherence times,
+identical energy characteristics from qubit to qubit, and a recent
+demonstration of a fully-programmable two-qubit trapped ion quantum processor
+ \cite{Hanneke2009}.
+
+Dr. Michael J. Biercuk would be an ideal host due to his past experience at NIST
+Boulder in achieving high-fidelity quantum control over trapped ions
+\cite{BUVSIB2009a}.
+In particular, he has developed advanced experimental techniques for 
+suppressing noise in trapped ions using a technique called dynamical
+decoupling (DD) which has increased the reliability of initial measurements
+by several orders of magnitude.
+Dr. Biercuk is further pursuing this research
+at the University of Sydney where he is a lecturer and head of the newly-established
+Quantum Control Laboratory, where I propose to carry out my fellowship in
+dealing with the central problem of suppressing quantum noise.
+
+\section{Quantum Noise}
+
+In order to realize the benefits of quantum information processing and
+to make a quantum computer into a reality, we need to deal with the
+practical problems of fault-tolerance and noise.
+Any quantum system must be shielded from
+unintended couplings to its environment in order to maintain a coherent 
+quantum state that is useful for computation. These stray couplings are
+known as noise, errors, or {\em decoherence}. Remarkable theoretical results in
+{\em fault-tolerant} quantum computing have shown that we can correct these
+seemingly continuous errors using discrete operations, unlike classical
+analog computation. Most current approaches to fault-tolerance focus on
+quantum error correcting (QEC) codes, which encode
+each logical qubit into many physical qubits. However, every QEC code introduces
+an overhead of more physical qubits, which increases the probability of
+failure. We need to achieve a "fault-tolerant threshold" for a single qubit's
+error probability in order to ensure we get a net benefit from applying QEC.
+Threshold theorems for a variety of architectures have proven that this single
+qubit error is anywhere from $10^{-3}$ to $10^{-6}$ \cite{NC2000}.
+If $p$ is the single qubit error and $p_{th}$ is the threshold error rate,
+the error rate for the encoded logical qubit is $p(p/p_{th})^{2^k}$ \cite{NC2000}.
+Therefore, to fully realize the benefits of driving down error rates with
+concatenating QEC codes, we need the ratio $p/p_{th}$ to be as small as possible,
+and therefore our goals for $p$ are much more stringent than for unencoded
+qubits.
+
+\section{Dynamical Decoupling}
+
+Dynamical decoupling is a promising approach for achieving this much lower error
+rate without introducing more qubits or measurement---only precise, unitary quantum
+control are needed via programmed pulses.
+Based on open-loop control techniques pioneered with
+nuclear magnetic resonance (NMR), dynamical decoupling uses sequences of
+precisely timed pulses to perform quantum bit flips to coherently average out
+fluctuations from the environment \cite{VL1998}.
+The most famous example of a dynamical
+process for suppressing noise is Hahn's spin-echo sequence, which was
+developed in NMR to remote arbitrary dephasing due to inhomogeneities in the
+magnetic field \cite{}. Dr. Biercuk was able to use a similar technique
+to increase phase coherence times in trapped beryllium ions from 2.5ms to 700ms, an
+increase of {\em two orders of magnitude} \cite{BUVSIB2009a}.
+Unfortunately, the NMR community has long known about several limitations
+to a simple DD approach, using, for example a repeated sequence of
+pulses attributed to Carr, Purcell, Meiboom, and Gill (CPMG). The CPMG
+sequence is only effective against slowly varying phase noise, whereas
+in a general quantum information setting, we may experience phase noise
+of arbitrary spectal density.
+
+Recent theoretical results indicate that more general kinds of noise can be further
+suppressed with longer and more complicated pulse sequences called
+Uhrig Dynamical Decoupling (UDD) \cite{Uhrig2007}, where the delays between various
+pulses in a sequence can be varied precisely.
+Until recently, experimental errors were too great to allow the precise
+implementation of these new sequences. However, Dr. Biercuk's group at NIST
+were able to overcome these limitations by achieving high operational
+and measurement fidelities and engineering the noise
+environment itself \cite{BUVSIB2009a}, and thus were able to achieve
+the first ever experimental demonstration of UDD and a corresponding
+suppression of errors by 8 to 10 orders of magnitude for some kinds of
+high-frequency noise.
+
+Dynamical decoupling can be useful for "refreshing" arbitrary quantum states
+in a quantum memory. This provides much needed volatile storage in between
+computational operations, similar to a DRAM for classical computers. In the
+future, this research could give rise to a "quantum firmware" which will
+provide a platform for higher-level quantum computation.
+Dr. Biercuk was also able to use experimental feedback to
+generate optimized sequences for such a model quantum memory \cite{BUVSIB2009c}.
+
+Further theoretical frameworks have been proposed to extend these results,
+most importantly Dynamical Controlled Gates (DCGs) to perform non-trivial gates
+\cite{Khodjasteh2009},
+other than just the "no-op" of preserving quantum states.
+This is crucial for performing real quantum computations since even a simple
+logical gate in a quantum algorithm may result in many physical gates
+\cite{Dawson2005}.
+Even small errors in enacting individual gates may accumulate and render
+the overall computation useless, unless additional suppression is done.
+
+\section{Project Description: Pulse Programming}
+
+In order to generate these complex sequences of programmable pulses,
+high-speed digital electronic hardware is needed as well as a flexible software
+interface. Because Dr. Biercuk is starting a new lab, he will have the
+opportunity to redesign and improve the pulse programming system at NIST
+to validate the theoretical proposals above and further extend his
+experimental results. The system will need to be able to generate
+transistor-to-transistor logic levels (TTL) as well as generate radiofrequency
+(RF) pulses of a programmable phase, frequency, and amplitude using
+direct digital synthesis (DDS) in 8 independent, synchronized channels.
+The system will also need to generate arbitrary analog waveforms using
+a digital-to-analog converter (DAC).
+Finally, the system will need to be able to count input pulses from a
+photomultiplier tube (PMT) and perform conditional actions based on these
+counts, such as branching on whether a threshold has been reached in order to
+perform state detection. Ideally this system would be constructed from
+open source and/or commodity off-the-shelf components in order to decrease
+its cost and increase its reusability.
+
+The proposed project will include designing, assembling, and testing
+custom circuit boards, integrating them with commercial boards, and
+writing control software to perform the above tasks. It will make heavy
+use of reusable, open source components that have already been tested in other
+ion trap experiments, as described in \cite{pp2005}.
+Thus, this project will form one part of a general-purpose quantum control toolkit,
+which is the larger goal of Dr. Biercuk's laboratory.
+
+\section{Applicant}
+
+I would be a valuable contributor to this effort due to my past experience in
+designing and implementing electronic pulse programming systems to control
+ion traps \cite{Pham2005} \cite{Petersen2007} \cite{Schindler2008}.
+I have a solid track record of openly contributing
+to the research community for over five years, both in terms of personally
+engineering systems in two European laboratories \cite{Riebe2006}
+ and one laboratory in the U.S.,
+as well as maintaining an open source project on the internet
+\cite{pp2005}
+from which other
+researchers can learn and to which they have contributed. I have
+been cited by the company MagiQ in their successful
+Small Business Innovation Research (SBIR)
+grant for pulse programming systems \cite{MagiQ2007}
+and have also been retained as a consultant for the same company.
+
+I
+frequently correspond with professors, post-docs, and grad students from groups
+in Germany, Denmark, England, Austria, and the across the U.S. in my quest to
+better understand the scientific process. It is my belief that we are limited
+more by social and political constraints rather than technological or physical
+limitations. My work so far in this field is part of a
+new trend of applying reconfigurable computing and open source
+methodologies to physics research, as evidenced by NIST Boulder's decision
+to release their ion trap control software as open source \cite{ionizer2010}.
+
+I am passionate about open discussion and sharing, so successful in
+the software world and internet development, and would love the opportunity to
+bring this perspective and my experience to help Dr. Biercuk in his research,
+thereby bringing us closer to a functioning quantum computer.
+
+\bibliography{ppham-project-description}
+\bibliographystyle{tocplain}
+
+\end{document}
