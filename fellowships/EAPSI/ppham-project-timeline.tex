@@ -2,96 +2,97 @@
 
 \usepackage{eprint}
 
+\setlength{\textheight}{9.5in}	% more margin hacking.
+\addtolength{\textwidth}{1in}	% same here....
+\addtolength{\topmargin}{-0.75in}	% repairing LaTeX's huge margins...
+\addtolength{\hoffset}{-0.75in}	% repairing LaTeX's huge margins...
+\addtolength{\marginparwidth}{-.2in}	% The word ``Memberships'' is really long below
+
 \begin{document}
 
+\thispagestyle{empty}           % no headers on the first page
+
 \begin{center}
-\LARGE{2010 NSF EAPSI Project Timeline}\\
+\LARGE{2010 NSF EAPSI Project Synopsis and Timeline}\\
 \Large{Paul Pham}
 \end{center}
 
-\section{Week 0: Before arriving in Australia}
+\section{Synopsis}
 
+My proposed project is to construct an electronic pulse programmer to
+provide high-fidelity quantum control for trapped ion experiments in
+the laboratory of Dr. Michael Biercuk. In particular, the pulse programmer will
+operate
+at 100 MHz (corresponding to a 10 ns time resolution) and have modules
+for radiofrequency analog generation, arbitrary analog waveforms, and
+input counting.
+
+The project will be documented in real-time on the website
+http://pulse-programmer.org as a resource to the larger ion trap community.
+Each week of the timeline
+below will include documentation of that week's work with a blog update and
+uploaded photos.
+All related designs, software, and documentation will be released as
+open source.
+
+The circuit boards, electronic components, chassis, and all materials and
+supplies will be paid for out of Dr. Biercuk's funding, independently of the
+EAPSI fellowship.
+
+\section{Timeline}
 \begin{itemize}
-\item
+\item Week 0: Before arriving in Australia
+
 Discuss logistics of commercial boards to order and design parameters for
 custom boards to design.
-\item
 Begin custom board design, choose components.
-\end{itemize}
 
-Components:
-\begin{itemize}
-\item
-FPGA sequencer
-\item DDS
-\item Arbitrary waveform generator
-\item Breakout board
-\item Chain boards (if necessary)
-\item Clock system
-\item Power supply
-\end{itemize}
+\item Week 1: June 14-20, 2010
 
-\section{Week 1: June 14-20, 2010}
-
-\begin{itemize}
-\item
 Set up laboratory workbench, test all boards and components brought from the U.S.
-\item
 Finish custom board designs, send out for fabrication.
-\item
 Design system and wiring scheme for controlling all board from FPGA sequencer,
 including clock system.
-\item
 Physically lay out rackmount chassis to store entire pulse programmer,
 including faceplate design.
-\end{itemize}
 
-\section{Week 2: June 21-27, 2010}
+\item Week 2: June 21-27, 2010
 
-\begin{itemize}
-\item
 Order parts and chassis.
-\item
 Write software/firmware to control the boards from the FPGA sequencer.
-\item
-Begin documenting system design and operation.
-\end{itemize}
 
-\section{Weeks 3-4: June 28 - July 11, 2010}
+\item Week 3: June 28 - July 4, 2010
 
-\begin{itemize}
-\item
 Receive custom boards back from fabrication.
-\item
 Receive parts and chassis.
-\item
 Construct rackmount chassis and faceplate.
-\item
 Test physical layout in rackmount chassis.
-\item
-Assemble custom boards (or outsource)
-\item
+Assemble custom boards (or outsource).
+
+\item Week 4: July 5 - July 11, 2010
+
+Wire together existing boards, screw into chassis.
 Mid-project checkpoint.
-\end{itemize}
 
-\section{Weeks 5-7: July 12 - August 1, 2010}
+\item Week 5: July 12 - 18, 2010
 
-\begin{itemize}
-\item
-Wire system together, screw into chassis.
-\item
-Test generating desired waveforms and input counting.
-\item
-Finish documentation.
-\end{itemize}
+Receive back assembled custom boards. Add to chassis.
+Test generating TTL and arbitrary analog waveforms.
 
-\section{Week 8: August 2 - August 8, 2010}
+\item Week 6: July 19 - July 25, 2010
 
-\begin{itemize}
-\item
-Integrate into laboratory setup
-\item
+Test generating RF waveforms using DDS with specified phase, frequency, and
+amplitude.
+
+\item Week 7: July 26 - August 1, 2010
+
+Test PMT input counting.
+
+\item Week 8: August 2 - August 8, 2010
+
+Integrate into laboratory setup.
 Hand over keys / control codes.
+
 \end{itemize}
 
 \end{document}

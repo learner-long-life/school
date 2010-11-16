@@ -12,9 +12,10 @@
 \cfoot[]{}
 \addtolength{\headheight}{1.6pt}
 
-\addtolength{\topmargin}{-0.75in}	% repairing LaTeX's huge margins...
+\addtolength{\topmargin}{-0.25in}	% repairing LaTeX's huge margins...
+\addtolength{\leftmargin}{1.0in}	% ensuring left margin
 \addtolength{\textwidth}{.5in}	% same here....
-\addtolength{\marginparwidth}{.1in}	% The word ``Memberships'' is really long below
+\addtolength{\marginparwidth}{-.2in}	% The word ``Memberships'' is really long below
 \setlength{\headwidth}{\textwidth}
 \setlength{\parindent}{0mm}	% indented paragraphs just don't make it
 			   	% on a resume.  (My opinion; if you
@@ -35,22 +36,6 @@
 {\Large {\bf Paul T. Pham}}
 \par
 \vspace{.25in}
-E-mail: ppham@cs.washington.edu
-\hspace*{\fill}
-205 13th Ave E, \#5
-\linebreak
-Phone: (206) 859-0322
-\hspace*{\fill}
-Seattle, WA 98102
-
-				% address stuff.  The \hspace*{\fill} is
-				% necessary to get things laid out
-				% correctly.  The sizes fed to \vspace are
-				% variable, depending on how much
-				% whitespace you want, and how much
-				% stuff you're trying to fit on a page....
-\par
-\vspace{.25in}
 				% if the \marginpar is at the beginning
 				% of the line, it loses.  *sigh*.  This
 				% is a typical entry in a resume.   (I'm
@@ -61,7 +46,21 @@ Seattle, WA 98102
 				% between paragraphs, enter your text,
 				% and place the \marginpar at the end.
 				
-%Yes\marginpar{{\bf U.S. Citizenship}}
+Yes, I am a {\bf U.S. Citizen} \marginpar{{\bf Required}}
+\par
+{\bf Last high school attended:}
+Oklahoma School of Science and Mathematics\marginpar{{\bf Information}}
+\par
+Oklahoma City,
+Oklahoma
+\par
+{\bf Previous EAPSI Fellow:} No
+\par
+{\bf Heard about EAPSI from:}
+Faculty advisor
+\par
+\vspace{\baselineskip}
+\par
 
 {\bf Pulse Programmer} \hspace*{\fill}January 2005---Present
 \marginpar{{\bf Open Source}}
@@ -75,7 +74,7 @@ An open platform for general-purpose, programmable radiofrequency systems.
 \vspace{\baselineskip}
 \par
 
-{\bf Quantum Compiler} \hspace*{\fill}July 2005---Present
+{\bf Quantum Compiler} \hspace*{\fill}August 2010---Present
 \par
 \url{http://quantum-compiler.org}
 \par
@@ -90,7 +89,8 @@ logic gates.
 {\bf University of Washington} \hspace*{\fill}September 2005---Present
 \marginpar{{\bf Education}}
 \par
-Degree in progress: Doctor of Philosophy in Computer Science.
+Degree in progress: Doctor of Philosophy in Computer Science.\\
+Expected graduation date: June 2015\\
 Advisor: Dave Bacon
 \vspace{\baselineskip}
 \par
@@ -119,18 +119,15 @@ Undergraduate GPA: 4.2/5.0
 {\bf {University of Washington Dept. of Physics and Astronomy}} \hfill Seattle, WA
 \marginpar{{\bf Research}}
 \par
-{\em Lab Technician} \hfill January---July 2007
+{\em Graduate Research Assistant} \hfill January---July 2007
 \marginpar{{\bf Experience}}
 \par
 \href{http://depts.washington.edu/qcomp/}{Trapped Ion Quantum Computing Group}
 \par
 Supervisor: Prof. Boris Blinov
 \par
-Built a programmable radio-frequency system for ion trap laser control. Designed and
-assembled high-speed printed circuit boards. Developed FPGA firmware and
-software for Ethernet control
-and an instruction set architecture for generating fast pulses.\\
-\url{http://pulse-sequencer.sf.net}
+Built a programmable radio-frequency system for ion trap control
+including photomultiplier tube input counting.
 
 \par
 
@@ -144,11 +141,14 @@ and an instruction set architecture for generating fast pulses.\\
 \par
 Advisor: Dr. Tobias Sch\"atz
 \par
-Built a programmable radio-frequency system for ion trap laser control.
+Built a programmable radio-frequency system for ion trap control
+with phase-coherent frequency-switching.
 \par
 
-\vspace{\baselineskip}
-\par
+\newpage
+
+%\vspace{\baselineskip}
+%\par
 {\bf University of Innsbruck} \hfill Innsbruck, Austria
 \par
 {\em Visiting Ph.D. Student} \hfill February 2005---June 2005
@@ -157,7 +157,8 @@ Built a programmable radio-frequency system for ion trap laser control.
 \par
 Advisor: Univ. Prof. Rainer Blatt
 \par
-Built a programmable radio-frequency system for ion trap laser control.
+Built a programmable radio-frequency system for ion trap control
+with shaped amplitudes.
 \par
 
 \vspace{\baselineskip}
@@ -176,14 +177,14 @@ Designed and built instrumentation for quantum computing experiments.
 \vspace{\baselineskip}
 \par
 ``Component-based Invisible Computing.''
-\marginpar{{\bf Publications}}\\
+\marginpar{{\bf Publication}}\\
 A. Forin, J. Helander, \textbf{P. Pham}, J. Rajendiran.\\
 IEEE Realtime Embedded Systems Workshop Paper, December 2001.
 
-\newpage
+\vspace{\baselineskip}
 
 ``Method and system for managing the execution of threads and data processing.''
-\marginpar{{\bf Patents}}\\
+\marginpar{{\bf Patent}}\\
 A. Forin, J. Helander, \textbf{P. Pham}.\\
 U.S. Patent Application No. 20030233392.\\
 Filed on June 12, 2002.
