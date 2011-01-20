@@ -2,6 +2,7 @@
 
 \usepackage{fullpage}
 \usepackage{fancyhdr}
+\usepackage{amsmath}
 \pagestyle{fancy}
 
 \rhead{Problem \thesection\\Page \thepage\\Winter 2011}
@@ -29,6 +30,7 @@
 
 \begin{document}
 \newcommand{\ket}[1]{|#1 \rangle}
+\newcommand{\bra}[1]{\langle #1 |}
 \newcommand{\normtwo}{\frac{1}{\sqrt{2}}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -39,15 +41,138 @@
 
 % Part A
 \item
-Part A
+The probability that a photon prepared in state $\ket{P_{\theta_1}}$ is sent
+through a polarizer at angle $\theta_2$ is given by:
+
+\begin{equation}
+\Pr[P_{\theta_2} | P_{\theta_1} ] = | \langle P_{\theta_1} | P_{\theta_2} \rangle |^2 =
+| \cos{\theta_1}\cos{\theta_2} + \sin{\theta_1}\sin{\theta_2} | ^2
+\end{equation}
+
+Using the following double-angle trigonometric identity:
+
+\begin{equation}
+\cos{\alpha \pm \beta} = \cos{\alpha}\cos{\beta} \mp \sin{\alpha}\sin{\beta}
+\end{equation}
+
+We get the following final probability:
+
+\begin{equation}
+\Pr[P_{\theta_2} | P_{\theta_1} ] = | \cos(\theta_2 - \theta_1) |^2 =
+\cos^2(\theta_2 - \theta_1)
+\end{equation}
 
 % Part B
 \item
-Part B
+
+We denote by $E_i$ the event that the photon is transmitted by the polarizer
+at angle $\theta_i$. We will often conflate the polarizer itself and the
+measurement basis state $P_{\theta_i}$ that results when a photon is
+transmitted by the polarizer.
+
+We will treat the initial preparation of the photon in the state $P_{\theta_1}$
+as equivalent to preparing a photon in state $\ket{0}$ and then passing
+it through a polarizer at angle
+$\theta_1$ before all other polarizers (which succeeds with probability 1).
+
+We want to calculate the probability that the photon is transmitted by both
+$P_{\theta_2}$ and $P_{\theta_3}$, that is, $\Pr[E_2 \cap E_3]$, which we know
+by Bayes's Rule satisfies the following:
+
+\begin{equation}
+\Pr[E_2 | E_3] = \frac{\Pr[E_2 \cap E_3]}{\Pr[E_3]}
+\end{equation}
+
+Rearranging and solving we get
+
+\begin{equation}
+\Pr[E_2 \cap E_3] = \Pr[E_2 | E_3]\cdot \Pr[E_3]
+\end{equation}
+
+where we have the following, using part (a).
+
+\begin{equation}
+\Pr[E_3] = \Pr[E_3 | E_1] = \Pr[E_3 \cap E_1] = \cos^2(\theta_3 - \theta_1)
+\end{equation}
+\begin{equation}
+\Pr[E_2 | E_3] = \cos^2(\theta_2 - \theta_3)
+\end{equation}
+
+So finally we get:
+
+\begin{equation}
+\Pr[E_2 \cap E_3] = \cos^2(\theta_3 - \theta_1)\cos^2(\theta_2 - \theta_3)
+\end{equation}
+
+Choosing $\theta_1 = \frac{\pi}{2}$, $\theta_2 = 0$, $\theta_3 = \frac{\pi}{4}$,
+we get the following disparity with part (a):
+
+\begin{equation}
+\Pr[E_2 \cap E_1] = \cos^2(\frac{\pi}{2} - 0) = 0
+\end{equation}
+\begin{equation}
+\Pr[E_3 \cap E_2 \cap E_1] = \cos^2(\frac{\pi}{2}-\frac{\pi}{4})\cos^2(0-\frac{\pi}{4}) = \frac{1}{4}
+\end{equation}
+
+I guess this is like the Stern-Gerlach experiment with photons?
 
 % Part C
 \item
-Part C
+First we note that the $N$ polarizers ${P_{\theta_j}}$, each at a corresponding angle
+$\frac{pi}{2}\frac{j}{N}$, are equally spaced between $0$ and $\pi/2$, and that
+the difference in angles between neighboring polarizers is a constant:
+
+\begin{equation}
+\theta_j - \theta_{j+1} = \frac{\pi}{2}\frac{1}{N}
+\end{equation}
+
+Using some kind of chain rule along with the law of total probability, we get
+
+\begin{equation}
+\Pr[E_1 \cap E_2 \cap \ldots \cap E_N] = \Pr[E_1]\cdot\Pr[E_2 | E_1]\cdot
+\Pr[E_3 | E_2 \cap E_1] \cdots \Pr[E_N | E_1 \cap E_2 \cap \ldots \cap E_{N-1}]
+\end{equation}
+
+Each of the product terms in the equation above is simply the probability
+that the photon is transmitted through polarizer $P_{\theta_j}$ given that
+it has been transmitted through all previous polarizers $P_{\theta_1}$ through
+$P_{\theta_{j-1}}$, which we know from the previous parts is:
+
+\begin{equation}
+\Pr[E_j | E_1 \cap \ldots \cap E_{j-1}] = \cos^2(\frac{\pi}{2}\frac{1}{N})
+\end{equation}
+
+Therefore, our desired probability of passing through all polarizers is
+just a product of constant probabilities, with an initial $\theta_0 = 0$.
+
+\begin{equation}
+\Pr[E_1 \cap \ldots \cap E_N] = \prod_{j=1}^{N} \cos^2(\theta_j - \theta_{j-1}) = \cos^{2N}(\frac{\pi}{2}\frac{1}{N})
+\end{equation}
+
+Because cosine squared is a function that ranges from 1 (for $\cos(0)$) down to 0
+(for $\cos(\pi/2)$), as the polarizer rotates slightly away from 0 degrees,
+the transmission probability also decreases slightly from 1.
+
+How slightly? We can lower bound the transmission probability at each polarizer
+by the steepest slope of the cosine function (squared) (a slope of $-1$,
+which occurs at $\cos(\pi/2)$). At that point, a decrease of angle
+$\frac{\pi}{2}\frac{1}{N}$ corresponds to at most a corresponding decrease in
+probability of $1 - (\frac{\pi}{2}\frac{1}{N})$.
+
+Therefore, we have
+
+\begin{equation}
+\Pr[E_1 \cap \ldots \cap E_N] \ge (1-(\frac{\pi}{2}\frac{1}{N}))^N
+\end{equation}
+
+Using some Taylor series approximation or binomial expansion which is too clever
+for me right now, we can show that:
+
+\begin{equation}
+\Pr[E_1 \cap \ldots \cap E_N] \ge (1-\frac{c}{N})
+\end{equation}
+
+for some positive constant $c$.
 
 \end{enumerate}
 
@@ -61,31 +186,362 @@ Part C
 
 % Part A
 \item
-Part A
+\begin{multline}
+\bra{\psi} \sigma_x \ket{\psi} =
+\begin{bmatrix}
+\cos(\frac{\theta}{2})e^{i\frac{\theta}{2}} & \sin(\frac{\pi}{2})e^{-i\frac{\pi}{2}}\\
+\end{bmatrix}
+\cdot
+\begin{bmatrix}
+\sin(\frac{\theta}{2})e^{i\frac{\phi}{2}}\\
+\cos(\frac{\theta}{2})e^{-i\frac{\phi}{2}}\\
+\end{bmatrix}\\
+= \cos(\theta/2)\sin(\theta/2)e^{i\phi} + \cos(\theta/2)\sin(\theta/2)e^{-i\phi}\\
+= \cos(\theta/2)\sin(\theta/2)\cdot 2\cos(\phi)
+\end{multline}
+
+\begin{multline}
+\bra{\psi} \sigma_y \ket{\psi} =
+\begin{bmatrix}
+\cos(\frac{\theta}{2})e^{i\frac{\theta}{2}} & \sin(\frac{\pi}{2})e^{-i\frac{\pi}{2}}\\
+\end{bmatrix}
+\cdot
+\begin{bmatrix}
+-i \sin(\frac{\theta}{2})e^{i\frac{\phi}{2}}\\
+i \cos(\frac{\theta}{2})e^{-i\frac{\phi}{2}}\\
+\end{bmatrix}\\
+= \cos(\theta/2)\sin(\theta/2)e^{i(\phi-\pi/2)} + \cos(\theta/2)\sin(\theta/2)e^{-i(\phi - \pi/2)}\\
+= \cos(\theta/2)\sin(\theta/2)\cdot 2\cos(\phi - \pi/2)
+\end{multline}
+
+\begin{multline}
+\bra{\psi} \sigma_z \ket{\psi} =
+\begin{bmatrix}
+\cos(\frac{\theta}{2})e^{i\frac{\theta}{2}} & \sin(\frac{\pi}{2})e^{-i\frac{\pi}{2}}\\
+\end{bmatrix}
+\cdot
+\begin{bmatrix}
+\cos(\frac{\theta}{2})e^{-i\frac{\phi}{2}}\\
+-\sin(\frac{\theta}{2})e^{i\frac{\phi}{2}}\\
+\end{bmatrix}\\
+= \cos^2(\theta/2) - \sin^2(\theta/2)\\
+= \cos(\theta)
+\end{multline}
 
 % Part B
 \item
-Part B
+\begin{equation}
+{\sigma_1}^2 =
+\begin{bmatrix}
+0 & 1\\
+1 & 0
+\end{bmatrix}
+\begin{bmatrix}
+0 & 1\\
+1 & 0
+\end{bmatrix}
+=
+\begin{bmatrix}
+0\cdot 0 + 1\cdot 1 & 0\cdot 1 + 1\cdot 0\\
+1\cdot 0 + 0\cdot 1 & 1\cdot 1 + 0\cdot 0
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 & 0\\
+0 & 1
+\end{bmatrix}
+= I
+\end{equation}
+
+\begin{equation}
+{\sigma_2}^2 =
+\begin{bmatrix}
+0 & -i\\
+i & 0
+\end{bmatrix}
+\begin{bmatrix}
+0 & -i\\
+i & 0
+\end{bmatrix}
+=
+\begin{bmatrix}
+0\cdot 0 + -i\cdot i & 0\cdot -i + -i\cdot 0\\
+0\cdot -i + i\cdot 0 & i\cdot -i + 0\cdot0
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 & 0\\
+0 & 1
+\end{bmatrix}
+= I
+\end{equation}
+
+\begin{equation}
+{\sigma_3}^2 =
+\begin{bmatrix}
+1 & 0\\
+0 & -1
+\end{bmatrix}
+\begin{bmatrix}
+1 & 0\\
+0 & -1
+\end{bmatrix}
+=
+\begin{bmatrix}
+1\cdot 1 + 0\cdot 0 & 1\cdot 0 + 0\cdot -1\\
+0\cdot 1 + -1 \cdot 0 & 0\cdot 0 + -1\cdot -1
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 & 0\\
+0 & 1
+\end{bmatrix}
+= I
+\end{equation}
 
 % Part C
 \item
-Part C
+For the cases where $j=k=i$, we have $\epsilon_{jkl}=0$ and $\delta_{jk}=1$,
+so have just verified part (b)
+
+\begin{equation}
+\sigma_j\sigma_k = \sigma_i \sigma_i = \delta_{jk}\sigma_0 = \delta_{ii}\sigma_0 = \sigma_0
+\end{equation}
+
+There are three such cases for $i \in \{1,2,3\}$.
+
+For the remaining six cases, $j \ne k$ and $\delta_{jk} = 0$ so we can neglect
+the $\sigma_0$ term.
+
+%-----------------------------------------------------------------------------
+\begin{equation}
+\sigma_1 \sigma_2 =
+\begin{bmatrix}
+0 & 1\\
+1 & 0
+\end{bmatrix}
+\begin{bmatrix}
+0 & -i\\
+i & 0
+\end{bmatrix}
+=
+\begin{bmatrix}
+0\cdot 0 + 1\cdot i & 0\cdot -i + 1\cdot 0\\
+1\cdot 0 + 0 \cdot i & 1\cdot -i + 0\cdot 0
+\end{bmatrix}
+=
+\begin{bmatrix}
+i & 0\\
+0 & -i
+\end{bmatrix}
+= i \sigma_3
+\end{equation}
+
+%-----------------------------------------------------------------------------
+\begin{equation}
+\sigma_2 \sigma_3 =
+\begin{bmatrix}
+0 & -i\\
+i & 0
+\end{bmatrix}
+\begin{bmatrix}
+1 & 0\\
+0 & -1
+\end{bmatrix}
+=
+\begin{bmatrix}
+0\cdot 1 + -i\cdot 0 & 0\cdot 0 + -i\cdot -1\\
+i\cdot 1 + 0 \cdot 0 & i\cdot 0 + 0\cdot -1
+\end{bmatrix}
+=
+\begin{bmatrix}
+0 & i\\
+i & 0
+\end{bmatrix}
+= i \sigma_1
+\end{equation}
+
+%-----------------------------------------------------------------------------
+\begin{equation}
+\sigma_3 \sigma_1 =
+\begin{bmatrix}
+1 & 0\\
+0 & -1
+\end{bmatrix}
+\begin{bmatrix}
+0 & 1\\
+1 & 0
+\end{bmatrix}
+=
+\begin{bmatrix}
+1\cdot 0 + 0\cdot 1 & 1\cdot 1 + 0\cdot 0\\
+0\cdot 0 + -1 \cdot 1 & 0\cdot 1 + -1\cdot 0
+\end{bmatrix}
+=
+\begin{bmatrix}
+0 & 1\\
+-1 & 0
+\end{bmatrix}
+= i \sigma_2
+\end{equation}
+
+%-----------------------------------------------------------------------------
+\begin{equation}
+\sigma_2 \sigma_1 =
+\begin{bmatrix}
+0 & -i\\
+i & 0
+\end{bmatrix}
+\begin{bmatrix}
+0 & 1\\
+1 & 0
+\end{bmatrix}
+=
+\begin{bmatrix}
+0\cdot 0 + -i\cdot 1 & 0\cdot 1 + -i\cdot 0\\
+i\cdot 0 + 0 \cdot 1 & i\cdot 1 + 0\cdot 0
+\end{bmatrix}
+=
+\begin{bmatrix}
+-i & 0\\
+0 & i
+\end{bmatrix}
+= -i \sigma_3
+\end{equation}
+
+%-----------------------------------------------------------------------------
+\begin{equation}
+\sigma_3 \sigma_2 =
+\begin{bmatrix}
+1 & 0\\
+0 & -1
+\end{bmatrix}
+\begin{bmatrix}
+0 & -i\\
+i & 0
+\end{bmatrix}
+=
+\begin{bmatrix}
+1\cdot 0 + 0\cdot i & 1\cdot -i + 0\cdot 0\\
+0\cdot -i + -1 \cdot 0 & 0\cdot -i + -1\cdot 0
+\end{bmatrix}
+=
+\begin{bmatrix}
+0 & -i\\
+i & 0
+\end{bmatrix}
+= -i \sigma_1
+\end{equation}
+
+%-----------------------------------------------------------------------------
+\begin{equation}
+\sigma_1 \sigma_3 =
+\begin{bmatrix}
+0 & 1\\
+1 & 0
+\end{bmatrix}
+\begin{bmatrix}
+1 & 0\\
+0 & -1
+\end{bmatrix}
+=
+\begin{bmatrix}
+0\cdot 1 + 1\cdot 0 & 0\cdot 0 + 1\cdot -1\\
+1\cdot 1 + 0 \cdot 0 & 1\cdot 0 + 0\cdot -1
+\end{bmatrix}
+=
+\begin{bmatrix}
+0 & -1\\
+1 & 0
+\end{bmatrix}
+= -i \sigma_2
+\end{equation}
 
 % Part D
 \item
-Part D
+\begin{equation}
+(\overline{v}\cdot \overline{\sigma})^2 = \sum_{i,j=1}^3 v_i v_j \sigma_i \sigma_j
+= 
+\left(\sum_{i=1}^3 v_i^2\right)\sigma_0 + \sigma_{j,k,l=1}^3 v_j v_k \epsilon_{jkl} \sigma_l
+\end{equation}
+
+In second sum above. we restrict $j \ne k \ne l$ since this is covered in the
+first sum. Therefore, the only terms where $\epsilon_{jkl}$ is non-zero
+appear in symmetric pairs that cancel out. Therefore, we are just left
+with the first sum, which is equal to $||\overline{v}||^2\sigma_0$
+
+Now, we use the given fact
+
+\begin{equation}
+(\overline{v} \times \overline{w})_i = \sum_{j,k} \epsilon_{ijk} v_j w_k
+\end{equation}
+
+Let's calculate the following commutator
+
+\begin{equation}
+\left[ \overline{v}\cdot \overline{\sigma}, \overline{w} \cdot \overline{sigma} \right]
+= \left(\sum_{j=1}^3 v_j \sigma_j \right) \left(\sum_{k=1}^3 w_k \sigma_k \right) -
+\left(\sum_{k'=1}^3 w_{k'} \sigma_{k'} \right)\left(\sum_{j'=1}^3 v_{j'} \sigma_{j'} \right)
+\end{equation}
+
+We can expand these sums as
+
+\begin{equation}
+\left[ \sum_{m=1}^3 v_m w_m \sigma_m^2 + \sum_{j\ne k}^3 v_j w_k \sigma_j \sigma_k \right]
+-
+\left[ \sum_{m=1}^3 v_m w_m \sigma_m^2 + \sum_{j'\ne k'}^3 v_{j'} w_{k'} \sigma_{k'} \sigma_{j'} \right]
+\end{equation}
+
+The first sums over $m$ above cancel out, so we are left with the two
+remaining sums of $j,k$ and $j',k'$.
+
+Note that $\epsilon_{jkl} = \epsilon_{ljk}$ and $\epsilon_{k'j'l'} = \epsilon_{l'k'j'} = -\epsilon_{l'j'k'}$.
+
+We then have the remaining sums:
+
+\begin{equation}
+\sum_{j\ne k}^3 v_j w_k \sigma_j \sigma_k = \sum_{j \ne k}^3 \sum_{l=1}^3 i v_j w_k \epsilon_{jkl} \sigma_l
+\end{equation}
+\
+\begin{equation}
+\sum_{j'\ne k'}^3 v_{j'} w_{k'} \sigma_{j'} \sigma_{k'} = \sum_{j' \ne k'}^3 \sum_{l'=1}^3 i v_{j'} w_{k'} \epsilon_{k'j'l'} \sigma_{l'}
+\end{equation}
+
+Adding both of these sums together (well, combining them with the original minus sign)
+and matching up the indices
+$j=j'$ and $k=k'$ and $l=l'$ gives us
+
+\begin{equation}
+\sum_{j \ne k, l=1}^3 \left[ i\epsilon_{ljk}\sigma_l - i(-\epsilon_{ljk})\sigma_l \right] =
+2i \sum_{j \ne k, l=1}^3 \epsilon_{ljk} v_j w_k \sigma_l = 2i(\overline{v}\times \overline{w})
+\end{equation}
 
 % Part E
 \item
-Part E
+If $\overline{v}$ is a unit vector, then $||\overline{v}||=1$ and from part (d)
+we have $(\overline{v}\cdot \overline{\sigma})^2) = I$.
+
+Taking the Taylor series expansion of the exponential function on the
+matrix $M=\overline{v}\cdot\overline{\sigma}$ we have
+
+\begin{equation}
+e^{i\alpha M} = I + i\alpha M - \frac{\alpha^2 M^2}{2!} - \frac{\alpha^3 M^3}{3!} +
+\frac{\alpha^4 M^4}{4!} - \ldots
+\end{equation}
+
+Noting that $M^2 = I$, we can regroup the terms in this suggestive way
+
+\begin{equation}
+\left( 1 - \frac{\alpha^2}{2!} + \frac{\alpha^4}{4!} - \ldots \right) I +
+i \left(\alpha - \frac{\alpha^3}{3!} + \frac{\alpha^5}{5!} - \ldots \right) M
+= \cos{\alpha}I + i\sin{\alpha}M
+\end{equation}
 
 % Part F
 \item
-Part F
 
 % Part G
 \item
-Part G
 
 \end{enumerate}
 
@@ -98,15 +554,53 @@ Part G
 
 % Part A
 \item
-Part A
+Define the following two states with complex coefficients whose norm is one.
+
+\begin{equation*}
+\ket{\alpha} = a_0\ket{0} + a_1\ket{1}
+\end{equation*}
+\begin{equation*}
+\ket{\beta} = b_0\ket{0} + b_1\ket{1}
+\end{equation*}
+
+Then the combined state is
+
+\begin{equation*}
+\ket{\alpha} \otimes \ket{\beta} =
+\begin{bmatrix}
+a_0 b_0\\
+a_0 b_1\\
+a_1 b_0\\
+a_1 b_1\\
+\end{bmatrix}
+\end{equation*}
+
+Assume that this state is equal to the following entangled pair
+
+\begin{equation*}
+\frac{1}{\sqrt{2}}(\ket{00} + \ket{11})
+=
+\frac{1}{\sqrt{2}}
+\begin{bmatrix}
+1\\
+0\\
+0\\
+1\\
+\end{bmatrix}
+\end{equation*}
+
+Then solving for the coefficients, let's start with $a_0 b_1 = 0$.
+If we choose $a_0 = 0$, then $a_1 = 1$ in
+order to normalize $\ket{\alpha}$, and $b_0 = 0$ and $b_1 = 1$. However, this
+does not satisfy the coefficients in the equation above. Likewise for choosing
+$b_0 = 0$. Therefore, there is no way to express the entangled pair as
+a tensor product of any two single-qubit states.
 
 % Part B
 \item
-Part B
 
 % Part C
 \item
-Part C
 
 \end{enumerate}
 
