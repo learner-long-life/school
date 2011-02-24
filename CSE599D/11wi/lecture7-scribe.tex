@@ -1,0 +1,359 @@
+\documentclass[12pt]{article}
+\usepackage{scribe}
+\usepackage[all]{xy}
+\Scribe{Paul Pham}
+\Lecturer{Aram Harrow}
+\LectureNumber{7}
+\LectureDate{31 January 2011}
+\LectureTitle{Shor's Factoring Algorithm and QFT}
+\begin{document}
+\MakeScribeTop
+
+\newcommand{\ket}[1]{|#1 \rangle}
+\newcommand{\bra}[1]{\langle #1 |}
+
+In this lecture, we'll show how to factor integers by the reductions below,
+the last two of which are due to Peter Shor and together make up a quantum
+algorithm for factoring, although most of it is still classical.
+
+\begin{enumerate}
+\item Reduce factoring to order finding (Miller '76).
+\item Reduce order finding to period finding.
+\item Reduce period finding to QFT and continued fractions.
+\end{enumerate}
+
+%------------------------------------------------------------------------------
+\section{Preliminaries}
+
+The problem of factoring (factorizing) a number $N$ is to find its prime factors
+$p_i$ (possibly up to a power $\alpha_i$):
+
+\begin{displaymath}
+N = \prod_{i=1}^k p_i{\alpha_i}
+\end{displaymath}
+
+\subsection{GCD and Euclid}
+
+A useful tool in factoring is finding the greatest common denominator
+(denoted $gcd$), which has the following useful properties:
+
+\begin{displaymath}
+gcd(x,y) = gcd(x, y-x) = gcd(x, y - \lfloor \frac{y}{x} \rfloor)
+\end{displaymath}
+
+Euclid's algorithm does this efficiently in time polynomial in the number
+of bits of the numbers $x$ and $y$.
+
+\subsection{ModExp}
+
+Another useful idea is modular exponentiation, $a^x \mod N$ for
+$0 \le a,x < N$ which we also know how to do efficiently via successive
+squaring based on the binary expansion of the exponent $x$:
+
+\begin{displaymath}
+a \rightarrow a^{2^{k_1}} \mod N \rightarrow a^{2^{k_2}} \mod N \rightarrow \ldots
+\rightarrow a^{2^{k_l}} \mod N
+\end{displaymath}
+
+where $x$ has $l \le \log N$ bits:
+
+\begin{displaymath}
+x = 2^{k_1} + 2^{k_2} + \ldots + 2^{k_l}
+\end{displaymath}
+
+\subsection{Pre-Reduction: Finding a Square Modulo $N$}
+
+As a preliminary reduction, suppose that we can find $x$ such that
+
+\begin{displaymath}
+x^2 \equiv 1 \mod N \rightarrow (x + 1)(x - 1) \equiv 0 \mod N
+\end{displaymath}
+
+excepting the trivial solutions $x = 1$ and $x = N-1$.
+Therefore, $N$ must have a common factor with either $x-1$ or $x+1$, therefore
+our desired non-trivial factor is either $gcd(x+1,N)$ or $gcd(x-1,N)$.
+How do we find this $x$?
+
+%------------------------------------------------------------------------------
+\section{Order Finding}
+
+First, we show how factoring a number $N$
+reduces to order-finding after considering the
+the cases below where we can trivially find factors before we bring out
+any heavy machinery.
+
+\begin{description}
+\item[Even $N$]:
+Then the factors of $N$ are 2 and $N/2$.
+\item[$N$ is a power of some prime factor]
+
+That is, $N = p^\alpha$.
+We won't show this here, but there is a classical algorithm for
+factoring in this case that runs in time $O(\log_2^3 N)$.
+You can find this in Dave Bacon's lecture \#11
+notes for the Winter 2006 version of this class.
+
+\end{description}
+
+Okay, so now on to more tricky cases of $N$.
+
+Recall $ord_N(a) = \min_{r \ge 1} a^r \equiv 1 \mod N$.
+This is undefined if $gcd(a,N) \ne 1$.
+
+Now we make two assumptions, show how they allow us to factor, and
+justify them later.
+
+\begin{enumerate}
+\item
+Suppose we can find $r = ord_N(a)$ through some black box,
+and therefore $a^r - 1 \equiv 0 \mod N$.
+\item
+Further suppose that $r$ is even.
+\end{enumerate}
+
+If $r$ is even, then $r/2$ is an integer, and we have the following:
+
+\begin{displaymath}
+a^r \equiv 1 \mod N \rightarrow
+(a^{r/2}+1)(a^{r/2}-1) \equiv 0 \mod N
+\end{displaymath}
+
+That is, $N$ is a multiple of either $a^{r/2}-1$ only (Case 1), or
+$a^{r/2}+1$ only (Case 2),
+or both (Case 3). Let's consider them separately:
+
+\begin{description}
+\item[Case 1] We know $a^{r/2}-1 \not\equiv 0 \mod N$ because $r$ is the minimum
+power such that $a^r \equiv 1 \mod N$, so this case can't actually happen.
+\item[Case 2] if $a^{r/2}+1 \equiv 0 \mod N$, then this is a case which is bad
+for us, in that I don't know if a solution exists. We'll later show that
+the probability of this case is small. On to the next case!
+\item[Case 3] if $a^{r/2}+1 \not\equiv 0 \mod N$, then $gcd(a^{r/2} \pm 1, N)$ are both
+non-trivial factors of $N$, and we are done.
+\end{description}
+
+\subsection{Reduction of Factoring to Order Finding}
+
+Now we can formulate our reduction:
+
+\begin{enumerate}
+\item Choose $a \in \{2, \ldots, N-1\}$ uniformly at random.
+\item if $gcd(a,N) \ne 1$, then we are done.
+\item Find $r = ord_N(a)$ using our black box.
+\item If $r$ is odd, try again with another $a$.
+\item If $r$ is even, calculate both $gcd(a^{r/2} \pm 1, N)$ and we're done.
+\end{enumerate}
+
+We will now justify one of the gaping assumptions above, namely that our
+reduction completes in bounded time with some high probability of success.
+That is, we want the probability of the cases where our reduction doesn't
+work to be exponentially small in $k$, the number of prime factors of $N$.
+
+\begin{displaymath}
+\Pr\left[ r \text{ is odd or } a^{r/2} + 1 \equiv 0 \mod N \right] \le 1/2^{k-1}
+\end{displaymath}
+
+\subsection{Success Probability of Order-Finding Reduction}
+
+First, consider the positive integers less than $N$ and coprime to
+it:
+
+\begin{displaymath}
+\mathbb{Z}^*_N = \left\{ 1 \le x \le N : gcd(x,N) = 1 \right\}
+\end{displaymath}
+
+Note that the coprime condition stipulates
+$\exists_{a,b} ax + bN \equiv 1 \mod N$, so that we can define
+$x^{-1} \equiv a \mod N$.
+Since the set above is closed under integer multiplication modulo $N$ and
+every element has an inverse, this is a group.
+
+By the Chinese Remainder Theorem, we can decompose elements of
+$\mathbb{Z}^*_n$ as unique products of elements from the cyclic groups of
+its prime factor powers.
+
+\begin{displaymath}
+\mathbb{Z}^*_N = \mathbb{Z}^*_{p_1^{\alpha_1}} \times \ldots
+\mathbb{Z}^*_{p_k^{\alpha_k}}
+\end{displaymath}
+
+That is, $a \in \mathbb{Z}^*_N$ is uniquely determined by
+$a \mod p_1^{\alpha_1}, \ldots , a \mod p_k^{\alpha_k}$.
+
+We have the size of this group as
+
+\begin{displaymath}
+\mid \mathbb{Z}^*_N \mid = (\prod_{i=1}^k (1 - \frac{r}{p_i})) N
+\end{displaymath}
+
+The order of $a$
+with respect to $N$ is the least common multiple of $a$'s order with
+respect to each $p_i^{\alpha_i}$
+
+\begin{displaymath}
+ord_N(a) = lcm(ord_{p_1^{\alpha_1}}(a), \ldots , ord_{p_k^{\alpha_k}}(a))
+\end{displaymath}
+\begin{displaymath}
+r = ord_N(a) \qquad r = lcm(r_1, \ldots r_k)
+\end{displaymath}
+
+\begin{displaymath}
+r_i = ord_{p_i^{\alpha_i}}(a) \qquad d_j \equiv \max_{d} 2^d \mid r_j
+\end{displaymath}
+
+\begin{displaymath}
+d_1 = \ldots = d_k = 0 \qquad \Longleftrightarrow \qquad
+\text{all } r_i \text{ odd} \qquad \Longleftrightarrow \qquad r \text{ odd}
+\end{displaymath}
+
+Claim:
+
+\begin{displaymath}
+a^{r/2} + 1 \equiv 0 \mod N \Longleftrightarrow d_1 = \ldots = d_k > 0
+\end{displaymath}
+
+\begin{displaymath}
+a^{r/2} + 1 \equiv 0 \mod N \Longleftrightarrow
+a^{r/2} + 1 \equiv 0 \mod p_i^{\alpha_i} \forall{i \in [k]}
+\end{displaymath}
+
+Define $d$ to be the following:
+
+\begin{displaymath}
+d \equiv \max \left\{ d_i : 2^{d_i} \mid r \right\}
+\end{displaymath}
+
+\begin{displaymath}
+d_i < d \rightarrow r_i \mid \frac{r}{2}
+\end{displaymath}
+
+Choose $a$ uniformly from the following group:
+
+\begin{displaymath}
+a \in \mathbb{Z}^*_{p_i^{\alpha_i}} \cong
+\mathbb{Z}^+_{p_i^{a_i}}(1 - \frac{1}{p_i})
+\end{displaymath}
+
+Define $b_i$ to be the following:
+
+\begin{displaymath}
+b_i = \max \{b_j : 2^{b_j} \mid p_i^{\alpha_i}(1 - \frac{1}{p_i})
+\end{displaymath}
+
+\begin{eqnarray*}
+\Pr[d_i = 0] & = & \frac{1}{2}\\
+\Pr[d_i = 1] & = & \frac{1}{4}\\
+\ldots \\
+\Pr[d_i = b_i - 1] & = & 2^{-b_i}\\
+\Pr[d_i = b_i] & = & 2^{-b_i}
+\end{eqnarray*}
+
+This is the low probability that we want.
+Now on to period finding.
+
+%------------------------------------------------------------------------------
+\section{Period Finding and QFT}
+
+Let
+
+\begin{displaymath}
+f(x) = a^x \mod N
+\end{displaymath}
+
+\begin{multline}
+f(x) = f(x+r)\\
+f(y) = f(x) \Longleftrightarrow r \mid x-y \\
+0 \le x < 2^n \qquad 2^n \gg N^2
+\end{multline}
+
+where we can think of $n \sim O(\log N)$.
+
+Now here is the reduction to the Quantum Fourier Transform, which as you recall
+is defined by:
+
+\begin{displaymath}
+F = \frac{1}{\sqrt{2^n}} \sum_{x,y=0}^{2^n - 1}
+e^{2\pi i xy / 2^n} \ket{y} \bra{x}
+\end{displaymath}
+
+\begin{enumerate}
+\item Start with $\frac{1}{\sqrt{2^n}} \sum_{x=0}^{2^n - 1} \ket{x}$ in the
+first register.
+\item Apply $f$, storing the result in a second register,
+obtaining $\frac{1}{\sqrt{2^n}}\sum \ket{x} \ket{f(x)}$.
+\item Measure the second register to obtain the following state for some $0 \le x < r$
+
+\begin{displaymath}
+\frac{\ket{x} + \ket{x+r} + \ket{x + 2r} + \ldots + \ket{x + (l-1)r}}{\sqrt{l}} =
+\frac{1}{\sqrt{l}} \sum_{j=0}^{l-1} \ket{x + jr}
+\end{displaymath}
+
+\item Apply $F$ to get
+\begin{displaymath}
+\frac{1}{\sqrt{2^n l}} \sum_{j=0}^{l-1} \sum_{y=0}^{2^n - 1}
+\exp(2\pi i y (x + jr) / 2^n \ket{y}
+\end{displaymath}
+
+\item Measure $y$ with the following probability:
+
+\begin{displaymath}
+\Pr[y] = \frac{1}{2^nl} \mid \sum_{j=0}^{l-1} \exp(2 \pi i y j r / 2^n) \mid ^2
+\cdot \mid \exp(2 \pi i y x) \mid ^2
+\end{displaymath}
+
+If $y \approx \frac{2^n}{r}k$, for $0 \le k < r$, $k \in \mathbb{Z}$, then
+this probability is: $\frac{2 \pi i y j r}{2^n} \approx 2 \pi i j k$.
+
+\end{enumerate}
+
+Claim:
+
+$\Pr[y]$ peaks around $y \in \left\{ 0, \frac{2^n}{r}, \frac{2^n}{r}2,
+\frac{2^n}{r}3, \ldots \right\} \}$
+
+We're not going to prove this, but it is similar to the homework problem for
+phase estimation. $f$ repeats with a period $r$, like a unitary which
+repeats phase with a period $r$.
+
+Define:
+
+\begin{displaymath}
+X_r \equiv \sum_{j=0}^{r-1} \ket{j+1 \mod r} \bra{j}
+\end{displaymath}
+
+The eigenvalues of this operator are $e^{2\pi i k / r}$ for
+$k = 0, 1, \ldots, r-1$, for the corresponding eigenvectors:
+
+\begin{displaymath}
+\ket{\psi_k} = \frac{1}{\sqrt{r}} \sum_{j=0}^{r-1} e^{-\frac{2\pi i j k}{r}\ket{j}}
+\end{displaymath}
+
+After running phase estimation, we get some phase approximately equal to
+$\frac{k}{r}$ for some random $k$. Now run continued fractions expansion to
+get the best rational approximation to $r$.
+See Nielsen \& Chuang.
+
+We can write the result of a QFT using the
+following \emph{product representation}, a tensor product of single qubit
+states:
+
+\begin{displaymath}
+F\ket{x_0, \ldots x_{n-1}} =
+\frac{\ket{0} + e^{2\pi i \cdot 0.x_{n-1}\cdots x_0} \ket{1}}{\sqrt{2}} \otimes
+\frac{\ket{0} + e^{2\pi i \cdot 0.x_{n-2}\cdots x_0} \ket{1}}{\sqrt{2}} \otimes
+\ldots
+\end{displaymath}
+
+Therefore, we can enact the QFT by doing controlled rotations on single-qubits,
+which look like:
+
+\begin{displaymath}
+R_k = 
+ \left(
+  \begin{array}{cc}
+    1 & 0 \\
+    0 & e^{2\pi i / 2^k} \\
+  \end{array} \right)
+\end{displaymath}
+
+\end{document}
