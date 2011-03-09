@@ -1,0 +1,160 @@
+\documentclass[12pt]{article}
+
+\usepackage{fullpage}
+\usepackage{fancyhdr}
+\usepackage{amsmath}
+\pagestyle{fancy}
+
+\rhead{Problem \thesection\\Page \thepage\\Winter 2011}
+\lhead{Paul Pham [ppham@cs.washington.edu]\\CSE 599D: Quantum Computing \\Problem Set 4}
+
+%\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\addtolength{\headheight}{42pt} % make space for the rule
+\addtolength{\headsep}{6pt} % make space for the rule
+
+\renewcommand{\labelenumi}{\textbf{\alph{enumi})}}
+\renewcommand{\labelenumii}{\textbf{\arabic{enumii}}}
+%\renewcommand{\thesection}{\small{Problem \arabic{section}.}}
+%  \makeatletter
+%   \renewcommand{\section}{\@startsection{section}{1}{0mm}
+%   {\baselineskip}%
+%   {\baselineskip}{\normalfont\normalsize}}%
+%   \makeatother
+%\renewcommand{\section}{\@startsection{section}{1}}
+\def\qopnamewl@#1{\mathop{\fam\z@#1}\nlimits@}
+\def\Exp{\mathop{\rm {E}}}
+\def\dist{{\rm dist}\,}
+\def\mod{{\rm mod}}
+
+\begin{document}
+\newcommand{\ket}[1]{|#1 \rangle}
+\newcommand{\bra}[1]{\langle #1 |}
+\newcommand{\tr}{\text{tr}}
+\newcommand{\normtwo}{\frac{1}{\sqrt{2}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\setcounter{section}{0}
+\section{Fidelity and trace distance}
+
+\begin{enumerate}
+
+% Part A
+\item
+If $\alpha = \ket{\alpha}\bra{\alpha}$ and
+$\beta = \ket{\beta}\bra{\beta}$ are the density matrices of pure states,
+then we can imagine them as vectors with an angle $\theta$ between them.
+Then consider the basis where $\ket{alpha} = \ket{0}$ and
+$\ket{beta} = \cos\theta\ket{0} + \sin\theta\ket{1}$, and we have the
+following matrix:
+
+\begin{displaymath}
+\alpha - \beta = 
+\begin{bmatrix}
+1 - \cos^2 \theta      & -\cos\theta \sin\theta \\
+-\cos\theta \sin\theta & \sin^2 \theta
+\end{bmatrix}
+\end{displaymath}
+
+Then we have
+
+\begin{displaymath}
+T(\alpha, \beta) = \frac{1}{2}||\alpha - \beta||_1 = \tr |A-B|
+
+\end{displaymath}
+
+We can define $\ket{\alpha} = \sum_{i} \sqrt{a_i}\ket{i}$ and
+$\ket{\beta} = \sum_{i} \sqrt{b_i}\ket{i}$.
+Recall that the fidelity in this case is simply the inner product of
+the two vectors. Since each vector has unit magnitude, this is just the
+(positive) cosine of the angle between them.
+
+\begin{displaymath}
+F(\alpha,\beta) = \sum_{i} \sqrt{a_i b_i} = |\cos\theta|
+\end{displaymath}
+
+Finally, we have the following relation between fidelity and trade distance:
+
+\begin{displaymath}
+T(\alpha, \beta) = \sqrt{1 - F(\alpha,\beta)^2}
+\end{displaymath}
+
+% Part B
+\item
+We use the fact that trace distance is non-increasing under partial trace.
+
+\begin{displaymath}
+T(\alpha, \beta) \ge T(\rho, \sigma) = \frac{1}{2} ||\rho - \sigma||_1
+\end{displaymath}
+
+where $\alpha$ and $\beta$ are any purification of $\rho$ and $\sigma$
+respectively.
+
+Then from the previous part:
+\begin{displaymath}
+F(\alpha, \beta)^2 = 1 - T(\alpha, \beta)^2 \le 1 - T(\rho, \sigma)^2 =
+\frac{1}{4} || \rho - \sigma ||^2_1
+\end{displaymath}
+
+\end{enumerate}
+
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\setcounter{section}{1}
+\section{Optimality of super-dense coding and teleportation}
+
+\begin{enumerate}
+
+% Part A
+\item
+The chance of Alice sending one of $2^n$ $n$-bit messages (chosen uniformly
+at random) is $1/2^n$. If $m=n$, then she can send the whole message, and
+Bob can guess it with probability $2^{m-n} = 2^0 = 1$.
+
+If $m < n$, then suppose Alice and Bob have some encoding/decoding algorithm
+
+\begin{multline}
+E: \{0,1\}^n \rightarrow \{0,1\}^m \\
+D: \{0,1\}^m \rightarrow \{0,1\}^n
+\end{multline}
+
+By the pigeonhole principle, at least one ciphertext message $y \in \{0,1\}^m$
+must be the encoding of more than one plaintext message $x \in \{0,1\}^n$.
+In a completely "balanced" encoding, each ciphertext $y$ correspondings to
+$2^{n-m}$ plaintext strings, and if Bob receives this $y$, he can do no better
+than randomly guess one of these $x$'s with probability $2^{-(n-m)}$. This is the
+best case.
+
+In the worst case, the encoding maps more than $2^{n-m}$ $x$'s to a $y$, and
+Bob could get one of these. Then his probability of guessing correctly is
+less than $2^{-(n-m)}$.
+
+% Part B
+\item
+
+% Part C
+\item
+
+\end{enumerate}
+
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Partial transpose and data hiding}
+
+\begin{enumerate}
+
+% Part A
+\item
+
+% Part B
+\item
+
+% Part C
+\item
+
+\end{enumerate}
+
+\end{document}
