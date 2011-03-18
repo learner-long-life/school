@@ -1,0 +1,41 @@
+\section{Introduction}
+
+General quantum states cannot be cloned, but this apparent
+algorithmic disadvantage can be turned into a cryptographic advantage.
+Money is a common implementation of a
+real-life, physical one-way function:
+we want valid bills and coins to be easily creatable (via a
+\emph{minting algorithm} possibly with some classical secret) by a central
+bank but easily checkable (by a public \emph{verification algorithm})
+by anyone with access to a quantum computer.
+
+This project provides a critical summary of a recent proposed 
+ quantum money scheme based on the properties
+mathematical knots \cite{Farhi2010}.
+The interested reader is referred to that paper for
+a good summary of prior work.
+While a promising approach, this scheme's Markov-chain-based
+verification algorithm is incomplete
+and may not be able to distinguish valid and invalid quantum money states.
+
+First, we briefly review knots and how they are used
+in the minting algorithm to create valid money states.
+Second, we move on to the main part of this paper, the dissection of the
+verification algorithm, including a calculation bounding how much
+damage is done to a valid money state and a discussion about our
+desired mixing properties for the Markov chain part.
+Then we expand upon existing attacks for this scheme.
+Finally, we conclude with future extensions to this exciting work to
+make the scheme more concrete.
+
+%\section{Related Work}
+
+%The unforgeability of quantum money was studied as early as Wiesner
+%\cite{}. Although his scheme provides information-theoretic security
+%in the sense of relying directly on the laws of physics, it has the
+%severe disadvantage of involving the mint in every transaction.
+%Ideally, we would like our quantum money to be publicly verifiable, that is,
+%without resorting to the trusted authority for every interaction.
+%Aaronson proved that public-key quantum money was possible relative to an oracle
+
+

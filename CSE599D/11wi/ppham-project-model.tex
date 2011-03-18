@@ -1,0 +1,58 @@
+\section{Quantum Money}
+
+Consider notes which consist of a quantum state $\ket{\$_p}$ in
+a fixed basis $\mathcal{B}$
+and a classical serial number $p$,
+together with a global classical function $A$ which computes
+$p$ from the basis states. $\ket{\$_p}$ is a (possibly weighted) superposition
+of basis states $\ket{G}$ which are equivalent in the sense that they all map
+to the same value.
+
+\begin{displaymath}
+\ket{\$_p} = \frac{1}{\sqrt{N}} \sum_{G:A(G)=p} q_G \ket{G}
+\end{displaymath}
+
+With respect to some security parameter $\overline{D}$, 
+we would like a different serial number $p$ to be produced each time
+with probability exponentially close to 1 to prevent forgery through
+repetition
+of the minting algorithm. For each $p$, or even from each $\ket{G}$ where
+$A(G)=p$, it should be difficult to find all equivalent basis states and
+therefore
+to forge their superposition. We will see later that it is useful to
+shape the weights $q_G$ of the superposition, rather than have uniform
+distribution. So how do we do this? Two words: knots, maybe.
+
+\section{Knots}
+
+Knots are like a loop of string which can be arbitrarily tangled
+with
+itself in three dimensions. We
+can represent them in two-dimensions with $d \times d$
+\emph{grid diagrams}, where strands
+pass vertically and horizontally between $d$ \textsf{X} and
+$d$ \textsf{O} markers,
+one of each kind of marker in each column and row.
+Equivalently, we can encode a grid diagram purely through
+a pair of disjoint permutations $\Pi_{\textsf{X}}$
+and $\Pi_{\textsf{O}}$ on the integers $\{1, \ldots, d\}$.
+
+An Alexander polynomial can be computed for each knot based on its
+crossings and is invariant under the Reidemeister moves. Therefore,
+all grid diagrams of the same knot have the same Alexander polynomial
+and can be transformed into one another.
+However, it is conjectured to be hard (even for a quantum computer, on
+average) to be able to generate all such equivalent
+grid diagrams, or even more simply to determine if two grid diagrams are
+equivalent. However, we can easily create a quantum
+superposition of all grid encodings, compute their Alexander polynomials
+$p$ into a second register, then measure $p$ to be left with the
+superposition of all corresponding equivalent grid diagrams.
+This one-wayness, due to quantum measurement, combined with the classical
+one-wayness of digitally signing $p$, result in the one-wayness of
+the minting algorithm.
+
+Based on the leading notation above, you have probably guessed that the
+basis $\mathcal{B}$ consists of all grid diagrams of size $d$ which ranges
+from $2$ to $2\overline{D}$. The size of a grid diagram is
+denoted as $d(G)$.

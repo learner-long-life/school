@@ -1,0 +1,49 @@
+\section{Possible Attacks}
+
+Since this scheme of quantum money from knots is based on conjectures, this
+points the way to several future attacks.
+
+\begin{enumerate}
+\item Reverse engineering from the Alexander polynomial $p$. If the attacker
+could easily find all equivalent grid diagrams to a single "canonical" grid
+diagram corresponding to the serial number, he could create the correctly
+weighted superposition to duplicate $\ket{\$_p}$. Call
+$\mathcal{G}_{2\overline{D}}$ the set of all grid diagrams of up to size
+$2\overline{D}$.
+The attacker could enumerate over
+exponentially many grid moves within $\mathcal{G}_2\overline{D}$,
+or he could enumerate over all grids in $\mathcal{G}_2\overline{D}$ assuming
+he has an oracle for determining if two grid diagrams are equivalent.
+Both would take exponential time.
+Alternatively, suppose that a polynomial time algorithm exists to extract from
+each grid diagram
+(encoded in $O(\overline{D}^2)$
+bits) either the moves to get to all but exponentially many equivalent
+diagrams or (even more unlikely) the equivalent diagrams themselves.
+We would have to be able to upper bound the number of equivalent grid diagrams to
+also be $O(\overline{D}^2)$, which we currently don't know how to do.
+\item
+It turns out that a certain class of states can be efficiently copied, which
+includes the eigenstates of some classical reversible circuit.
+A special case of this
+are the states $\ket{\psi_{n,k}}$ used to enact arbitrary controlled phase
+rotations in the quantum compiling algorithm of Kitaev, Shen, and Vyalyi
+\cite{KSV02}, where the state to copy (say $\ket{\psi_{n,1}}$ which is hard
+to produce) is of the
+same form as the "empty" register to hold the new copy ($\ket{\psi_{n,0}}$, which
+is easy to produce). As in
+\begin{displaymath}
+\ket{\psi_{n,1}}\otimes\ket{\psi_{n,0}} \rightarrow
+\ket{\psi_{n,1}}\otimes\ket{\psi_{n,1}}
+\end{displaymath}
+If it turns out that weighted superpositions of equivalent
+grid diagrams are within that class of states, then the valid money state
+$\ket{\$_p}$ could be copied into an entangled pair
+$\ket{\$_p} \otimes \ket{\$_p}$
+can somehow be used toese are somehow encoded in the grid diagram itself,
+waiting to be extracted.
+he might be able to somehow extractEven if he is given an
+oracle to 
+come up with a "canonical" grid diagram corresponding to the serial number and
+
+\end{enumerate}

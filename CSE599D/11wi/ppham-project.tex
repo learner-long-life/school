@@ -1,0 +1,51 @@
+\documentclass[twocolumn,10pt]{article}
+
+\usepackage[dvips]{graphicx}
+%\usepackage{times}
+%\usepackage{fullpage}
+\usepackage{eprint}
+\usepackage{rotating}
+%\usepackage{eepic}
+\usepackage{amsfonts}
+\usepackage{algorithmic}
+\usepackage{amsthm}
+\usepackage{amsmath}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+
+\title{Quantum Money From Knots}
+%\subtitle{CSE 599D Winter 2011: Final Project}
+\date{18 March 2011}
+\author{Paul Pham}
+
+%\input{Qcircuit}
+
+\begin{document}
+
+\newcommand{\ket}[1]{|#1 \rangle}
+\newcommand{\bra}[1]{\langle #1 |}
+\newcommand{\braket}[2]{\langle #1|#2 \rangle}
+\newcommand{\normtwo}{\frac{1}{\sqrt{2}}}
+\newcommand{\norm}[1]{\parallel #1 \parallel}
+
+\maketitle
+
+\input{ppham-project-abstract}
+
+\input{ppham-project-intro}
+
+\input{ppham-project-model}
+
+\input{ppham-project-verify}
+
+\input{ppham-project-damage}
+
+\input{ppham-project-markov}
+
+\input{ppham-project-future}
+
+\bibliography{ppham-project}
+\bibliographystyle{tocplain}
+
+\end{document}

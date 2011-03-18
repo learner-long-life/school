@@ -1,0 +1,52 @@
+\section{Damage from Measuring Valid Money States}
+
+In Step 3, we are cutting off the tails of the Gaussian distribution
+to eliminate a certain class of equivalent knot diagrams with size close
+to $2\overline{D}$ or $2$ which are easy to create due to the edge cases
+in our Markov chain moves. Otherwise, these easily forgeable states would
+pass Step 4. How do we know this projection won't significantly damage a valid
+money state?
+
+First let's define the set of all equivalent
+grid diagrams $G$ with Alexander polynomial $p$ and with dimension outside
+the cutoff regions:
+
+\begin{displaymath}
+\mathcal{G} = \{
+G:A(G)=p \land d(G) \in
+[2, \frac{\overline{D}}{2})
+\cap (\frac{3\overline{D}}{2},2\overline{D}]
+\}
+\end{displaymath}
+
+Then lets take the norm of the difference between the original valid money state
+$\ket{\psi}$ and the same state after its tails have been cut off,
+$\ket{\tilde{\psi}}$, which ends up just being the sum of the coefficients
+squared
+of grid diagrams in $\mathcal{G}$.
+
+\begin{displaymath}
+|| \ket{\psi} - \ket{\tilde{\psi}} || \le
+\sum_{G \in \mathcal{G}} (\sqrt{q(d(G))})^2
+\end{displaymath}
+
+Recall that $q(d)$ is designed to be a Gaussian distribution with
+standard deivation $\sqrt{\overline{D}}/2$, which we can recenter to zero mean.
+Then we
+can calculate the area under the distribution from
+$\frac{\overline{D}}{2}$ to $\frac{3\overline{D}}{2}$ using the error function:
+\cite{WikipediaNormal}
+
+\begin{multline*}
+F(\mu + n\sigma; \mu, \sigma^2) - F(\mu - n\sigma; \mu, \sigma^2) = 
+\Phi(n) - \Phi(-n) \\ = \textrm{erf}(\frac{n}{\sqrt{2}}) =
+\textrm{erf}(\frac{\sqrt{\overline{D}}}{2\sqrt{2}})
+\end{multline*}
+
+Here, $n = \sqrt{\overline{D}}/2$, and we can approximate the
+error function by:
+
+\begin{displaymath}
+erf(\frac{\overline{D}}{2\sqrt{2}}) =
+\sqrt{1 - \exp(-\Omega(\overline{D}^2))} = 1 - \exp(\Omega(\overline{D}^2))
+\end{displaymath}
