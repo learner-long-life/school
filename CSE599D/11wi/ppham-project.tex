@@ -14,8 +14,9 @@
 \theoremstyle{plain}
 \newtheorem{theorem}{Theorem}
 
-\title{Quantum Money From Knots}
-%\subtitle{CSE 599D Winter 2011: Final Project}
+\title{Quantum Money From Knots\\
+\large{CSE 599D Winter 2011: Final Project}
+}
 \date{18 March 2011}
 \author{Paul Pham}
 
@@ -28,6 +29,10 @@
 \newcommand{\braket}[2]{\langle #1|#2 \rangle}
 \newcommand{\normtwo}{\frac{1}{\sqrt{2}}}
 \newcommand{\norm}[1]{\parallel #1 \parallel}
+\newcommand{\Dhalf}{\tfrac{D}{2}}
+\newcommand{\threeDhalf}{\tfrac{3D}{2}}
+\newcommand{\cutoffInterval}{\overline{\left[\Dhalf, \threeDhalf\right]}}
+\newcommand{\cutoffG}{\mathcal{G}_p(\cutoffInterval)}
 
 \maketitle
 
@@ -36,6 +41,10 @@
 \input{ppham-project-intro}
 
 \input{ppham-project-model}
+
+\input{ppham-project-knots}
+
+\input{ppham-project-weights}
 
 \input{ppham-project-verify}
 

@@ -1,0 +1,46 @@
+\section{Superposition Weights}
+\label{sec:weights}
+
+So how do we verify a valid money state $\ket{\$_p}$ made up of possibly
+exponentially many, hard-to-find
+equivalent grid diagrams? Note that
+the local moves to transform one grid diagram into another can be
+compactly represented as a Markov chain. Simply allow a given state to
+mix according to this Markov chain for long enough. If we started
+out with a valid $\ket{\$_p}$, then mixing won't change it because
+all $G\in\mathcal{G}_p$ will mix with each other in isolation from the
+grid diagrams of another polynomial $p'$. If its
+eigenvalue is close to +1, it should project to the
+stationary distributions (the +1 eigenstates) with high probability.
+
+However, there is one big wrinkle in that we have to limit ourselves
+to a finite size interval,
+so any moves which go outside that will not happen in our Markov chain.
+There may be small subsets of $\mathcal{G}_p$, which we'll call
+\emph{shards},
+close to that size limit that will
+not mix as a result, which could be
+easy to forge but still pass verification.
+To get around this, we can define our superposition
+weights (and our corresponding Markov chain moves) to heavily favor
+grid diagrams close to some mean and then
+cut off the tails. Therefore,
+we define our weights $q_G=q(d(G))$ in Section \ref{sec:model}
+to be
+a Gaussian distribution on the grid diagram's size 
+centered at $D$ with standard deviation
+$\sqrt{D}$.
+
+\begin{displaymath}
+q(d) = 
+\begin{cases} 
+\lceil \tfrac{1}{N} \exp \tfrac{-(d-D)^2}{2D} \rceil & \text{if } 2 \le d \le 2D\\ 
+0 & \text{otherwise }
+\end{cases} 
+\end{displaymath}
+
+The distribution is integer-valued, and the Markov chain walks over
+configuration pairs $(G,i)$ of diagram grid $G$ and a label
+$i \in [q(d(G))]$. Moves that takes us from $G$ to $G'$ where
+$i \ge q(d(G'))$ are not allowed.
+Now we show that cutting of the tails doesn't damage our state too much.

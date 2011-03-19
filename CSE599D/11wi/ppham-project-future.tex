@@ -3,23 +3,22 @@
 To extend this scheme or prove it secure, we would need a better
 understanding of knots and quantum algorithms for them. The
 two obvious future extensions are to come up with a quantum algorithm
-for knot equivalence to attach the security of this scheme directly or
+for knot equivalence or
 to prove an eigenvalue gap for the Markov chain in the verification
 scheme. Aside from those, here are a
 few other interesting directions:
 
 \begin{enumerate}
-\item Current schemes do not address the demand for currency.
-For a given security parameter $\overline{D}$, 
+\item
+For a given security parameter $D$, 
 are there sufficiently many Alexander polynomials (serial numbers)
-available to supply the world with enough quantum bills?
-To do this, we would need to lower-bound the number of
-different knots that can be embedded in grid diagrams of up to size
-$2\overline{D}$, not including the unknot which has empirically been shown
+available to meet the global demand for quantum bills?
+To do this, we would need to lower-bound $|\{\mathcal{G}_p\}|$,
+not including the unknot which has empirically been shown
 to
 occupy the vast majority of grid diagrams.
 \item
-Quantum bills and coins currently have no denomination associated with
+Quantum bills currently have no denomination associated with
 them and so are of unit value.
 Is it possible to associate a denomination with quantum money, or to have
 it be dividable or combinable?
@@ -28,31 +27,35 @@ It turns out that a certain class of states can be efficiently copied, which
 includes the eigenstates of the addition operator, $\ket{\psi_{n,k}}$,
 used to enact arbitrary controlled phase
 rotations in the quantum compiling algorithm of Kitaev, Shen, and Vyalyi
-\cite{KSV02}. The state to copy (say $\ket{\psi_{n,1}}$, which is hard
-to produce), but is of the
-same form as the "empty" register to hold the new copy
-($\ket{\psi_{n,0}}$, which
-is easy to produce). As in
-\begin{displaymath}
-\ket{\psi_{n,1}}\otimes\ket{\psi_{n,0}} \rightarrow
-\ket{\psi_{n,1}}\otimes\ket{\psi_{n,1}}
-\end{displaymath}
-If it turns out that weighted superpositions of equivalent
-grid diagrams are within that class of states, then the valid money state
-$\ket{\$_p}$ could be copied into an entangled pair
-$\ket{\$_p} \otimes \ket{\$_p}$, either have of which would pass
-verification.
+\cite{KSV02}.
+%The state to copy (say $\ket{\psi_{n,1}}$, which is hard
+%to produce), but is of the
+%same form as the ``empty'' register to hold the new copy
+%($\ket{\psi_{n,0}}$, which
+%is easy to produce).
+%As in
+%\begin{displaymath}
+%$\ket{\psi_{n,1}}\otimes\ket{\psi_{n,0}} \rightarrow
+%\ket{\psi_{n,1}}\otimes\ket{\psi_{n,1}}$.
+%\end{displaymath}
+If it turns out that $\ket{\$_p}$ or some part of it is
+within that class of states, then we can forge it with non-negligible
+probability.
 \end{enumerate}
 
-Interesting results which have emerged since the main paper \cite{Farhi2010}
+Results which have emerged since the main paper \cite{Farhi2010}
 include a new online attack for Wiesner's original scheme
-\cite{Lutomirski2010} which involves the bank returning bogus bills.
-Incidentally, the related work \cite{Lutomirski 2010} addresses this same
-concern of a mint artificially inflating currency by releasing additional bills,
-and then sketches a solution using a \emph{collision-free} quantum money
-protocol.
+which involves the bank returning bogus bills,
+also addressed in \cite{Lutomirski2010} by 
+\emph{collision-free} quantum money
+protocols which prevent currency inflation.
+Furthermore, if deciding knot equivalence in two dimensions is ever
+solved, one might hope that lifting knots into
+three-dimensional \emph{cube diagrams}
+will evade solution for longer \cite{Baldridge2009}.
 
-However, if one is not satisfied with the hardness of finding a connecting
-sequence of Reidemeister moves between any two grid diagrams, we can increase
-the hardness even further by embedding knots into three dimensions, using
-so-called \emph{cube diagrams}\cite{Baldridge2009}.
+In conclusion, our hopes are raised by the promise of
+this new public-key quantum money scheme, but we also poke at some of
+its shortcomings. We've only scratched the surface of this fascinating
+topic, leaving out many bad jokes, and
+we look forward to future developments in this field.

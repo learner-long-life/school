@@ -1,19 +1,22 @@
-\section{Markov Chain Mixing to Distinguish Money States}
+\section{Markov Chain Mixing}
 
 In Step 4 of the verification scheme, we apply a Markov chain
 $\hat{B}$ and then
 project onto its +1 eigenstates. This depends on valid money states
 $\ket{\$_p}$
-being very close to +1 eigenstates of $\hat{B}$, much closer than
-the eigenstates corresponding to invalid money. 
-Valid money states cannot be exactly +1 eigenstates, because those
-include mixing from grid diagrams in $\mathcal{G}$ above,
-with size in the tails that we cut off in Step 3. Therefore, our only
-hope is that the eigenvalues for $\ket{\$_p}$ being exponentially
-close to one and the eigenvalues for all other states being at least
+having eigenvalues very close to (but not exactly equal to) +1,
+which is suggested by the previous
+section. But are $\ket{\$_p}$ eigenvalues much closer than
+the eigenvalues corresponding to invalid money?
+Our only
+hope is
+%that the eigenvalues for $\ket{\$_p}$ being exponentially
+%close to one and
+that the ``invalid'' eigenvalues
+are at least
 polynomially farther away.
 
-Unfortunately, we don't understanding enough about knots to make that
+Unfortunately, we don't understand enough about knots to make that
 claim for this particular Markov chain. This is the biggest open
 question and avenue for attack in our knot-based scheme.
 In particular, we don't know
@@ -23,34 +26,32 @@ eigenstates (call it $(1-b), b \in [0,1)$). We are guaranteed to be exponentiall
 to some eigenstate of $\hat{B}$ after calculating and measuring the
 Alexander polynomial in Step 2 above.
 
-However, as dreamers, we can imagine what desirable properties we would
-like to prove for $\hat{B}$. First, we would like $b > a$, so that
-there is a gap. First, we would like to show that $a$ is
-small, so a $\ket{\$_p}$ doesn't degrade under
+In our wildest dreams, what would we like to be true about the eigenvalues
+of $\hat{B}$?
+First off, we'd like $b > a$. Next, we'd like $a$ to be
+exponentially small, so that a $\ket{\$_p}$ doesn't degrade under
 $r$ repetitions of Markov chain verification and still projects
 to a +1 eigenstate with high probability.
-
-\begin{displaymath}
-a = \frac{1}{\exp(\Omega(\overline{D}))}
-\end{displaymath}
-
-Second, we would like to show that $b$ is polynomially away from 1, so
+Finally, we'd like $b$ to be at least polynomially away from 1, so
 that under $r$ repetitions of Markov chain verification, it
 projects to a +1 eigenstate with low probability.
 
-\begin{displaymath}
-b = \frac{1}{\Omega(\overline{D})}
-\end{displaymath}
+%\begin{eqnarray*}
+%a & = & \frac{1}{\exp(\Omega(D))} \\
+%b & = & \frac{1}{\Omega(D)}
+%\end{eqnarray*}
 
-We would like to show that difference in probabilities increases
-exponentially close to 1 with $r$:
+How high is high and how low is low?
+We would like to show that the difference in probabilities increases
+exponentially close to 1 with $r$, where in the first inequality below
+we use the union bound.
 
 \begin{multline*}
 (1-a)^r - (1-b)^r \ge (1 - ra) - (1 - rb) \\
 = r(b-a) =
-\frac{1}{\exp(\Omega(\overline{D}))} - \frac{1}{\Omega(\overline{D})}
+r \left(\tfrac{1}{\exp(\Omega(D))} - \tfrac{1}{\Omega(D)}\right)
 \end{multline*}
 
 Therefore, if $(b-a)$ also increases exponentially closer to 1, we can
-get away with $r = \textrm{poly}(\overline{D})$ repetitions, so that our
+get away with $r = \textrm{poly}(D)$ repetitions, so that our
 Markov chain verification procedure is tractable.

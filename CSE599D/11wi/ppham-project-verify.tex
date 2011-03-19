@@ -1,63 +1,35 @@
 \section{Verification}
 
-So how do we verify a valid money state $\ket{\$_p}$ made up of possibly
-exponentially many, hard-to-find
-equivalent grid diagrams? The great insight of this knot scheme is that
-the local moves to transform one grid diagram into another can be
-compactly represented as a Markov chain. Simply allow a given state to
-mix according to this Markov chain for long enough, and it should reach
-some stationary distribution (the +1 eigenstates). If we truly started
-out with a valid $\ket{\$_p}$, then mixing won't change it. After we
-project onto the $+1$ eigenstates, with high probability $\ket{\$_p}$ will
-have outcome $+1$.
-
-However, there is one big wrinkle in that we have to limit ourselves
-to grid diagrams of a finite size (say $2\overline{D}$), and any moves
-which go beyond that limit will not happen in our Markov chain.
-There may be equivalent grid diagrams close to that size limit that will
-not mix as a result, and therefore these relatively small superpositions
-may be easy to forge. To get around this, we can define our superposition
-weights (and our corresponding Markov chain moves) to heavily favor
-grid diagrams close to some mean (say $\overline{D}$) and where we can
-cut off the tails without damaging out states too much. Therefore,
-we define the $q_G=q(d(G))$ weights in the previous section to be a
-function of the grid diagram's size and to give a
-Gaussian distribution centered at $\overline{D}$ with standard deviation
-$\sqrt{\overline{D}}$.
-
-The distribution is integer-valued, and the Markov chain walks over
-configuration pairs $(G,i)$ of diagram grid $G$ and a label
-$i \in [q(d(G))]$. Moves that takes us from $G$ to $G'$ where
-$i \ge q(d(G'))$ are not allowed.
-
-So that settles that. Now we're ready to tackle 
+Now we're ready to tackle 
 the main steps of verifying whether a pair $(\ket{\phi},p)$ is valid
 quantum knot money as follows. Keep in mind that
 rejection at any step results in
 the whole procedure rejecting.
+%, and possibly a visit from Treasury agents.
 
 \begin{enumerate}
 \item
 Verify that $\ket{\phi}$ is a superposition of valid encoded grid diagrams.
 \item
-Measure the Alexander polynomial on the state $\ket{\phi}$. If it is equal to $p$,
-continue. At this point, $\ket{\phi}$ is some superposition of
-equivalent grid diagrams, but we must make sure it is the correctly weighted
-superposition produced by our minting algorithm.
+Measure the Alexander polynomial on the state $\ket{\phi}$ and verify
+that it is equal to $p$.
+At this point, $\ket{\phi}$ is some superposition of
+$\mathcal{G}_p$, but may not have the correct weights.
 \item
 Measure the projector onto grid diagrams with size in the range
-$\left[ \frac{\overline{D}}{2}, \frac{3\overline{D}}{2} \right]$,
-essentially cutting off its tails.
-If you get outcome $+1$,
-continue.
+$\left[ \Dhalf, \threeDhalf \right]$.
+Verify that the outcome is $+1$.
 \item
 Apply $r$ trials of
-Markov chain verification and accept only if all trials have outcome +1.
+Markov chain verification. Verify that all trials have outcome $+1$.
 \end{enumerate}
 
-Two important things are worth noting about the last two steps, both of
-which we
-will examine in greater detail: the damage done to a valid money state by
-cutting off its tails,
-and how well the mixing properties of the Markov chain allow us
-to distinguish valid from invalid money states.
+We will now discuss the motivation and important implications of the
+last two steps.
+
+%Two important things are worth noting about the last two steps, both of
+%which we
+%will examine in greater detail: the estimated damage done to a valid money
+%state by projecting it to a smaller subspace,
+%and how well the mixing properties of the Markov chain allow us
+%to distinguish valid from invalid money states.

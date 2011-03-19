@@ -1,19 +1,58 @@
-\section{Knots and Grid Diagrams}
+\section{Knots}
 
-Knots are three-dimensional mathematical objects analogous to a (directed) string
-that can be arbitrarily tangled with itself. Knots can be projected into
-two-dimensions where every string crossing is drawn as solid (the overcrossing
-segment) or broken (the undercrossing segment). However, string is a loose
-and messy analogy to deal with. To discretize knots into a useful computational
-tool, we can embed them into two-dimensional $d \times d$ grid diagrams,
-containing $d$ each of $X$ and $O$ markers, with exactly one of each in every
-column and row.
+Knots are like a loop of string which can be arbitrarily tangled
+with
+itself in three dimensions. We
+can represent them (non-uniquely) in two-dimensions with $d \times d$
+\emph{grid diagrams}.
+%, where strands
+%pass vertically and horizontally between $d$ \textsf{X} and
+%$d$ \textsf{O} markers,
+%one of each kind of marker in each column and row.
+%Equivalently, we can encode a grid diagram purely through
+%a pair of disjoint permutations $\Pi_{\textsf{X}}$
+%and $\Pi_{\textsf{O}}$ on the integers $\{1, \ldots, d\}$.
+An Alexander polynomial can be computed for each knot based on its
+crossings and is invariant under the Reidemeister moves on all
+corresponding gird diagrams.
 
-A link is a collection of
-one or more directed knots, possibly separable.
-If a link is separable, or if a link is the unknot the Alexander polynomial of
-its corresponding grid diagrams is 0.
+Based on the leading notation above, you have probably guessed that we
+choose our basis $\{G\}$ to consist of all grid diagrams of size
+within the arbitrarily chosen range
+$[2,2D]$.
+Furthermore, we choose $A$ to compute
+the Alexander polynomial $p$ of a graph $G$.
+We denote the integer size of a grid diagram $G$ by $d(G)$.
+Now it is useful to restrict our definition of equivalent basis states
+to grid diagrams representing the same underlying knot,
+with sizes within a certain interval $[a,b]$ for $a,b \in \mathbb{Z}^+$,
+with omission of an interval meaning the
+maximum range: $\mathcal{G}_p = \mathcal{G}_p([2,2D])$.
 
-Just as knots are invariant under Reidemeister moves,
-the Alexander polynomial is an invariant of knots embedded in grid diagrams
-under equivalent moves.
+\begin{displaymath}
+\mathcal{G}_p([a,b]) = \{G: (A(G) = p) \land (d(G) \in[a,b]) \}
+\end{displaymath}
+
+It is conjectured to be hard on average (even for a quantum computer)
+to be able to generate all $G \in \mathcal{G}_p([a,b])$ given
+uniformly random $p$, $a$, and $b$. We will skip the minting algorithm,
+but its one-wayness is based on the random outcome of measuring $p$
+out of a superposition of $\{\mathcal{G}_p\}$, together with a classical
+private key for signing valid serial numbers.
+
+%This one-wayness, due to quantum measurement, combined with the classical
+%one-wayness of digitally signing $p$, result in the one-wayness of
+%the minting algorithm. We can then digitally sign $p$ with the bank's
+%private key and publish that along with $(\ket{\$_p},p)$.
+%However, we can easily create
+%$\ket{\$_p}$ for a random $p$ via our minting algorithm:
+
+%\begin{enumerate}
+%\item Create a quantum
+%superposition of all grid diagrams $\ket{G}$ in a first register.
+%\item Compute their Alexander polynomials
+%$p$ into a second register.
+%\item Measure $p$ to be left with the
+%superposition of all $G \in \mathcal{G}_p$.
+%corresponding equivalent grid diagrams.
+%\end{enumerate}

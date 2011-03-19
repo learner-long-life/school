@@ -1,32 +1,34 @@
 \section{Introduction}
 
-General quantum states cannot be cloned, but this apparent
-algorithmic disadvantage can be turned into a cryptographic advantage.
-Money is a common implementation of a
-real-life, physical one-way function:
-we want valid bills and coins to be easily creatable (via a
-\emph{minting algorithm} possibly with some classical secret) by a central
-bank but easily checkable (by a public \emph{verification algorithm})
-by anyone with access to a quantum computer.
+General quantum states cannot be cloned. Is it possible to
+turn this apparent disadvantage into a cryptographic advantage,
+implementing money that is hard to counterfeit?
+We want valid money tokens to be easily \emph{minted}
+(possibly with some classical secret) by a central
+bank but easily \emph{verified}
+by anyone (with access to a quantum computer).
 
-This project provides a critical summary of a recent proposed 
+This project provides a critical summary of a recently proposed 
  quantum money scheme based on the properties
-mathematical knots \cite{Farhi2010}.
+of knots and grid diagrams \cite{Farhi2010}.
 The interested reader is referred to that paper for
 a good summary of prior work.
 While a promising approach, this scheme's Markov-chain-based
-verification algorithm is incomplete
-and may not be able to distinguish valid and invalid quantum money states.
+verification algorithm is incomplete.
+Therefore our criticism will focus on the ability to
+distinguish valid and invalid
+quantum money states.
 
+Our report is organized as follows.
 First, we briefly review knots and how they are used
 in the minting algorithm to create valid money states.
-Second, we move on to the main part of this paper, the dissection of the
-verification algorithm, including a calculation bounding how much
-damage is done to a valid money state and a discussion about our
-desired mixing properties for the Markov chain part.
-Then we expand upon existing attacks for this scheme.
-Finally, we conclude with future extensions to this exciting work to
-make the scheme more concrete.
+Second and most importantly, we analyze the relative ability of
+valid and invalid money states to survive the
+verification algorithm, specifically measurement damage and
+the
+desired mixing properties of the given Markov chain. This section
+requires some ``reasonable'' assumptions, which in turn point to
+possible future extensions, where we conclude.
 
 %\section{Related Work}
 

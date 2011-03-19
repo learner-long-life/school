@@ -1,52 +1,90 @@
-\section{Damage from Measuring Valid Money States}
+\section{Measurement Damage}
+\label{sec:damage}
 
-In Step 3, we are cutting off the tails of the Gaussian distribution
-to eliminate a certain class of equivalent knot diagrams with size close
-to $2\overline{D}$ or $2$ which are easy to create due to the edge cases
-in our Markov chain moves. Otherwise, these easily forgeable states would
-pass Step 4. How do we know this projection won't significantly damage a valid
-money state?
+In Step 3, we are cutting off the tails of the Gaussian distribution,
+like mice in some gruesome evolution experiment,
+to eliminate the shards mentioned in Section \ref{sec:weights}.
+ These edge cases will not mix with the rest of
+$\mathcal{G}_p$ and may have artificially small size, making them easy
+to forge and still pass Step 4.
+How do we know this projection won't significantly damage a
+valid money state?
 
-First let's define the set of all equivalent
-grid diagrams $G$ with Alexander polynomial $p$ and with dimension outside
-the cutoff regions:
+First let's define the cut-off interval as the complement of the
+``cut-in'' interval:
 
 \begin{displaymath}
-\mathcal{G} = \{
-G:A(G)=p \land d(G) \in
-[2, \frac{\overline{D}}{2})
-\cap (\frac{3\overline{D}}{2},2\overline{D}]
-\}
+\cutoffInterval = \left[2, \Dhalf \right)
+\cup \left(\threeDhalf,2D\right]
 \end{displaymath}
 
+So the grid diagrams in the cut-off interval are:
+
+\begin{multline*}
+\cutoffG
+= \\ \{
+G: (A(G)=p) \land (d(G) \in
+[2, \Dhalf)
+\cup (\threeDhalf,2D])
+\}
+\end{multline*}
+
 Then lets take the norm of the difference between the original valid money state
-$\ket{\psi}$ and the same state after its tails have been cut off,
-$\ket{\tilde{\psi}}$, which ends up just being the sum of the coefficients
+$\ket{\$_p}$ and the same state after its tails have been cut off,
+$\ket{\tilde{\$_p}}$, which ends up just being the sum of the coefficients
 squared
-of grid diagrams in $\mathcal{G}$.
+of $G \in \mathcal{G}_p$.
+
+\begin{eqnarray*}
+|| \ket{\$_p} - \ket{\tilde{\$_p}} || & = &
+\sum_{G \in \cutoffG} (\sqrt{q(d(G))})^2 \\
+& = & \sum_{d \in \cutoffInterval} \sum_{G \in \mathcal{G}([d])} q(d(G)) \\
+& = & \sum_{d \in \cutoffInterval} |\mathcal{G}_p([d])| q(d) \\
+& \le & |\mathcal{G}_p|_{\textrm{max}}
+\sum_{d \in \cutoffInterval} q(d)
+\end{eqnarray*}
+
+In the last inequality, we upper bound using the maximum size of
+$\mathcal{G}_p$ for any $d$ in the cut-off interval.
 
 \begin{displaymath}
-|| \ket{\psi} - \ket{\tilde{\psi}} || \le
-\sum_{G \in \mathcal{G}} (\sqrt{q(d(G))})^2
+|\mathcal{G}_p|_{\textrm{max}} =
+(\textrm{argmax}_{d \in \cutoffInterval}|\mathcal{G}_p([d])|)
 \end{displaymath}
 
 Recall that $q(d)$ is designed to be a Gaussian distribution with
-standard deivation $\sqrt{\overline{D}}/2$, which we can recenter to zero mean.
+standard deivation $\sqrt{D}$, which we can recenter to zero mean.
 Then we
-can calculate the area under the distribution from
-$\frac{\overline{D}}{2}$ to $\frac{3\overline{D}}{2}$ using the error function:
-\cite{WikipediaNormal}
+can calculate the area under the distribution $q(d)$ from
+$\frac{D}{2}$ to $\frac{3D}{2}$ using the error function:
+\footnote{\url{http://en.wikipedia.org/wiki/Normal\_distribution\#Standard\_deviation\_and\_confidence\_intervals}}
 
 \begin{multline*}
 F(\mu + n\sigma; \mu, \sigma^2) - F(\mu - n\sigma; \mu, \sigma^2) = 
-\Phi(n) - \Phi(-n) \\ = \textrm{erf}(\frac{n}{\sqrt{2}}) =
-\textrm{erf}(\frac{\sqrt{\overline{D}}}{2\sqrt{2}})
+\Phi(n) - \Phi(-n) \\ = \textrm{erf}(\tfrac{n}{\sqrt{2}}) =
+\textrm{erf}(\tfrac{\sqrt{D}}{2\sqrt{2}})
 \end{multline*}
 
-Here, $n = \sqrt{\overline{D}}/2$, and we can approximate the
+Here, $n = \sqrt{D}$, and we can approximate the
 error function by:
 
 \begin{displaymath}
-erf(\frac{\overline{D}}{2\sqrt{2}}) =
-\sqrt{1 - \exp(-\Omega(\overline{D}^2))} = 1 - \exp(\Omega(\overline{D}^2))
+\textrm{erf}(\tfrac{\sqrt{D}}{\sqrt{2}}) =
+\sqrt{1 - \exp(-\Omega(D^2))} = 1 - \exp(\Omega(-D^2))
 \end{displaymath}
+
+Assuming that $|\mathcal{G}_p|_{\textrm{max}}| = \textrm{poly}(D)$,
+then we conclude that the damage to a valid money state is exponentially
+small.
+
+\begin{displaymath}
+|| \ket{\$_p} - \ket{\tilde{\$_p}} || = 1 - \exp(\Omega(-D^2))
+\end{displaymath}
+
+%For some intuition about why our assumption
+%might be true, consider the following naive upper bound on the 
+%For a given size $d$, we have $O(d^2)$ moves which can increase the size
+%of the grid to $d+1$, and each of those resulting $d+1$ size grids can
+%have $O(d^2)$ moves that maintain the same size. Sum $O(d^4)$ for $d$ in
+%some interval linear in $D$ to get a polynomial in
+%$D$.
